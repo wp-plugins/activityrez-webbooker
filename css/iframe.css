@@ -1,0 +1,33 @@
+
+html, body {background: transparent;}
+#webbooker-search-results .activity .summary {font-size: 0.8em;}
+.sidebar-container {border: none;}
+.sidebar-container .header h3 {color: #fff; font-size: 1.1em;}
+.sidebar-container .box-content h4 {color: #000; font-size: 0.8em;}
+.sidebar-container .box-content {background:#cecece;}
+#cart-sidebar .empty {color:#e21a1a}
+#search-filters, #cart-sidebar, #agents-sidebar {background:#f1f1f1;}
+#webbooker-search-results .activity {background: #cecece;}
+#webbooker-search-results .activity:nth-child(2n+2) {background: #f1f1f1;}
+.gradient-light h3, .gradient-light h2, .gradient-light h1 {color:#fff;}
+#webbooker-main .border {border: none;}
+#home-feature {margin:0px}
+#search-activities-form .box-content {padding: 1px 9px;}
+.border {background:#f1f1f1;}
+h1, h2, h3, h4, h5, h6 {margin: 5px 0;}
+.gradient-light h3 {line-height:40px;}
+.gradient-light {
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#7EDA4B), color-stop(50%,#548F00), color-stop(100%,#548F00));
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7eda4b', endColorstr='#548f00',GradientType=0 );
+}
+.gradient-light {
+   height:50px;
+   background: -moz-linear-gradient(center top , #7EDA4B 12%, #548F00 100%) repeat scroll 0 0 transparent !important;
+}
+#webbooker {
+    width: 960px;
+    margin: 0 auto;
+    padding: 0;
+}
+#webbooker-checkout .breadcrumbs a{padding: 5px 9px;}
+#webbooker-itinerary{}

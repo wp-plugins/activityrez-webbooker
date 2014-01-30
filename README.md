@@ -1,0 +1,69 @@
+# ActivityRez Wordpress Web Booker Plugin #
+Contributors: Analogrithems
+Tags: Activity, Reservations, WebBooker
+Requires at least: 3.0.1
+Tested up to: 3.8.1
+Stable tag: trunk
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
+ActivityRez Webbooker plugin for hosting your own booking engine.
+
+## Description ##
+
+The ActivityRez Webbooker is created to allow ActivityRez customers host their own booking enging. The plugin uses the ArezAPI
+to fetch activity information from the ActivityRez service and display it on your own site.  In order to use the ActivityRez Webbooker
+plugin you are REQUIRED to run your site with SSL (See below for examples on how to force SSL).  The plugin allows complete checkout
+on your own website.  Using this plugin you have more controll over the look and feel of your own website.
+
+For more help see http://support.activityrez.com
+
+# Installation #
+
+ActivityRez Webbooker is very simple to install and uses the default installation processes. After installing you need to import your
+webbookers and any needed translation files.
+
+e.g.
+
+1. Upload `activityrez-webbooker` to the `/wp-content/plugins/` directory
+2. Activate the plugin through the 'Plugins' menu in WordPress
+3. Got to Settings -> ActivityRez put in your ActivityRez username and password to import your web bookers.
+
+# Frequently Asked Questions #
+
+##The plugin isn't working what do I do? ##
+
+ActivityRez has amazing customer support that is available to all ActivityRez customers.  Go to https://support.activityrez.com to see the knowledge base, 
+chat with live support or open a support ticket.
+
+## Where will my webbooker show up after installing? ##
+
+Each webbooker has it's own unique web path that is prefixed by **/wb/** by default.  To see and/or set your path (Page Slug) login to
+https://secure.activityrez.com/admin and select **My Web** click edit on the webbooker you are interested in and look for the '''Page Slug''' 
+setting. You can also use this place to change the Page Slug or any other webbooker settings.  Please note after updating your webbooker 
+settings you must reimport the web booker in your wordpress site before it takes affect.
+
+You can also access this in your Wordpress install by going into the admin and Selecting '''ActivityRez -> Web Bookers''' on the left side 
+after importing your webbookers.  When you select a web booker you will see a view link that will take you to the public facing webbooker.
+
+
+## I made changes to my Web Booker and I'm not seeing them on my site, what do I do? ##
+
+While the webbooker does it's best to update in the background if this isn't happening or it's taking too long you can always go into your
+Wordpress Admin and reimport the web bookers again.  This will update your local settings.
+
+# Screenshots #
+
+1. ActivityRez Web Bookers in action ![](https://raw.github.com/ActivityRez/arez-web-booker/feature-wprepo/assets/screenshot-1.png)
+2. Web Booker Import ![](https://raw.github.com/ActivityRez/arez-web-booker/feature-wprepo/assets/screenshot-2.png)
+3. Web Booker Post Types ![](https://raw.github.com/ActivityRez/arez-web-booker/feature-wprepo/assets/screenshot-3.png)
+4. Web Booker Configuration Manager on ActivityRez ![](https://raw.github.com/ActivityRez/arez-web-booker/feature-wprepo/assets/screenshot-4.png)
+
+# Changelog #
+
+# 2.2.0 #
+* Plugin moved to wordpress repo
+* Added ability to override individual template files
+
+## Upgrade Notice ##
+Upgrades will function as normal and should only require you to use the normal Wordpress update system.

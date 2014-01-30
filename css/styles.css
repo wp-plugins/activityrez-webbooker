@@ -1,0 +1,15 @@
+/**
+ *	ActivityRez Web Booking Engine
+ *	CSS Styles File
+ *
+ *	@author Ryan Freeman <ryan@stoked-industries.com>
+ *	@package ActivityRez
+ *	@subpackage Web Booking Engine
+ */
+
+@import url("bootstrap.min.css");
+@import url("jquery-ui.css");
+@import url("jquery.nouislider.min.css");
+@import url("layout.css");
+@import url("sticky.css");
+@import url("print.css");

@@ -1,0 +1,109 @@
+@media print{
+	#webbooker-sidebar,
+	#webbooker-activity-actions,
+	#webbooker-activity-main .section .btn, 
+	#webbooker-activity-book .section .btn,
+	.activity #webbooker-activity-book .price-type .btn-group.shift-qty,
+	.queue, .pct, .sticky-note, .modal, #home-link, #multi-everything, #webbooker-activity-book, .webbooker-actions, webbooker-activity-little, #webbooker-activity-summary a{
+		display: none;
+	}
+	#qrcode-wrapper{
+		display:block !important;
+		margin-top:100px;
+		text-align: center;
+		line-height: 30px;
+		}
+	#qrcode canvas{
+		width: 150px;
+		height: 150px;
+	}
+	
+	#webbooker-activity-map{
+		page-break-before: always;
+	}
+	
+	#map_canvas{
+		margin: 0 auto;
+	}
+	#webbooker {
+		padding: 0;
+	}
+	#webbooker-main {
+		width: 100% !important;
+		margin: 0;
+		padding: 0;
+	}
+	.galleria-container {
+		margin: 0 auto;
+	}
+	
+	#webbooker-activity .header{
+		border: none;
+		margin: 0 auto .5em auto;
+	}
+	
+	#webbooker-main .header h3{
+		line-height: 1.2;
+	}
+	
+	#activity-availability, #activity-date, #activity-time {
+		display: inline-table;
+		width: 32%;
+		vertical-align: top;
+	}
+	
+	#webbooker-activity-main{
+		display: block;
+	}
+	
+	#webbooker-activity-main .price-type, #webbooker-activity-book .price-type {
+		display: inline-block;
+	}
+	
+	#webbooker-activity-main .section, #webbooker-activity-book .section {
+		padding: 0;
+		border-bottom: none;
+	}
+	
+	#webbooker-activity-main, #webbooker-activity-book {
+		width: 100%;
+		margin: 0;
+		border-top: 1px solid #ccc;
+	}
+	
+	#webbooker-activity-main p, #webbooker-activity-book p,
+	#webbooker-activity-main ul, #webbooker-activity-book ul {
+		page-break-inside: avoid;
+		page-break-after: avoid;
+		page-break-before: avoid;
+	
+	}
+	
+	#webbooker-activity-main .content, #webbooker-activity-book .content {
+		padding: 8px;
+	}
+	
+	#webbooker-activity-main #activity-time select, #webbooker-activity-book #activity-time select {
+		-webkit-appearance: none;
+		line-height: 12px;
+		display: inline-block;
+		font-size: 13px;
+	}
+	
+	#activity-prices {
+		border-top: 1px solid #ccc;
+		border-bottom: 1px solid #ccc;
+	}
+	
+	#page-container, #webbooker {
+		width: 100%;
+	}
+	
+	a[href]:after{
+		content: '';
+	}
+	
+	.border {
+		width: 100%;
+	}
+}
