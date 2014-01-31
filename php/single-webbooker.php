@@ -212,9 +212,6 @@ function arez_webbooker_loadScripts(){
 		}
 	}
 	
-	wp_enqueue_script('jquery');
-	wp_enqueue_script('jquery-ui-core');
-	wp_enqueue_script('jquery-ui-datepicker');
 	if($testMode){
 		//styles
 
@@ -231,7 +228,7 @@ function arez_webbooker_loadScripts(){
 		wp_enqueue_script('nouislider', ACTIVITYREZWB_PLUGIN_PATH . 'js/lib/jquery.nouislider.min.js', array('jquery'),'',1);
 		
 		//ActivityRez Required Scripts
-		wp_enqueue_script('ar-app',ACTIVITYREZWB_PLUGIN_PATH.'js/app/app.js',array('jquery','knockout','bootstrap','store','path','lazyload','nouislider'));
+		wp_enqueue_script('ar-app',ACTIVITYREZWB_PLUGIN_PATH.'js/app/app.js',array('jquery','jquery-ui-datepicker','knockout','bootstrap','store','path','lazyload','nouislider'));
 		wp_enqueue_script('ar-api',ACTIVITYREZWB_PLUGIN_PATH.'js/app/api.js',array('ar-app'));
 		wp_enqueue_script('ar-catalog',ACTIVITYREZWB_PLUGIN_PATH.'js/app/catalog.js',array('ar-app','ar-api'));
 		wp_enqueue_script('ar-cart',ACTIVITYREZWB_PLUGIN_PATH.'js/app/cart.js',array('ar-app','ar-api','ar-catalog'));

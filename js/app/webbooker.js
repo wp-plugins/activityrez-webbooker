@@ -478,6 +478,7 @@ null:this.val(),this.i?this.val():null],{trusted:!1})},function(a){a.stopPropaga
 f[7]]),B.concat([f[1]+f[8]])],r=[C.concat([f[2]+f[7]]),C.concat([f[2]+f[8]])];a=e.extend({handles:2,margin:0,orientation:"horizontal"},a)||{};a.serialization||(a.serialization={to:[!1,!1],resolution:0.01,mark:"."});G(a,c);a.S=a.serialization;a.connect?"lower"===a.connect?(s.push(f[9],f[9]+f[7]),p[0].push(f[12])):(s.push(f[9]+f[8],f[12]),p[0].push(f[9])):s.push(f[12]);l="vertical"===a.orientation?"top":"left";h=a.S.resolution.toString().split(".");h="1"===h[0]?0:h[1].length;"vertical"===a.orientation?
 s.push(f[10]):s.push(f[11]);k.addClass(s.join(" ")).data("target",c);c.data({base:k,mark:a.S.mark,decimals:h});for(d=0;d<a.handles;d++)g=e("<div><div/></div>").appendTo(k),g.addClass(p[d].join(" ")),g.children().addClass(r[d].join(" ")),q(n.start,g.children(),J,{base:k,target:c,handle:g}),q(n.end,g.children(),K,{base:k,target:c,handle:g}),g.data("nui",{target:c,decimals:h,options:a,base:k,style:l,number:d}).data("store",H(g,a.S)),g[0].gPct=F,m.push(g),v(g,t.to(a.range,a.start[d]));k.data({options:a,
 handles:m,style:l});c.data({handles:m});q(n.end,k,L,{base:k,target:c,handles:m})})}.call(this,D)}})($);
+$ = jQuery.noConflict(true);
 if (!Object.keys) {
 	Object.keys = (function () {
 		var hasOwnProperty = Object.prototype.hasOwnProperty,
@@ -3962,12 +3963,22 @@ WebBooker.ActivityView = (function(){
 				var map_canvas = document.getElementById('map_canvas');
 				if ( map_canvas ) {
 					map_canvas.style.width = '100%';
-					var mapOptions = {
-						zoom: 10,
-						center: new google.maps.LatLng(activity.address_lat, activity.address_lng),
-						mapTypeId: google.maps.MapTypeId.ROADMAP,
-						scrollwheel: false
-					};
+					if(window.innerWidth > 640){
+						var mapOptions = {
+							zoom: 10,
+							center: new google.maps.LatLng(activity.address_lat, activity.address_lng),
+							mapTypeId: google.maps.MapTypeId.ROADMAP,
+							scrollwheel: false
+						};
+					} else{
+						var mapOptions = {
+							zoom: 10,
+							center: new google.maps.LatLng(activity.address_lat, activity.address_lng),
+							mapTypeId: google.maps.MapTypeId.ROADMAP,
+							scrollwheel: false,
+							draggable: false
+						};
+					}
 					map = new google.maps.Map(map_canvas, mapOptions);
 					
 					new google.maps.Marker({
@@ -5323,6 +5334,16 @@ $ar.PaymentInfoModel = function(data){
 			that.errors.push(__('Postal Code is required.')());
 		}
 
+		if( that.errors().length === 0 ) {
+			WebBooker.Checkout.sale.leadGuest.json({
+				'country': that.country(),
+				'city': that.city(),
+				'state': that.state(),
+				'address': that.address(),
+				'postal': that.postal()
+			});
+		}
+		
 		return that.errors().length === 0;
 	};
 

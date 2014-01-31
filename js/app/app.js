@@ -1,3 +1,4 @@
+$ = jQuery.noConflict(true);
 if (!Object.keys) {
 	Object.keys = (function () {
 		var hasOwnProperty = Object.prototype.hasOwnProperty,
