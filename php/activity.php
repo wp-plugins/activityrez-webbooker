@@ -41,7 +41,8 @@ function currencyFormat( $amount ){
 }
 
 function getChildURL( $child ){
-	return site_url() . $child['slug'];
+	global $wb;
+	return $wb['wb_url'] .'/'. $child['slug'];
 }
 /*
 <!--
