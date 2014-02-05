@@ -144,7 +144,7 @@ WebBooker.MiniCart = (function(){
 	
 	self.checkout = function(){
 		if( !self.addToCart() ) return;
-		$('html, body').animate({ scrollTop: 0 }, 500);
+		jQuery('html, body').animate({ scrollTop: 0 }, 500);
 		window.location.href = WebBooker.bootstrap.wb_url + '/#/Checkout';
 	};
 	self.addToCart = function(){
@@ -171,7 +171,7 @@ WebBooker.MiniCart = (function(){
 
 		self.checkingInventory(true);
 		if(!self.time()){
-			$('#activity-availability > span').effect('pulsate', {times: 2}, 500);
+			jQuery('#activity-availability > span').effect('pulsate', {times: 2}, 500);
 			self.checkingInventory(false);
 			return;
 		}
@@ -324,7 +324,7 @@ WebBooker.MiniCart = (function(){
 	self.dayAvailable = function(date) {
 	//safe defaults
 		if('0000-00-00 00:00:00' == self.activity().date_start){
-			var ds = '1970-01-01 00:00:00';
+			var ds = '2001-01-01 00:00:00';
 		}else{
 			var ds = self.activity().date_start;			
 		}
@@ -354,7 +354,7 @@ WebBooker.MiniCart = (function(){
 		}
 
 		// check blackout days
-		for(ni = 0; ni < (self.blackoutDays||[]).length; ni++){
+		for(ni = 0; ni < (self.blackoutDays||[]).length; ni++){			
 			if(self.blackoutDays[ni].valueOf() != date.valueOf())
 				continue;
 			return [false];
@@ -394,7 +394,7 @@ WebBooker.MiniCart = (function(){
 		return [false];
 	};
 	self.showDatePicker = function(){
-		$('#activity-date .datepicker').datepicker('show');
+		jQuery('#activity-date .datepicker').datepicker('show');
 	};
 	self.add = function( item, evt ) {
 		item.qty( item.qty() + 1 );
@@ -474,7 +474,11 @@ WebBooker.MiniCart = (function(){
 			curr_date, end_date, ni;
 
 		//get the dates for each blackout date range and append them to blackoutDays
+
 		for(ni = 0; ni < blackouts.length; ni++) {
+			//ff and IE are dumb
+			blackouts[ni].startDate = blackouts[ni].startDate.replace(/-/g, '/');
+			blackouts[ni].endDate = blackouts[ni].endDate.replace(/-/g, '/');		
 			//generate a list of dates from a range
 			curr_date = new Date(blackouts[ni].startDate);
 			end_date = new Date(blackouts[ni].endDate);
@@ -483,9 +487,8 @@ WebBooker.MiniCart = (function(){
 				curr_date.setDate(curr_date.getDate() + 1);
 			}
 		}
-
 		// adjust the date picker.
-		$('#webbooker-activity-book .datepicker').datepicker({
+		jQuery('#webbooker-activity-book .datepicker').datepicker({
 			numberOfMonths: 1,
 			minDate: 0,
 			//showOn: 'button',
@@ -670,14 +673,14 @@ WebBooker.ActivityView = (function(){
 	self.viewFullSize = function(){
 		$ar.load(wb_global_vars['plugin_url'] + '/js/lib/bootstrap-modal-carousel.js', function (){
 			self.fullScreenShow(true);
-			$('.carousel').carousel({pause: 'hover'});
+			jQuery('.carousel').carousel({pause: 'hover'});
 		});
 	};
 
 	self.activity.subscribe(function(activity){
 		if(!activity) return;
 
-		$('#activityCarousel').hide();
+		jQuery('#activityCarousel').hide();
 
 		self.slideshow([]);
 		self.children([]);
@@ -697,7 +700,7 @@ WebBooker.ActivityView = (function(){
 		//set up the gallery
 		if(activity.media && activity.media.length > 0){
 			var show = [];
-			var columnWidth = $('#webbooker-main').width();
+			var columnWidth = jQuery('#webbooker-main').width();
 			var makeurl = function(hash, height){
 				return WebBooker.mediaServer+'/media/'+hash+'/thumbnail/height/'+height;
 			}
@@ -724,7 +727,7 @@ WebBooker.ActivityView = (function(){
 					}
 			}
 			self.slideshow(show);
-			$('.carousel').carousel({pause: 'hover'});
+			jQuery('.carousel').carousel({pause: 'hover'});
 		}
 
 		// Analytics hook
@@ -734,7 +737,7 @@ WebBooker.ActivityView = (function(){
 		}, 'action_viewActivity');
 
 		if(activity.address_lng && activity.address_lat && !isNaN(activity.address_lng) && !isNaN(activity.address_lat)){
-			$(document).ready(function(){
+			jQuery(document).ready(function(){
 				var map_canvas = document.getElementById('map_canvas');
 				if ( map_canvas ) {
 					map_canvas.style.width = '100%';
@@ -770,7 +773,7 @@ WebBooker.ActivityView = (function(){
 		self.show(true);
 		if(!window.isIE){
 			$ar.load(wb_global_vars['plugin_url'] + '/js/lib/jquery.qrcode.min.js', function() {
-				$('#qrcode').qrcode(document.URL);
+				jQuery('#qrcode').qrcode(document.URL);
 			});
 		}
 	});

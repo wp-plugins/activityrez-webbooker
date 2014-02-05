@@ -27,7 +27,7 @@ WebBooker.API = {
 			args.crossDomain = false;
 		}
 
-		$.ajax(args).always(function(result){
+		jQuery.ajax(args).always(function(result){
 			if(typeof callback == 'function'){
 				callback(result);
 			}
@@ -80,7 +80,7 @@ WebBooker.API = {
 	},
 	
 	fetchImages: function(id,callback){
-		$.ajax({
+		jQuery.ajax({
 		    url: WebBooker.mediaServer + '/media/' + WebBooker.bootstrap.nonce + '/meta/all/activity_id/' + id,
 		    type: 'GET',
 			async: true

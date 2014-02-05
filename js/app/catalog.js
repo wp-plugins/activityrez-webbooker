@@ -215,7 +215,7 @@ WebBooker.Catalog = (function(){
 
 	self.backupParams = function() {
 		var params = self.getParams();
-		$.each( params, function( key, value ) {
+		jQuery.each( params, function( key, value ) {
 			self.backup_search_params[key] = typeof value == 'undefined' ? '' : value;
 		});
 	};
@@ -261,7 +261,7 @@ WebBooker.Catalog = (function(){
 		self.search_params.moods([]);
 		self.search_params.price_min(0);
 		self.search_params.price_max(10000);
-		$('#price-range-slider').val([0,10000]);
+		jQuery('#price-range-slider').val([0,10000]);
 	};
 
 	self.init = function() {
@@ -335,7 +335,7 @@ WebBooker.Catalog = (function(){
 		self.search_params.keywords(WebBooker.Settings.get('SearchParams_Keywords') || null);
 		self.search_params.price_min(min_price || 0);
 		self.search_params.price_max(max_price || 10000);
-		$('#price-range-slider').val([ min_price || 0, max_price || 10000 ]);
+		jQuery('#price-range-slider').val([ min_price || 0, max_price || 10000 ]);
 
 		//grab this bit from the bootstrap
 		for ( var i = 0; i < WebBooker.bootstrap.wb_destinations.length; i += 1 ) {
@@ -405,40 +405,40 @@ WebBooker.Catalog = (function(){
 		});
 		self.search_params.category.subscribe(function(value){
 			WebBooker.Settings.set('SearchParams_Category', value || '');
-			$('#search-activities-form').mouseleave(function(){
+			jQuery('#search-activities-form').mouseleave(function(){
 				setTimeout(function(){
-					if(!self.search_params.category() && !self.search_params.tag() && !$('.select-category').hover())
-						$('#search-filters-categories .collapse-me').slideUp();
+					if(!self.search_params.category() && !self.search_params.tag() && !jQuery('.select-category').hover())
+						jQuery('#search-filters-categories .collapse-me').slideUp();
 				}, 1000);
 			});
 		});
 		self.search_params.tag.subscribe(function(value){
 			WebBooker.Settings.set('SearchParams_Tag', value || '');
-			$('#search-activities-form').mouseleave(function(){
+			jQuery('#search-activities-form').mouseleave(function(){
 				setTimeout(function(){
-					if(!self.search_params.category() && !self.search_params.tag() && !$('.select-tag').hover())
-						$('#search-filters-categories .collapse-me').slideUp();
+					if(!self.search_params.category() && !self.search_params.tag() && !jQuery('.select-tag').hover())
+						jQuery('#search-filters-categories .collapse-me').slideUp();
 				}, 1000);
 			});
 		});
 		self.search_params.date_start.subscribe(function(value){
 			WebBooker.Settings.set('SearchParams_StartDate', value || '');
 			//checks to see if the mouse is over the section
-			$('#search-activities-form').mouseleave(function(){
+			jQuery('#search-activities-form').mouseleave(function(){
 				setTimeout(function(){
-					if(!self.search_params.date_start() && !self.search_params.date_end() && !$('#ui-datepicker-div').is(':visible')) {
+					if(!self.search_params.date_start() && !self.search_params.date_end() && !jQuery('#ui-datepicker-div').is(':visible')) {
 						// if the mouse has not been in the section, for 1 sec and nothing is checked
-						$('#search-filters-date .collapse-me').slideUp();
+						jQuery('#search-filters-date .collapse-me').slideUp();
 					}
 				}, 1000);
 			});
 		});
 		self.search_params.date_end.subscribe(function(value){
 			WebBooker.Settings.set('SearchParams_EndDate', value || '');
-			$('#search-activities-form').mouseleave(function(){
+			jQuery('#search-activities-form').mouseleave(function(){
 				setTimeout(function(){
-					if(!self.search_params.date_start() && !self.search_params.date_end() && !$('#ui-datepicker-div').is(':visible'))
-						$('#search-filters-date .collapse-me').slideUp();
+					if(!self.search_params.date_start() && !self.search_params.date_end() && !jQuery('#ui-datepicker-div').is(':visible'))
+						jQuery('#search-filters-date .collapse-me').slideUp();
 				}, 1000);
 			});
 		});
@@ -459,10 +459,10 @@ WebBooker.Catalog = (function(){
 				saver.push(moods[ni].name());
 			}
 			WebBooker.Settings.set('SearchParams_Moods', saver);
-			$('#search-activities-form').mouseleave(function(){
+			jQuery('#search-activities-form').mouseleave(function(){
 				setTimeout(function(){
 					if(self.search_params.moods().length < 1)
-						$('#search-filters-moods .collapse-me').slideUp();
+						jQuery('#search-filters-moods .collapse-me').slideUp();
 				}, 1000);
 			});
 		});

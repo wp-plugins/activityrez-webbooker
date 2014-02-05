@@ -45,7 +45,7 @@ if (!Array.prototype.indexOf) {
 var if_height_interval = false;
 function setHeight(parent_url) {
 	if_height_interval = setInterval(function() {
-		WebBooker.postMessage('if_height=' + $('body').outerHeight(true));
+		WebBooker.postMessage('if_height=' + jQuery('body').outerHeight(true));
 	}, 2000);
 }
 
@@ -77,10 +77,10 @@ if(window.addEventListener) {
 	});
 }
 
-$(document).ready(function(){
-	ko.applyBindings(WebBooker, $('#multi-everything')[0]);
-	ko.applyBindings(WebBooker, $('#webbooker-sidebar')[0]);
-	ko.applyBindings(WebBooker, $('#webbooker-main')[0]);//don't bind the same object to different places in ie8
+jQuery(document).ready(function(){
+	ko.applyBindings(WebBooker, jQuery('#multi-everything')[0]);
+	ko.applyBindings(WebBooker, jQuery('#webbooker-sidebar')[0]);
+	ko.applyBindings(WebBooker, jQuery('#webbooker-main')[0]);//don't bind the same object to different places in ie8
 
 	WebBooker.init();
 	WebBooker.wbLoaded(true);
@@ -118,7 +118,7 @@ $(document).ready(function(){
 		} else {
 			WebBooker.Catalog.load();
 		}
-		$('#webbooker-search-results .results').focus();
+		jQuery('#webbooker-search-results .results').focus();
 	}
 	
 	if ( !WebBooker.bootstrap.activity && !is_search ) {

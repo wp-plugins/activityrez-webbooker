@@ -16,7 +16,7 @@
 			<p><?php _e('This activity cannot be booked under', 'arez'); ?> <!-- ko if: activity() && activity().cutoff_hours > 48 --><span data-bind="text: activity().cutoff_hours"></span><!-- /ko --><!-- ko if: activity() && activity().cutoff_hours <= 48 -->48<!-- /ko --> <?php _e('hours in advance.', 'arez'); ?></p>
 			<p><?php _e('Please select a later date or contact an agent at: ', 'arez'); ?><br><!-- ko if: activity --><span data-bind="text: activity().reseller_csPhone"></span><!-- /ko --></p>
 		</div>
-		<!-- ko if: cartItem() -->
+		<!-- ko if: cartItem() && time() -->
 		<div id="activity-noprices" class="section" data-bind="visible: !guests().length">
 			<p><?php _e('No pricing information was found for this activity.','arez');?></p>
 		</div><!-- /activity-noprices -->

@@ -148,7 +148,6 @@ class ActivityRezAPI {
 		$params['service'] = $service;
 		$params['action'] = $action;
 		$params['nonce'] = $nonce;
-		//die($this->base_url.'?'.http_build_query($params));
 		return json_decode($this->raw($this->base_url,$params),1);
 	}
 

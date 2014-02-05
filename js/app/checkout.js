@@ -2081,7 +2081,7 @@ WebBooker.Checkout = (function(){
 			//TODO insure this is for r2
 			if(payments[ni].require_authorization_id() && !payments[ni].authorization_ID()){
 				$ar.Notification(__('Authorization ID is required'),'error');
-				$(window).scrollTop($("#authorization_id").offset().top, 200);
+				jQuery(window).scrollTop(jQuery("#authorization_id").offset().top, 200);
 				return false;	
 			}
 		}
@@ -2101,11 +2101,11 @@ WebBooker.Checkout = (function(){
 				$ar.Notification(payments[ni].card.errors,'error');
 			}
 			WebBooker.CheckoutNav.processing(false);
-			$('#checkout-processing').modal('hide');
+			jQuery('#checkout-processing').modal('hide');
 			return false;
 		}
 
-		$('#checkout-processing').removeData('modal').modal({
+		jQuery('#checkout-processing').removeData('modal').modal({
 			show: true,
 			backdrop: 'static',
 			keyboard: false
@@ -2113,7 +2113,7 @@ WebBooker.Checkout = (function(){
 
 		self.sale.save(function(result){
 			if(!self.sale.id()){
-				$('#checkout-processing').modal('hide');
+				jQuery('#checkout-processing').modal('hide');
 				return;
 			}
 
@@ -2133,13 +2133,13 @@ WebBooker.Checkout = (function(){
 				if(result.hosted){
 					window.location.href = result.hosted;
 				} else {
-					$('.modal-backdrop').hide();
-					$('html, body').animate({ scrollTop: 0 }, 500);
+					jQuery('.modal-backdrop').hide();
+					jQuery('html, body').animate({ scrollTop: 0 }, 500);
 					window.location.hash = '/Confirmation/' + saleid;
 				}
 			}
 
-			$('#checkout-processing').modal('hide');
+			jQuery('#checkout-processing').modal('hide');
 		});
 	};
 
@@ -2180,12 +2180,12 @@ WebBooker.Checkout = (function(){
 			valid = valid && item[ni].validate();
 		}
 		if(!valid){
-			$("#checkout-customize .required").addClass('warning-shadow');
+			jQuery("#checkout-customize .required").addClass('warning-shadow');
 			$ar.Notification(__('You seem to have missed something. Please check again.'),'error');
-			$(window).scrollTop($("#checkout-activities").offset().top, 200);
+			jQuery(window).scrollTop(jQuery("#checkout-activities").offset().top, 200);
 		} else {
-			$('#checkout-customize .warning-shadow').removeClass('warning-shadow');
-			$("#checkout-customize .required").removeClass('warning-shadow');
+			jQuery('#checkout-customize .warning-shadow').removeClass('warning-shadow');
+			jQuery("#checkout-customize .required").removeClass('warning-shadow');
 		}
 		return valid;
 	};
@@ -2206,7 +2206,7 @@ WebBooker.CheckoutNav = (function(){
 	self.progress = ko.observable(4);
 	self.progressWidth = ko.computed(function(){ return self.progress() + '%'; });
 	self.goToStep = function(item, event) {
-		var which = arguments.length == 2?$(event.currentTarget).attr('data-target'):item;
+		var which = arguments.length == 2?jQuery(event.currentTarget).attr('data-target'):item;
 		if(which == 'Confirmation' && !self.termsAccepted()){
 			return false;
 		}
@@ -2270,6 +2270,6 @@ WebBooker.CheckoutNav = (function(){
 	return self;
 })();
 
-$(document).ready(function(){
-	ko.applyBindings(WebBooker.bootstrap, $('#reseller-privacy-policy .modal-body')[0]);
+jQuery(document).ready(function(){
+	ko.applyBindings(WebBooker.bootstrap, jQuery('#reseller-privacy-policy .modal-body')[0]);
 });

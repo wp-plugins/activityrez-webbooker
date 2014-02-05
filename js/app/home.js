@@ -29,7 +29,7 @@ WebBooker.Homepage.show.subscribe(function(newValue){
 					ni, no;
 					
 				for ( ni = 0; ni < results.data.length; ni += 1 ) {
-					if ( $.inArray( results.data[ni].destination, dests ) < 0 ) {
+					if ( jQuery.inArray( results.data[ni].destination, dests ) < 0 ) {
 						dests.push( results.data[ni].destination );
 					}
 				}

@@ -1,4 +1,3 @@
-$ = jQuery.noConflict(true);
 if (!Object.keys) {
 	Object.keys = (function () {
 		var hasOwnProperty = Object.prototype.hasOwnProperty,
@@ -182,16 +181,19 @@ var WebBooker = {
 		});
 
 		WebBooker.bootstrap = wb_global_vars;
-		if(WebBooker && WebBooker.bootstrap){
+		if( WebBooker.bootstrap && WebBooker.bootstrap.server && WebBooker.bootstrap.server == 'training'){
 			var training_div = '<div class="trainingWarning">You are currently in training mode. Switch to production mode <a href="' ;
-				training_div += WebBooker.bootstrap.webbooker_settings + '" target="_blank">here</a> to start accepting payments.<div class="trainingClose">X</div></div>';
+				training_div += WebBooker.bootstrap.webbooker_settings + '" target="_blank">here</a> to start accepting payments.</div>';
 
-			$('body').addClass('training');
-			$('body').append(training_div);
+			jQuery('body').addClass('training');
+			jQuery('body').append(training_div);
+			jQuery('.trainingClose').on('click',function(){
+				jQuery('.trainingWarning').hide();
+			});
 		}
 		createCookie('ACTIVITYREZ', WebBooker.bootstrap.nonce);
 		WebBooker.Agent.last_key = WebBooker.bootstrap.nonce;
-		$('#wb_bootstrapper').remove();
+		jQuery('#wb_bootstrapper').remove();
 
 		//lets save some keystrokes
 		var boot = WebBooker.bootstrap;
@@ -256,15 +258,15 @@ var WebBooker = {
 		}
 
 		// init the date pickers
-		$('.datepicker').each(function() {
-			$(this).datepicker({
+		jQuery('.datepicker').each(function() {
+			jQuery(this).datepicker({
 				minDate: 0,
 				numberOfMonths: 2,
 				dateFormat: 'mm/dd/yy',
 				beforeShow: function(a) {
-					if( a.id == 'datepicker-second' && $('#datepicker-first').datepicker('getDate') ) {
+					if( a.id == 'datepicker-second' && jQuery('#datepicker-first').datepicker('getDate') ) {
 						return {
-							minDate: $('#datepicker-first').datepicker('getDate')
+							minDate: jQuery('#datepicker-first').datepicker('getDate')
 						};
 					}
 					var b = new Date();
@@ -276,12 +278,12 @@ var WebBooker = {
 		});
 		
 		// init the price range slider
-		$('#price-range-slider').noUiSlider({
+		jQuery('#price-range-slider').noUiSlider({
 			range: [0,10000],
 			start: [0,10000],
 			step: 10,
 			slide: function() {
-				var values = $(this).val();
+				var values = jQuery(this).val();
 				
 				WebBooker.Catalog.search_params.price_min( values[0] );
 				WebBooker.Catalog.search_params.price_max( values[1] );
@@ -299,7 +301,7 @@ var WebBooker = {
 	},
 
 	hideAllScreens: function() {
-		$('#cart-sidebar .retrieve').show(); //this is dumb
+		jQuery('#cart-sidebar .retrieve').show(); //this is dumb
 		WebBooker.Homepage.show(false);
 		WebBooker.Catalog.show(false);
 		WebBooker.ActivityView.show(false);
@@ -450,8 +452,8 @@ WebBooker.Agent = {
 				WebBooker.Dashboard.showPasswordReset(false);
 				WebBooker.Dashboard.showPasswordResetConfirmation(true);
 				WebBooker.Agent.loginSuccess(__('Your password has been reset successfully. Please log-in here.'));
-				var sidebar = $('#agents-sidebar');
-				$('html, body').animate({ scrollTop: sidebar.offset().top }, 500);
+				var sidebar = jQuery('#agents-sidebar');
+				jQuery('html, body').animate({ scrollTop: sidebar.offset().top }, 500);
 				WebBooker.postMessage('scroll_to=' + sidebar.offset().top);
 			} else {
 				WebBooker.Agent.loginError(result.msg);
@@ -486,8 +488,8 @@ WebBooker.Agent = {
 				WebBooker.Dashboard.showReports(false);
 				WebBooker.Dashboard.showSignup(false);
 				WebBooker.Dashboard.signupSuccessMsg(true);
-				var sidebar = $('#agents-sidebar');
-				$('html, body').animate({ scrollTop: sidebar.offset().top }, 500);
+				var sidebar = jQuery('#agents-sidebar');
+				jQuery('html, body').animate({ scrollTop: sidebar.offset().top }, 500);
 				WebBooker.postMessage('scroll_to=' + sidebar.offset().top);
 				WebBooker.Agent.loginSuccess(__('Congratulations, your travel agent sign-up is complete! You may log-in now below.')());
 			} else {
@@ -627,7 +629,7 @@ Path.map("#/Home").to(function(){
 	WebBooker.hideAllScreens();
 	WebBooker.Homepage.show(true);
 	WebBooker.Analytics.trigger({}, 'action_Home');
-	$('html, body').animate({ scrollTop: 0 }, 500);
+	jQuery('html, body').animate({ scrollTop: 0 }, 500);
 	WebBooker.postMessage('scroll_to=0');
 });
 
@@ -639,10 +641,10 @@ Path.map('#/Search').to(function() {
 	WebBooker.hideAllScreens();
 	WebBooker.Catalog.show(true);
 	setTimeout(function() {
-		$('html, body').animate({ scrollTop: 0 }, 500);
+		jQuery('html, body').animate({ scrollTop: 0 }, 500);
 		WebBooker.postMessage('scroll_to=0');
 		WebBooker.Catalog.loadWithFilters();
-		$('#webbooker-search-results .results').focus();
+		jQuery('#webbooker-search-results .results').focus();
 	}, 1);
 });
 
@@ -650,7 +652,7 @@ Path.map('#/Contact').to(function() {
 	WebBooker.showInitLoader(false);
 	WebBooker.hideAllScreens();
 	WebBooker.Contact.show(true);
-	$('html, body').animate({ scrollTop: 0 }, 500);
+	jQuery('html, body').animate({ scrollTop: 0 }, 500);
 	WebBooker.postMessage('scroll_to=0');
 });
 
@@ -658,7 +660,7 @@ Path.map('#/About').to(function() {
 	WebBooker.showInitLoader(false);
 	WebBooker.hideAllScreens();
 	WebBooker.About.show(true);
-	$('html, body').animate({ scrollTop: 0 }, 500);
+	jQuery('html, body').animate({ scrollTop: 0 }, 500);
 	WebBooker.postMessage('scroll_to=0');
 });
 
@@ -669,7 +671,7 @@ Path.map('#/Dashboard').to(function() {
 	WebBooker.Dashboard.showReports(false);
 	WebBooker.Dashboard.showPasswordReset(false);
 	WebBooker.Dashboard.show(true);
-	$('html, body').animate({ scrollTop: 0 }, 500);
+	jQuery('html, body').animate({ scrollTop: 0 }, 500);
 	WebBooker.postMessage('scroll_to=0');
 });
 
@@ -680,7 +682,7 @@ Path.map('#/Dashboard/reports').to(function() {
 	WebBooker.Dashboard.showMain(false);
 	WebBooker.Dashboard.showPasswordReset(false);
 	WebBooker.Dashboard.showReports(true);
-	$('html, body').animate({ scrollTop: 0 }, 500);
+	jQuery('html, body').animate({ scrollTop: 0 }, 500);
 	WebBooker.postMessage('scroll_to=0');
 });
 
@@ -692,7 +694,7 @@ Path.map('#/Dashboard/signup').to(function() {
 	WebBooker.Dashboard.showReports(false);
 	WebBooker.Dashboard.showPasswordReset(false);
 	WebBooker.Dashboard.showSignup(true);
-	$('html, body').animate({ scrollTop: 0 }, 500);
+	jQuery('html, body').animate({ scrollTop: 0 }, 500);
 	WebBooker.postMessage('scroll_to=0');
 });
 
@@ -705,7 +707,7 @@ Path.map('#/Dashboard/PasswordReset').to(function() {
 	WebBooker.Dashboard.showSignup(false);
 	WebBooker.Dashboard.showPasswordReset(true);
 	WebBooker.Agent.pw_reset.username(WebBooker.Agent.email());
-	$('html, body').animate({ scrollTop: 0 }, 500);
+	jQuery('html, body').animate({ scrollTop: 0 }, 500);
 	WebBooker.postMessage('scroll_to=0');
 });
 
@@ -778,14 +780,14 @@ Path.map('#/Confirmation/error/:errorMsg').to(function() {
 Path.map('#/Itinerary').to(function() {
 	WebBooker.showInitLoader(false);
 	WebBooker.hideAllScreens();
-	$('#cart-sidebar .retrieve').hide(); //dumbness
+	jQuery('#cart-sidebar .retrieve').hide(); //dumbness
 	WebBooker.Itinerary.show(true);
 });
 
 Path.map('#/Itinerary/:saleID').to(function() {
 	WebBooker.showInitLoader(false);
 	WebBooker.hideAllScreens();
-	$('#cart-sidebar .retrieve').hide(); //dumbness
+	jQuery('#cart-sidebar .retrieve').hide(); //dumbness
 	var sale = WebBooker.Sale.get('sale');
 	if(sale) WebBooker.Itinerary.sale = $ar.SaleModel(sale);
 	WebBooker.Itinerary.sale.id(this.params['saleID']);
@@ -797,8 +799,8 @@ Path.map('#/PasswordResetRequest').to(function(){
 	WebBooker.showInitLoader(false);
 	WebBooker.hideAllScreens();
 	WebBooker.Agent.passwordResetRequest(true);
-	$('#passwordResetRequest input').focus();
-	$('html, body').animate({ scrollTop: 0 }, 500);
+	jQuery('#passwordResetRequest input').focus();
+	jQuery('html, body').animate({ scrollTop: 0 }, 500);
 	WebBooker.postMessage('scroll_to=0');
 });
 
@@ -837,18 +839,18 @@ WebBooker.postMessage = function(message) {
 ko.bindingHandlers.collapseSidebarBox = {
 	init: function(element, valueAccessor) {
 		setTimeout(function(){
-		    if(!$(element).siblings('.collapse-me').is(':hidden')){
-		        $(element).children('i').removeClass('icon-chevron-down');
-				$(element).children('i').addClass('icon-chevron-up');
+		    if(!jQuery(element).siblings('.collapse-me').is(':hidden')){
+		        jQuery(element).children('i').removeClass('icon-chevron-down');
+				jQuery(element).children('i').addClass('icon-chevron-up');
 			}
 		}, 2000);
-		$(element).click(function(e) {
+		jQuery(element).click(function(e) {
 			e.preventDefault();
-			$(this).siblings('.collapse-me').slideToggle();
-			$(this).children('i').toggleClass('icon-chevron-down icon-chevron-up');
-			var title = $(this).attr('title');
+			jQuery(this).siblings('.collapse-me').slideToggle();
+			jQuery(this).children('i').toggleClass('icon-chevron-down icon-chevron-up');
+			var title = jQuery(this).attr('title');
 			title = (title == __('Show')()) ? __('Hide')() : __('Show')();
-			$(this).attr('title', title);
+			jQuery(this).attr('title', title);
 			return false;
 		});
 	}
@@ -859,7 +861,7 @@ ko.bindingHandlers.hotelTypeahead = {
 		var option = valueAccessor()['value'];
 		var saved_query = '';
 		if(WebBooker.bootstrap.agencyID == 1260) return false;
-		$(element).typeahead({
+		jQuery(element).typeahead({
 			source: function(query,process) {
 				if(query.length < 3 || query == saved_query) {
 					if(!query.length) {
@@ -877,7 +879,7 @@ ko.bindingHandlers.hotelTypeahead = {
 					query: query
 				},function(data){
 					var names = [];
-					var mappedObjs = $.map(data.items,
+					var mappedObjs = jQuery.map(data.items,
 						function(item) {
 							names.push(item.name);
 							return $ar.HotelModel(item);
@@ -895,7 +897,7 @@ ko.bindingHandlers.hotelTypeahead = {
 					var hotel = WebBooker.Checkout.hotels()[r];
 					if(hotel.name == item){
 						option(hotel);
-						$(element).val(hotel.name);
+						jQuery(element).val(hotel.name);
 						return item;
 					}
 				}
@@ -909,7 +911,7 @@ ko.bindingHandlers.hotelTypeahead = {
 	update: function(element, valueAccessor) {
 		var option = valueAccessor()['value'];
 		if(option()) {
-			$(element).val(option().name);
+			jQuery(element).val(option().name);
 		}
 	}
 };
@@ -917,19 +919,19 @@ ko.bindingHandlers.hotelTypeahead = {
 ko.bindingHandlers.processingBtn = {
 	update: function(element, valueAccessor) {
 		if(valueAccessor()) {
-			$(element).prepend('<i class="icon-processing"></i> ');
+			jQuery(element).prepend('<i class="icon-processing"></i> ');
 		} else {
-			var content = $(element).html();
+			var content = jQuery(element).html();
 			content.replace('<i class="icon-processing"></i> ', '');
-			$(element).html(content);
+			jQuery(element).html(content);
 		}
 	}
 };
 
 ko.bindingHandlers.scrollTopOnClick = {
 	init: function(element, valueAccessor) {
-		$(element).click(function(e) {
-			$('html, body').animate({ scrollTop: 0 }, 500);
+		jQuery(element).click(function(e) {
+			jQuery('html, body').animate({ scrollTop: 0 }, 500);
 			WebBooker.postMessage('scroll_to=0');
 		});
 	}
@@ -937,9 +939,9 @@ ko.bindingHandlers.scrollTopOnClick = {
 
 ko.bindingHandlers.scrollTo = {
 	init: function(element, scrollTo) {
-		$(element).click(function(e) {
-			var offset = $(scrollTo()).offset();
-			$('html, body').animate({ scrollTop: offset.top }, 1000);
+		jQuery(element).click(function(e) {
+			var offset = jQuery(scrollTo()).offset();
+			jQuery('html, body').animate({ scrollTop: offset.top }, 1000);
 			WebBooker.postMessage('scroll_to=' + offset.top);
 		});
 	}
@@ -947,11 +949,11 @@ ko.bindingHandlers.scrollTo = {
 
 ko.bindingHandlers.fadeOpacity = {
 	init: function(element, valueAccessor) {
-		$(element).css({opacity: 0.2});
+		jQuery(element).css({opacity: 0.2});
 	},
 	update: function(element, valueAccessor) {
 		var shouldDisplay = ko.utils.unwrapObservable(valueAccessor());
-		shouldDisplay ? $(element).fadeTo('slow', 1) : $(element).fadeTo('slow', 0.2);
+		shouldDisplay ? jQuery(element).fadeTo('slow', 1) : jQuery(element).fadeTo('slow', 0.2);
 	}
 };
 
@@ -959,12 +961,12 @@ ko.bindingHandlers.fadeVisible = {
 	init: function(element, valueAccessor) {
 		// Start visible/invisible according to initial value
 		var shouldDisplay = ko.utils.unwrapObservable(valueAccessor());
-		$(element).toggle(shouldDisplay);
+		jQuery(element).toggle(shouldDisplay);
 	},
 	update: function(element, valueAccessor) {
 		// On update, fade in/out
 		var shouldDisplay = ko.utils.unwrapObservable(valueAccessor());
-		shouldDisplay ? $(element).fadeIn() : $(element).fadeOut();
+		shouldDisplay ? jQuery(element).fadeIn() : jQuery(element).fadeOut();
 	}
 };
 
@@ -1216,16 +1218,16 @@ ko.bindingHandlers.clean_money = {
 	}
 };
 /* TODO, figure out why this is here
-$(document).ready(function(){
+jQuery(document).ready(function(){
 	 if($.browser.msie){
-		 $(function() {
-			$('[placeholder]').focus(function() {
-			  if($(this).val() == $(this).attr('placeholder')) {
-				$(this).val('');
+		 jQuery(function() {
+			jQuery('[placeholder]').focus(function() {
+			  if(jQuery(this).val() == jQuery(this).attr('placeholder')) {
+				jQuery(this).val('');
 			  }
 			}).blur(function() {
-			  if ($(this).val() == '' || $(this).val() == $(this).attr('placeholder')) {
-				$(this).val($(this).attr('placeholder'));
+			  if (jQuery(this).val() == '' || jQuery(this).val() == jQuery(this).attr('placeholder')) {
+				jQuery(this).val(jQuery(this).attr('placeholder'));
 			  }
 			}).blur();
 		});
@@ -1256,13 +1258,13 @@ $ar.Notification = (function(){
 
 		var clearElem = function(){
 			if(_self.time) clearTimeout(_self.time);
-			$(_self.elem).off('mousedown',clearElem);
+			jQuery(_self.elem).off('mousedown',clearElem);
 			_self.elem.className += ' remove';
 			setTimeout(function(){
 				_self.elem.parentNode.removeChild(_self.elem);
 			},remove);
 		};
-		$(_self.elem).mousedown(clearElem);
+		jQuery(_self.elem).mousedown(clearElem);
 		//if(!/(error)/.test(level)){
 			_self.time = setTimeout(clearElem,visible);
 		//}
@@ -1575,31 +1577,27 @@ $ar.Geocoder = (function() {
 		return that;
 	}
 })();
-$(document).ready(function(){
+jQuery(document).ready(function(){
 	setTimeout(function(){
-		$('.collapse-me input[type="text"]').each(function(){
-			if ($(this).val())
-				$(this).closest('.collapse-me').show();
+		jQuery('.collapse-me input[type="text"]').each(function(){
+			if (jQuery(this).val())
+				jQuery(this).closest('.collapse-me').show();
 		});
 
-		$('.collapse-me select').each(function(){
-			if ($(this).val())
-				$(this).closest('.collapse-me').show();
+		jQuery('.collapse-me select').each(function(){
+			if (jQuery(this).val())
+				jQuery(this).closest('.collapse-me').show();
 		});
 
-		$('.collapse-me input:checked').each(function(){
-			$(this).closest('.collapse-me').show();
+		jQuery('.collapse-me input:checked').each(function(){
+			jQuery(this).closest('.collapse-me').show();
 		});
 	}, 2000);
 
 	
-	$('.trainingClose').click(function(){
-		$('.trainingWarning').hide();
-	});
-	
-	$("#search-keywords").keypress(function(event){
+	jQuery("#search-keywords").keypress(function(event){
 		if(event.keyCode == 13){
-			$("#searchActivitiesButton").click();
+			jQuery("#searchActivitiesButton").click();
 		}
 	});
 });

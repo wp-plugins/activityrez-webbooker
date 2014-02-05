@@ -78,12 +78,19 @@ if ( WB_REMOTE == true ) {
 
 	if ( array_key_exists( 'activitySlug', $wp_query->query_vars ) ) {
 		//we need google maps on activity pages
-		wp_enqueue_script('google-maps','//maps.google.com/maps/api/js?sensor=true');
+		wp_enqueue_script('google-maps','//maps.google.com/maps/api/js?sensor=true',array('jquery'));
 		$wbArgs['slug'] = $wp_query->query_vars['activitySlug'];
-	}
-
+	}	
 	$wb = $wbAPI->action_bootStrap( $wbArgs );
 	$wb = $wb['data'];
+    if( $testMode ){
+            $wb['server']='training';
+    }else{ 
+            $wb['server']='secure';
+    }
+	$wb['include_header'] = true;
+	$wb['include_footer'] = true;
+
 	$wb['plugin_url'] = ACTIVITYREZWB_PLUGIN_PATH;
 }
 

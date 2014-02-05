@@ -179,14 +179,14 @@ WebBooker.Dashboard.show.subscribe(function(value) {
 	if(value) {
 		$ar.load(wb_global_vars['plugin_url'] + '/js/lib/highcharts.js', function () {
 			setTimeout(function() {
-				$('.datepicker-dash').each(function() {
-					$(this).datepicker({
+				jQuery('.datepicker-dash').each(function() {
+					jQuery(this).datepicker({
 						numberOfMonths: 2,
 						dateFormat: 'mm/dd/yy',
 						beforeShow: function(a) {
-							if ( a.id == 'topgross-enddate' && $('#topgross-startdate').datepicker('getDate') ) {
+							if ( a.id == 'topgross-enddate' && jQuery('#topgross-startdate').datepicker('getDate') ) {
 								return {
-									minDate: $('#topgross-startdate').datepicker('getDate')
+									minDate: jQuery('#topgross-startdate').datepicker('getDate')
 								};
 							}
 						}
