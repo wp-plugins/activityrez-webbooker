@@ -5178,9 +5178,9 @@ WebBooker.ChildActivityView = function(data){
 		shortDesc: data.shortDesc,
 		url: WebBooker.bootstrap.wb_url + '/' + data.slug + '/',
 		display_price: false,
-		low: 0,
+		low: Number.MAX_VALUE,
 		high: 0
-	}, ni;
+	}, ni, low, high;
 
 	if(!data.prices) return self;
 	
@@ -5197,8 +5197,8 @@ WebBooker.ChildActivityView = function(data){
 		}
 	}
 	
-	self.low = low;
-	self.high = high;
+	//self.low = low;
+	//self.high = high;
 	self.prices = data.prices
 
 	return self;

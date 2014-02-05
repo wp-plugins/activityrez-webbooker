@@ -29,7 +29,7 @@ if ( WB_REMOTE == true ) {
 	
 	if ( array_key_exists( 'activitySlug', $wp_query->query_vars ) ) {
 		//we need google maps on activity pages
-		wp_enqueue_script('google-maps','https://maps.google.com/maps/api/js?sensor=true');
+		wp_enqueue_script('google-maps','https://maps.google.com/maps/api/js?sensor=true',array('jquery') );
 		$wbArgs['slug'] = $wp_query->query_vars['activitySlug'];
 	}
 	if ( isset( $_REQUEST['i18N'] ) ) {
@@ -78,7 +78,7 @@ if ( WB_REMOTE == true ) {
 
 	if ( array_key_exists( 'activitySlug', $wp_query->query_vars ) ) {
 		//we need google maps on activity pages
-		wp_enqueue_script('google-maps','//maps.google.com/maps/api/js?sensor=true',array('jquery'));
+		wp_enqueue_script('google-maps','https://maps.google.com/maps/api/js?sensor=true',array('jquery'));
 		$wbArgs['slug'] = $wp_query->query_vars['activitySlug'];
 	}	
 	$wb = $wbAPI->action_bootStrap( $wbArgs );
