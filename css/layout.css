@@ -2449,7 +2449,7 @@ html[xmlns] .clearfix { display: block; }
 	top: 0;
 	right: 0;
 	overflow: hidden;
-	z-index: 1000;
+	z-index: 1000000;
 }
 .notifications .entry {
 	padding: .5em 1.5em .5em 1em;

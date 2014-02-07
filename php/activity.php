@@ -18,16 +18,16 @@ function getChildDisplayPrice( $child ){
 		$low = 999999999;
 		foreach( $child['prices'] as $price ){
 			//empty price continue 
-			if(!isset($child['amount']) || $child['amount'] < 1 ) continue;
+			if(!isset($price['amount']) || $price['amount'] < 1 ) continue;
 			if( isset($price['guest_type']) && preg_match('/adult/i',$price['guest_type']) > 0 ){
-				return __("Prices starting at ",'arez').currencyFormat($child['amount']);
+				return currencyFormat($price['amount']);
 			}else{
-				if($child['amount'] < $low){
-					$low = $child['amount'];
+				if($price['amount'] < $low){
+					$low = $price['amount'];
 				}
 			}
-			return __("Prices starting at ",'arez').currencyFormat($low);
 		}
+		return currencyFormat($low);
 	}
 	
 	return __("Click for prices",'arez');

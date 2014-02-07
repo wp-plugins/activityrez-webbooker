@@ -4994,8 +4994,10 @@ WebBooker.MiniCart = (function(){
 			clean;
 		//check the calendar date against all the days the activity is on
 		for(ni = 0; ni < times.length; ni++){
-			if(times[ni].startDayOfWeek && times[ni].startDayOfWeek != weekday[date.getDay()])
+
+			if(times[ni].startDayOfWeek && times[ni].startDayOfWeek != weekday[date.getDay()]){
 				continue;
+			}
 			if(times[ni].startDate != "0000-00-00 00:00:00"){
 				clean = times[ni].startDate.split('/');
 				if(clean.length > 1 && clean[2].length == 2) clean[2] = '20'+clean[2];
@@ -5010,8 +5012,11 @@ WebBooker.MiniCart = (function(){
 			var time_diff = Math.floor( ( ( new Date( date.getFullYear() + '/' + (date.getMonth()+1) + '/' + date.getDate() + ' ' + times[ni].startTime ) ).getTime() - today.getTime() ) / 60000 ),
 				cutoff_mins = ( cutoff_hrs * 60 ) + cutoff_minutes;
 			
-			if( time_diff <= 0 || ( cutoff_mins >= time_diff && !self.cfa() ) )
+			times[ni].startDate = times[ni].startDate.replace(/-/g, '/');
+			times[ni].endDate = times[ni].endDate.replace(/-/g, '/');		
+			if( time_diff <= 0 || ( cutoff_mins >= time_diff && !self.cfa() ) ){
 				return[false];
+			}
 			if(
 				( times[ni].startDate == "0000-00-00 00:00:00" || ( new Date(times[ni].startDate) ).valueOf() <= _date ) &&
 				( times[ni].endDate == "0000-00-00 00:00:00" || ( new Date(times[ni].endDate) ).valueOf() >= _date )
@@ -5180,7 +5185,7 @@ WebBooker.ChildActivityView = function(data){
 		display_price: false,
 		low: Number.MAX_VALUE,
 		high: 0
-	}, ni, low, high;
+	}, ni;
 
 	if(!data.prices) return self;
 	
