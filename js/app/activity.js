@@ -385,14 +385,12 @@ WebBooker.MiniCart = (function(){
 			var time_diff = Math.floor( ( ( new Date( date.getFullYear() + '/' + (date.getMonth()+1) + '/' + date.getDate() + ' ' + times[ni].startTime ) ).getTime() - today.getTime() ) / 60000 ),
 				cutoff_mins = ( cutoff_hrs * 60 ) + cutoff_minutes;
 			
-			times[ni].startDate = times[ni].startDate.replace(/-/g, '/');
-			times[ni].endDate = times[ni].endDate.replace(/-/g, '/');		
 			if( time_diff <= 0 || ( cutoff_mins >= time_diff && !self.cfa() ) ){
 				return[false];
 			}
 			if(
-				( times[ni].startDate == "0000-00-00 00:00:00" || ( new Date(times[ni].startDate) ).valueOf() <= _date ) &&
-				( times[ni].endDate == "0000-00-00 00:00:00" || ( new Date(times[ni].endDate) ).valueOf() >= _date )
+				( times[ni].startDate == "0000-00-00 00:00:00" || ( new Date(times[ni].startDate.replace(/-/g, '/')) ).valueOf() <= _date ) &&
+				( times[ni].endDate == "0000-00-00 00:00:00" || ( new Date(times[ni].endDate.replace(/-/g, '/')) ).valueOf() >= _date )
 			)
 				return [true];
 		}
