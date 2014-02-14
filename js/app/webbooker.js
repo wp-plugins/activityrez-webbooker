@@ -3877,12 +3877,12 @@ WebBooker.Catalog = (function(){
 			id: 3,
 			sort: 'price',
 			sort_dir: 'asc',
-			label: 'Price: Low to High'
+			label: __('Price: Low to High')
 		}, {
 			id: 4,
 			sort: 'price',
 			sort_dir: 'desc',
-			label: 'Price: High to Low'
+			label: __('Price: High to Low')
 		}])
 	};
 	self.search_params = {
@@ -4017,7 +4017,7 @@ WebBooker.Catalog = (function(){
 					return;
 				}
 				self.processResults( results );
-
+				self.isSearching(false);
 				// keep previous search paramaters
 				self.backupParams();
 			});

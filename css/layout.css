@@ -2679,8 +2679,12 @@ html[xmlns] .clearfix { display: block; }
 	#webbooker-search-results .results {
 		text-align: center;
 		-webkit-column-count: 2;
+		-moz-column-count: 2;
+		column-count: 2;
 		width: 96%;
 		-webkit-column-gap: 10px;
+		-moz-column-gap: 10px;
+		column-gap: 10px;
 		padding: 0 3%;
 	}
 	#webbooker-search-results .activity {
