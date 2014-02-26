@@ -809,7 +809,7 @@ $ar.TransportView = function(data){
 				vehicle = decodeURIComponent(trans.vehicle);//Remove URL Encoding if there
 				vehicle = __( trans.vehicle.charAt(0).toUpperCase() + trans.vehicle.slice(1) )();
 			
-			if ( $.inArray( vehicle, types ) < 0 ) {
+			if ( jQuery.inArray( vehicle, types ) < 0 ) {
 				types.push( vehicle );
 			}
 		}

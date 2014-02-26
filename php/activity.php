@@ -151,7 +151,7 @@ function getChildURL( $child ){
 						?>
 						<div class="child-activity">
 							<div class="clearfix">
-								<div class="price"><span ><?php echo $display_price;?></span></div>
+								<div class="price">Prices starting at: <span ><?php echo $display_price;?></span></div>
 								<div class="action"><a href="<?php echo $url; ?>" class="buttonBlue"><i class="icon-search icon-white"></i> <?php _e('View Details','arez'); ?></a></div>
 								<h4 ><?php echo $child['title'];?></h4>
 							</div>
@@ -178,7 +178,7 @@ function getChildURL( $child ){
 						?>
 						<div class="child-activity">
 							<div class="clearfix">
-								<div class="price"><span ><?php echo $display_price;?></span></div>
+								<div class="price">Prices Starting at: <span ><?php echo $display_price;?></span></div>
 								<div class="action"><a href="<?php echo $url; ?>" class="buttonBlue"><i class="icon-search icon-white"></i> <?php _e('View Details','arez'); ?></a></div>
 								<h4 ><?php echo $child['title'];?></h4>
 								<div class="description" ><?php if ( isset($child['shortDesc']) ) { echo $child['shortDesc']; } ?></div>
