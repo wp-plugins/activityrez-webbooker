@@ -828,10 +828,10 @@ WebBooker.About = {
 	content: ko.observable('')
 };
 
-// postMessage for iFrame
+// postMessage for iFrame 
 WebBooker.postMessage = function(message) {
 	if(WebBooker.bootstrap.parent_url) {
-		parent.postMessage(message, WebBooker.bootstrap.parent_url);
+		if(parent.hasOwnProperty('postMessage')) parent.postMessage(message, WebBooker.bootstrap.parent_url);
 	}
 };
 
