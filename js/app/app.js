@@ -898,7 +898,7 @@ ko.bindingHandlers.hotelTypeahead = {
 					if(hotel.name == item){
 						option(hotel);
 						jQuery(element).val(hotel.name);
-						return item;
+						return item.trim();
 					}
 				}
 			},

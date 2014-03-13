@@ -14,18 +14,15 @@ function getChildDisplayPrice( $child ){
 		return __("Prices starting at ",'arez').currencyFormat($child['display_price']);
 	}
 	
-	if(isset($child['prices']) && is_array( $child['prices'] ) ){
-		$low = 999999999;
+	if(isset($child['prices']) && is_array( $child['prices']) && count($child['prices'])){
+		$low = null;
 		foreach( $child['prices'] as $price ){
 			//empty price continue 
 			if(!isset($price['amount']) || $price['amount'] < 1 ) continue;
-			if( isset($price['guest_type']) && preg_match('/adult/i',$price['guest_type']) > 0 ){
+			if(isset($price['guest_type']) && preg_match('/adult/i',$price['guest_type']) > 0 )
 				return currencyFormat($price['amount']);
-			}else{
-				if($price['amount'] < $low){
-					$low = $price['amount'];
-				}
-			}
+			if(!$low || $price['amount'] < $low)
+				$low = $price['amount'];
 		}
 		return currencyFormat($low);
 	}

@@ -1404,18 +1404,18 @@ h6	{ font-size: 1em; }
 	border: 25px solid transparent;
 	border-top-color: #1c9be3;
 	margin: -1px 0 -25px 0;
-	-webkit-filter: drop-shadow(0 1px 0 #0281c9) drop-shadow(0 3px 2px rgba(0,0,0,.3));
-	-moz-filter: drop-shadow(0 1px 0 #0281c9) drop-shadow(0 3px 2px rgba(0,0,0,.3));
-	filter: drop-shadow(0 1px 0 #0281c9) drop-shadow(0 3px 2px rgba(0,0,0,.3));
+	-webkit-filter: drop-shadow(0 1px 0 #0281c9);
+	-moz-filter: drop-shadow(0 1px 0 #0281c9);
+	filter: drop-shadow(0 1px 0 #0281c9);
 	border-left-width: 104px;
 	border-right-width: 104px;
 }
 
 .point.avail{
 	border-top-color: #3CE31C;
-	-webkit-filter: drop-shadow(0 1px 0 #12C902) drop-shadow(0 3px 5px rgba(0,0,0,.3));
-	-moz-filter: drop-shadow(0 1px 0 #12C902) drop-shadow(0 3px 5px rgba(0,0,0,.3));
-	filter: drop-shadow(0 1px 0 #12C902) drop-shadow(0 3px 5px rgba(0,0,0,.3));
+	-webkit-filter: drop-shadow(0 1px 0 #12C902);
+	-moz-filter: drop-shadow(0 1px 0 #12C902);
+	filter: drop-shadow(0 1px 0 #12C902);
 }
 
 .itemsInCart{

@@ -2781,7 +2781,7 @@ ko.bindingHandlers.hotelTypeahead = {
 					if(hotel.name == item){
 						option(hotel);
 						jQuery(element).val(hotel.name);
-						return item;
+						return item.trim();
 					}
 				}
 			},
@@ -5163,6 +5163,9 @@ WebBooker.MiniCart = (function(){
 				}
 				self.times.push(time.startTime);
 			}
+			if(self.times().length === 1)
+				self.time(self.times()[0]);
+			break;
 		}
 		self.times.sort( function( a, b ) {
 			return new Date('1970/01/01 ' + a) - new Date('1970/01/01 ' + b);
@@ -5181,18 +5184,18 @@ WebBooker.ChildActivityView = function(data){
 		shortDesc: data.shortDesc,
 		url: WebBooker.bootstrap.wb_url + '/' + data.slug + '/',
 		display_price: false,
-		low: Number.MAX_VALUE,
-		high: 0
+		low: null,
+		high: null
 	}, ni;
 
 	if(!data.prices) return self;
-	
+
 	for ( ni = 0; ni < data.prices.length; ni += 1 ) {
-		if ( data.prices[ni].display_price == 1 ) {
+		if (data.prices[ni].display_price == 1 ) {
 			self.display_price = data.prices[ni].amount;
 			break;
 		}
-		if ( !self.low || data.prices[ni].amount < self.low ) {
+		if (!self.low || data.prices[ni].amount < self.low ) {
 			self.low = data.prices[ni].amount;
 		}
 		if ( !self.high || data.prices[ni].amount > self.high ) {
