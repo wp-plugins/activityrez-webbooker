@@ -1477,7 +1477,6 @@ $ar.MiniActivityModel = (function() {
 					  break;
 					}else if(media[na].hash){
 					  that.thumbnail_url(WebBooker.mediaServer+'/media/'+media[na].hash+'/thumbnail/height/'+200);
-					  break;
 					}
 				} 
 				if ( beans.id ) {

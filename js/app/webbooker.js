@@ -3360,7 +3360,6 @@ $ar.MiniActivityModel = (function() {
 					  break;
 					}else if(media[na].hash){
 					  that.thumbnail_url(WebBooker.mediaServer+'/media/'+media[na].hash+'/thumbnail/height/'+200);
-					  break;
 					}
 				} 
 				if ( beans.id ) {
@@ -5338,7 +5337,7 @@ WebBooker.ActivityView = (function(){
 				return WebBooker.mediaServer+'/media/'+hash+'/thumbnail/height/'+height;
 			}
 			for(ni in activity.media){
-				if(activity.media[ni] && activity.media[ni].type == 'image')
+				if(activity.media[ni] && activity.media[ni].type == 'image'){
 					if(activity.media[ni].url){
 						show.push( {
 							standard: WebBooker.timthumb + 'tth/400/' + basename(activity.media[ni].url),
@@ -5347,17 +5346,26 @@ WebBooker.ActivityView = (function(){
 						} );
 					}
 					else if(activity.media[ni].hash){
-						show.push({
-							full: makeurl(activity.media[ni].hash,700),
-							standard: makeurl(activity.media[ni].hash,400)
-						});		
-						if(activity.media[ni].featured){
-							show.splice(0,0,{
-								full: makeurl(activity.media[ni].hash,700),
-								standard: makeurl(activity.media[ni].hash,400)
-							});	
-						}
+					    if(activity.media[ni].featured == 'true'){
+					        if(show.length > 0){
+					            show.unshift({
+                                    full: makeurl(activity.media[ni].hash,700),
+                                    standard: makeurl(activity.media[ni].hash,400)
+                                });
+                            }else{
+        						show.push({
+        							full: makeurl(activity.media[ni].hash,700),
+        							standard: makeurl(activity.media[ni].hash,400)
+        						});                                
+                            }
+                        }else{
+    						show.push({
+    							full: makeurl(activity.media[ni].hash,700),
+    							standard: makeurl(activity.media[ni].hash,400)
+    						});                            
+                        }
 					}
+				}
 			}
 			self.slideshow(show);
 			jQuery('.carousel').carousel({pause: 'hover'});
