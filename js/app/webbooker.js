@@ -2764,7 +2764,10 @@ ko.bindingHandlers.hotelTypeahead = {
 					var names = [];
 					var mappedObjs = jQuery.map(data.items,
 						function(item) {
-							names.push(item.name);
+							var n = item.name + ' - ';
+							if ( item.hotel_st ) n = n + item.hotel_st + ', ';
+							n += item.hotel_country;
+							names.push(n);
 							return $ar.HotelModel(item);
 						}
 					);
@@ -2778,7 +2781,7 @@ ko.bindingHandlers.hotelTypeahead = {
 				option(null);
 				for(var r = 0; r < WebBooker.Checkout.hotels().length; r++){
 					var hotel = WebBooker.Checkout.hotels()[r];
-					if(hotel.name == item){
+					if(hotel.generatedName == item){
 						option(hotel);
 						jQuery(element).val(hotel.name);
 						return item.trim();
@@ -3321,7 +3324,8 @@ $ar.MiniActivityModel = (function() {
 			tags: [],
 			prices: [],
 			r2: 0,
-			times: []
+			times: [],
+			display_price: 0
 		});
 
 		that.thumbnail_url = ko.observable();
@@ -3350,7 +3354,7 @@ $ar.MiniActivityModel = (function() {
 			if ( beans.json_input && beans.json_input.media ) {
 				var media = beans.json_input.media, na, featured;
 				for( na in media ) {
-					if ( media[na].type != 'image' ) continue;
+					if ( media[na].type != 'image' || !media[na].hash) continue;
 					if(media[na].featured){
 						that.thumbnail_url(WebBooker.mediaServer+'/media/'+media[na].hash+'/thumbnail/height/'+200);
 						break;
@@ -3375,19 +3379,7 @@ $ar.MiniActivityModel = (function() {
 })();
 $ar.SearchResult = function(data) {
 	var that = $ar.MiniActivityModel( data ),
-		price, ni;
-	if( that.prices ){
-		for ( ni = 0; ni < that.prices.length; ni += 1 ) {
-			if ( that.prices[ni].display_price == 1 ) {
-				price = that.prices[ni].amount;
-				break;
-			}
-			else if( ( !price || that.prices[ni].amount < price ) && that.prices[ni].amount > 0 ) {
-				price = that.prices[ni].amount;
-			}
-		}
-	}
-	that.displayPrice = price || 0;
+		ni;
 	that.active_days = ko.computed(function(){
 		if(!that.times || !that.times.length)
 			return '';
@@ -4948,17 +4940,20 @@ WebBooker.MiniCart = (function(){
 	};
 	//check all the days in the calendar against the dates in blackoutDays then check to see if the activity is available on that day
 	self.dayAvailable = function(date) {
-	//safe defaults
 		if('0000-00-00 00:00:00' == self.activity().date_start){
-			var ds = '2001-01-01 00:00:00';
+			var ds = '2001/01/01 00:00:00';
 		}else{
-			var ds = self.activity().date_start;			
+			var ds = self.activity().date_start;
 		}
 		if('0000-00-00 00:00:00' == self.activity().date_end){
-			var de = '2037-01-01 00:00:00';
+			var de = '2037/01/01 00:00:00';
 		}else{
-			var de = self.activity().date_end;			
+			var de = self.activity().date_end;
 		}
+		
+		ds = ds.replace(/-/g, '/');
+		de = de.replace(/-/g, '/');
+		
 		var weekday = [ 'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday' ],
 			times = self.activity().times,
 			lifespanDateStart = new Date(ds),
@@ -4980,7 +4975,7 @@ WebBooker.MiniCart = (function(){
 		}
 
 		// check blackout days
-		for(ni = 0; ni < (self.blackoutDays||[]).length; ni++){			
+		for(ni = 0; ni < (self.blackoutDays||[]).length; ni++){
 			if(self.blackoutDays[ni].valueOf() != date.valueOf())
 				continue;
 			return [false];
@@ -5986,6 +5981,9 @@ $ar.CheckoutItemModel = function(data){
 		var tix = that.tickets(), ni;
 		if ( !that.transport() ) return;
 		for(ni = 0; ni < tix.length; ni++){
+			if ( tix[ni].transportView.selectTransport() === 'false' ) {
+				continue;
+			}
 			tix[ni].transportView.selectTransport('true');
 			tix[ni].transportView.wantsTransport(true);
 			tix[ni].transportView.selectedTransType(item.selectedTransType());
@@ -6516,7 +6514,7 @@ $ar.TransportationModel = function(data){
 			ticketID: ticket,
 			saleID: sale_id,
 			name: that.name,
-			value: that.name,
+			value: that.id,
 			fee: that.amount,
 			type: 'transportation'
 		});
@@ -6783,7 +6781,8 @@ $ar.HotelModel = function(data){
 		lng: '',
 
 		name: '',
-		phone: ''
+		phone: '',
+		generatedName: ''
 	},$ar.data_mapper({
 		'ID': 'id',
 		'hotel_addr1': 'addr1',
@@ -6796,6 +6795,12 @@ $ar.HotelModel = function(data){
 		'hotel_st': 'st',
 		'hotel_zip': 'zip'
 	},data));
+	
+	var n = that.name + ' - ';
+	if ( that.st ) n = n + that.st + ', ';
+	n += that.country;
+	
+	that.generatedName = n;
 
 	return that;
 };
@@ -6932,10 +6937,11 @@ $ar.CreditCardPaymentModel = function(data){
 };
 $ar.DiscountModel = function(data){
 	if(data && data.discount_amt){
-		if(data.discount_amt.indexOf('%') < 0)
+		if(data.discount_amt.indexOf('%') < 0) {
 			data.amount = data.discount_amt;
-		else
+		} else {
 			data.rate = data.discount_amt;
+		}
 		delete data.discount_amt;
 	}
 
@@ -7027,15 +7033,20 @@ $ar.SaleModel = function(data){
 
 	self.discountTotal = ko.computed(function(){
 		if(!self.discount() || !self.items().length) return 0;
+		console.log(self.discount());
 		var items = self.items(),
 			sub = 0,
 			amt,ni;
 		if(self.discount().rate){
-			amt = self.discount().rate;
+			amt = parseFloat( self.discount().rate.replace('%', '') )/100;
+			console.log(amt);
 			for(ni = 0; ni < items.length; ni++){
-				sub += Math.round(items[ni].subtotal()*amt*100)/100;
+				sub += items[ni].subtotal() * amt;
 			}
+		} else {
+			sub = self.discount().amount;
 		}
+		return sub;
 	}).extend({ throttle: 10 });
 	self.validateCustomize = function(){
 		var valid = true,
@@ -7600,12 +7611,19 @@ WebBooker.Checkout = (function(){
 		}
 		WebBooker.API.validateDiscountCode(self.discountCode(), function(response){
 			self.verifying(false);
-			if(response.status == 'valid'){
+			console.log(response);
+			if(response.status == 'valid' && response.discount_apr != 'true' ){
 				self.sale.discount($ar.DiscountModel(response));
 			} else {
 				self.sale.discount(null);
 			}
 		});
+	};
+	
+	self.clearDiscount = function() {
+		self.verifying(false);
+		self.discountCode(undefined);
+		self.sale.discount(undefined);
 	};
 	self.validateCustomize = function(){
 		var valid = true,

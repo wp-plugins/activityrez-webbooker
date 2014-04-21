@@ -322,17 +322,20 @@ WebBooker.MiniCart = (function(){
 	};
 	//check all the days in the calendar against the dates in blackoutDays then check to see if the activity is available on that day
 	self.dayAvailable = function(date) {
-	//safe defaults
 		if('0000-00-00 00:00:00' == self.activity().date_start){
-			var ds = '2001-01-01 00:00:00';
+			var ds = '2001/01/01 00:00:00';
 		}else{
-			var ds = self.activity().date_start;			
+			var ds = self.activity().date_start;
 		}
 		if('0000-00-00 00:00:00' == self.activity().date_end){
-			var de = '2037-01-01 00:00:00';
+			var de = '2037/01/01 00:00:00';
 		}else{
-			var de = self.activity().date_end;			
+			var de = self.activity().date_end;
 		}
+		
+		ds = ds.replace(/-/g, '/');
+		de = de.replace(/-/g, '/');
+		
 		var weekday = [ 'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday' ],
 			times = self.activity().times,
 			lifespanDateStart = new Date(ds),
@@ -354,7 +357,7 @@ WebBooker.MiniCart = (function(){
 		}
 
 		// check blackout days
-		for(ni = 0; ni < (self.blackoutDays||[]).length; ni++){			
+		for(ni = 0; ni < (self.blackoutDays||[]).length; ni++){
 			if(self.blackoutDays[ni].valueOf() != date.valueOf())
 				continue;
 			return [false];

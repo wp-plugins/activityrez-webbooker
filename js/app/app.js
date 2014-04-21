@@ -881,7 +881,10 @@ ko.bindingHandlers.hotelTypeahead = {
 					var names = [];
 					var mappedObjs = jQuery.map(data.items,
 						function(item) {
-							names.push(item.name);
+							var n = item.name + ' - ';
+							if ( item.hotel_st ) n = n + item.hotel_st + ', ';
+							n += item.hotel_country;
+							names.push(n);
 							return $ar.HotelModel(item);
 						}
 					);
@@ -895,7 +898,7 @@ ko.bindingHandlers.hotelTypeahead = {
 				option(null);
 				for(var r = 0; r < WebBooker.Checkout.hotels().length; r++){
 					var hotel = WebBooker.Checkout.hotels()[r];
-					if(hotel.name == item){
+					if(hotel.generatedName == item){
 						option(hotel);
 						jQuery(element).val(hotel.name);
 						return item.trim();
@@ -1438,7 +1441,8 @@ $ar.MiniActivityModel = (function() {
 			tags: [],
 			prices: [],
 			r2: 0,
-			times: []
+			times: [],
+			display_price: 0
 		});
 
 		that.thumbnail_url = ko.observable();
@@ -1467,7 +1471,7 @@ $ar.MiniActivityModel = (function() {
 			if ( beans.json_input && beans.json_input.media ) {
 				var media = beans.json_input.media, na, featured;
 				for( na in media ) {
-					if ( media[na].type != 'image' ) continue;
+					if ( media[na].type != 'image' || !media[na].hash) continue;
 					if(media[na].featured){
 						that.thumbnail_url(WebBooker.mediaServer+'/media/'+media[na].hash+'/thumbnail/height/'+200);
 						break;
@@ -1492,19 +1496,7 @@ $ar.MiniActivityModel = (function() {
 })();
 $ar.SearchResult = function(data) {
 	var that = $ar.MiniActivityModel( data ),
-		price, ni;
-	if( that.prices ){
-		for ( ni = 0; ni < that.prices.length; ni += 1 ) {
-			if ( that.prices[ni].display_price == 1 ) {
-				price = that.prices[ni].amount;
-				break;
-			}
-			else if( ( !price || that.prices[ni].amount < price ) && that.prices[ni].amount > 0 ) {
-				price = that.prices[ni].amount;
-			}
-		}
-	}
-	that.displayPrice = price || 0;
+		ni;
 	that.active_days = ko.computed(function(){
 		if(!that.times || !that.times.length)
 			return '';

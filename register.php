@@ -3,7 +3,7 @@
 Plugin Name: ActivityRez Wordpress Web Booker Plugin
 Plugin URI: http://www.activityrez.com/features/booking-engine/
 Description: ActivityRez plugin to show your ActivityRez booking engine on your site
-Version: 2.3.0
+Version: 2.3.4
 Author: ActivityRez LLC
 Author URI: http://ActivityRez.com/
 
@@ -291,7 +291,7 @@ function arez_update_webbookers( $webbookerID = null){
 				if( $wbID != $webbookerID) continue;
 			}
 			
-			$wbs[] = $wb->ID;
+			$wbs[] = $wbID;
 			$CurlResult = $arezApi->getWebBooker($wbID);//cache wb data
 			$msg .= sprintf(__("Refreshing Server Settings for %s \n<br>",'arez'),$wb->post_title);
 			foreach( $wbCacheFields as $field ){

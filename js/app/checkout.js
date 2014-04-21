@@ -551,6 +551,9 @@ $ar.CheckoutItemModel = function(data){
 		var tix = that.tickets(), ni;
 		if ( !that.transport() ) return;
 		for(ni = 0; ni < tix.length; ni++){
+			if ( tix[ni].transportView.selectTransport() === 'false' ) {
+				continue;
+			}
 			tix[ni].transportView.selectTransport('true');
 			tix[ni].transportView.wantsTransport(true);
 			tix[ni].transportView.selectedTransType(item.selectedTransType());
@@ -1081,7 +1084,7 @@ $ar.TransportationModel = function(data){
 			ticketID: ticket,
 			saleID: sale_id,
 			name: that.name,
-			value: that.name,
+			value: that.id,
 			fee: that.amount,
 			type: 'transportation'
 		});
@@ -1348,7 +1351,8 @@ $ar.HotelModel = function(data){
 		lng: '',
 
 		name: '',
-		phone: ''
+		phone: '',
+		generatedName: ''
 	},$ar.data_mapper({
 		'ID': 'id',
 		'hotel_addr1': 'addr1',
@@ -1361,6 +1365,12 @@ $ar.HotelModel = function(data){
 		'hotel_st': 'st',
 		'hotel_zip': 'zip'
 	},data));
+	
+	var n = that.name + ' - ';
+	if ( that.st ) n = n + that.st + ', ';
+	n += that.country;
+	
+	that.generatedName = n;
 
 	return that;
 };
@@ -1497,10 +1507,11 @@ $ar.CreditCardPaymentModel = function(data){
 };
 $ar.DiscountModel = function(data){
 	if(data && data.discount_amt){
-		if(data.discount_amt.indexOf('%') < 0)
+		if(data.discount_amt.indexOf('%') < 0) {
 			data.amount = data.discount_amt;
-		else
+		} else {
 			data.rate = data.discount_amt;
+		}
 		delete data.discount_amt;
 	}
 
@@ -1592,15 +1603,20 @@ $ar.SaleModel = function(data){
 
 	self.discountTotal = ko.computed(function(){
 		if(!self.discount() || !self.items().length) return 0;
+		console.log(self.discount());
 		var items = self.items(),
 			sub = 0,
 			amt,ni;
 		if(self.discount().rate){
-			amt = self.discount().rate;
+			amt = parseFloat( self.discount().rate.replace('%', '') )/100;
+			console.log(amt);
 			for(ni = 0; ni < items.length; ni++){
-				sub += Math.round(items[ni].subtotal()*amt*100)/100;
+				sub += items[ni].subtotal() * amt;
 			}
+		} else {
+			sub = self.discount().amount;
 		}
+		return sub;
 	}).extend({ throttle: 10 });
 	self.validateCustomize = function(){
 		var valid = true,
@@ -2165,12 +2181,19 @@ WebBooker.Checkout = (function(){
 		}
 		WebBooker.API.validateDiscountCode(self.discountCode(), function(response){
 			self.verifying(false);
-			if(response.status == 'valid'){
+			console.log(response);
+			if(response.status == 'valid' && response.discount_apr != 'true' ){
 				self.sale.discount($ar.DiscountModel(response));
 			} else {
 				self.sale.discount(null);
 			}
 		});
+	};
+	
+	self.clearDiscount = function() {
+		self.verifying(false);
+		self.discountCode(undefined);
+		self.sale.discount(undefined);
 	};
 	self.validateCustomize = function(){
 		var valid = true,

@@ -2,7 +2,7 @@
 Contributors: Analogrithems
 Tags: Activity, Reservations, WebBooker
 Requires at least: 3.0.1
-Tested up to: 3.8.1
+Tested up to: 3.9
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -60,6 +60,9 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 4. Web Booker Configuration Manager on ActivityRez ![](https://raw.github.com/ActivityRez/arez-web-booker/feature-wprepo/assets/screenshot-4.png)
 
 == Changelog ==
+= 2.3.4 =
+* Fixed several ui bugs
+* updated the whitelabel feed channel
 
 = 2.2.0 =
 * Plugin moved to wordpress repo

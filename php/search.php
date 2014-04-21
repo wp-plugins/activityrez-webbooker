@@ -41,12 +41,12 @@ global $wb;
 				<div class="activity" data-bind="click: link">
 					<div class="clearfix">
 					<div class="price">
-						<!-- ko if: displayPrice -->
+						<!-- ko if: display_price -->
 						<p class="descr"><?php _e('Prices start at','arez'); ?></p>
-						<p class="amount"><span data-bind="money: displayPrice"></span></p>
+						<p class="amount"><span data-bind="money: display_price"></span></p>
 						<!-- /ko -->
 						
-						<!-- ko ifnot: displayPrice -->
+						<!-- ko ifnot: display_price -->
 						<p class="descr"><?php _e('Click to see Prices','arez'); ?></p>
 						<!-- /ko -->
 						<div class="cb"></div>

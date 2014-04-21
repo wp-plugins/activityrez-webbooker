@@ -114,8 +114,8 @@ function getChildURL( $child ){
 	<div id="webbooker-activity-summary" class="gradient-blue clearfix">
 		<div class="more-info">
 			<div class="right">
-				<!-- ko if:ActivityView.activity().duration -->
-				<strong><?php _e('Duration','arez'); ?>: </strong><span data-bind="text: ActivityView.activity().duration"><?php echo $wb['activity']['duration']; ?></span><br />
+				<!-- ko if:ActivityView.activity().duration && ActivityView.activity().duration != '0' -->
+				<strong><?php _e('Duration','arez'); ?>: </strong><span data-bind="text: ActivityView.activity().duration === 'false' ? '' : ActivityView.activity().duration"><?php echo $wb['activity']['duration']; ?></span><br />
 				<!-- /ko -->
 				<strong><?php _e('Days','arez'); ?>: </strong><span data-bind="text: ActivityView.days"></span><br />
 				<span data-bind="visible: WebBooker.Agent.user_id() > 0"><strong><?php _e('Root Activity ID','arez'); ?>: </strong>#<span data-bind="text: ActivityView.activity().activityID"><?php echo $wb['activity']['activityID'];?></span></span>

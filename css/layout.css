@@ -24,6 +24,7 @@ body {
 
 body.training{
 	background-image: url('../images/trainingBG.png');
+	margin-top: 40px;
 }
 
 body.training .trainingWarning{
@@ -796,7 +797,7 @@ h6	{ font-size: 1em; }
 		position: relative;
 	}
 
-	.featured-destination .activities li:nth-child(3){
+	.featured-destination .activities li:nth-child(3n+3){
 		margin-right: 0;
 	}
 
@@ -2101,7 +2102,9 @@ table.checkout-review .guests, table.checkout-review .fees {
 	font-size: 0.8em;
 }
 
-#promotion-code { display: none }
+#promotion-code {
+	
+}
 
 
 /* Itinerary View Page */

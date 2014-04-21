@@ -546,29 +546,31 @@ global $wb;
 		<div id="promotion-code" class="box-rounded">
 			<h3><?php _e('Discount or Promotion Code','arez'); ?></h3>
 			<p><?php _e('If you\'ve got a discount or promotion code, enter it here.','arez'); ?></p>
-			<input type="text" class="input-medium" placeholder="<?php _e("Enter code...",'arez');?>" data-bind="value: discountCode" />
-			<button class="btn btn-success-primary btn-small" data-bind="click: getDiscount">
-				<i class="icon-ok icon-white"></i>
-				<!-- ko if: verifying --><?php echo __('Verifying','arez') . '...'; ?><!-- /ko -->
-				<!-- ko ifnot: verifying --><?php _e('Apply','arez'); ?><!-- /ko -->
-			</button>
-			<!-- ko if: sale.discount() -->
-				<button class="btn btn-small" data-bind="click: clearDiscountCode">
-					<i class="icon-remove"></i><?php _e('Clear','arez'); ?>
+			<form class="form-vertical">
+				<input type="text" class="input-medium" placeholder="<?php _e("Enter code...",'arez');?>" data-bind="value: discountCode" />
+				<button type="submit" class="buttonBlue" data-bind="click: getDiscount">
+					<i class="icon-ok icon-white"></i> 
+					<!-- ko if: verifying --><?php echo __('Verifying','arez') . '...'; ?><!-- /ko -->
+					<!-- ko ifnot: verifying --><?php _e('Apply','arez'); ?><!-- /ko -->
 				</button>
-			<!-- /ko -->
-			<!-- ko if: sale.discount() && !verifying() -->
-			<p>
-				<strong><?php _e('Name:','arez'); ?></strong> <span data-bind="text: sale.discount().name"></span><br />
-				<strong><?php _e('Amount:','arez'); ?></strong>
-					<!-- ko if: sale.discount().amount --><span data-bind="money: sale.discount().amount"></span><!-- /ko -->
-					<!-- ko if: sale.discount().rate --><span data-bind="text: sale.discount().rate"></span><!-- /ko -->
-			</p>
-			<!-- /ko -->
-			<p data-bind="visible: discountCode() && !verifying() && !sale.discount()"><?php _e('Sorry, that discount or promotion code isn\'t valid.','arez'); ?></p>
+				<!-- ko if: sale.discount() -->
+					<button class="buttonGray" data-bind="click: clearDiscount">
+						<i class="icon-remove icon-white"></i> <?php _e('Clear','arez'); ?>
+					</button>
+				<!-- /ko -->
+				<!-- ko if: sale.discount() && !verifying() -->
+				<p>
+					<strong><?php _e('Name:','arez'); ?></strong> <span data-bind="text: sale.discount().name"></span><br />
+					<strong><?php _e('Amount:','arez'); ?></strong>
+						<!-- ko if: sale.discount().amount --><span data-bind="money: sale.discount().amount"></span><!-- /ko -->
+						<!-- ko if: sale.discount().rate --><span data-bind="text: sale.discount().rate"></span><!-- /ko -->
+				</p>
+				<!-- /ko -->
+				<p data-bind="visible: discountCode() && !verifying() && !sale.discount()"><?php _e('Sorry, that discount or promotion code isn\'t valid.','arez'); ?></p>
+			</form>
 		</div><!-- /promo codes -->
 
-		<div class="box-rounded" data-bind="with:WebBooker.Checkout.sale">
+		<div class="box-rounded" data-bind="with: WebBooker.Checkout.sale">
 			<h3><?php _e('Summary','arez'); ?></h3>
 			<table class="table checkout-review">
 				<thead>
