@@ -306,11 +306,16 @@ global $wb;
 									<span data-bind="clean_money: price"></span>
 								</h4>
 								<div class="actions">
+									<div class="options-apply" data-bind="visible: $index() == 0 && (options().length > 0 || transportView.transportation().length > 0 || !WebBooker.Checkout.copyNames())">
+										<input type="checkbox" data-bind="checked: $parent.copyToAll" value="true" />
+										<?php _e('Apply to all guests on this activity.','arez'); ?>
+									</div>
 									<a href="#" class="buttonGray" title="<?php _e('Remove Guest','arez'); ?>" data-bind="click: $parent.removeGuest"><i class="icon-remove icon-white"></i></a>
 								</div>
 							</div>
 						</div>
-						<div class="padding">
+						<div class="padding" data-bind="visible: !$parent.copyToAll() || ($index() == 0 && $parent.copyToAll())">
+							<!-- ko ifnot: WebBooker.Checkout.copyNames -->
 							<div class="name">
 								<?php if( $wb['i18n'] != 'ja' ) { ?>
 								<div class="pull-left nameMarg">
@@ -333,21 +338,18 @@ global $wb;
 								<?php } ?>
 							</div>
 							<div style="clear:both"></div>
-							<div class="options" data-bind="visible: options().length">
+							<!-- /ko -->
+							<div class="options" data-bind="visible: options().length > 0 && showOptions()">
 								<div class="heading-bar heading-options">
 									<div class="clearfix">
 										<span class="heading-icon"><img src="<?php echo PLUGIN_DIR_URL; ?>/images/icon_options.png"></span>
 										<h4 class="heading-text"><?php _e('Options','arez'); ?></h4>
 										<div class="actions clearfix">
-											<div class="options-apply" data-bind="visible: $index() == 0">
-												<input type="checkbox" data-bind="checked: $parent.copyToAll" value="true" />
-												<?php _e('Apply to all guests on this activity.','arez'); ?>
-											</div>
 											<a href="#" class="buttonBlue" title="<?php _e('Edit Guest Options','arez'); ?>" data-bind="visible: $index() == 0 || ($index() != 0 && !$parent.copyToAll()), click: toggleOptions"><?php _e('Edit Options', 'arez'); ?></a>
 										</div>
 									</div>
 								</div>
-								<ul data-bind="foreach: options, visible: options().length > 0 && ( !$parent.copyToAll() && showOptions() || $index() == 0 && $parent.copyToAll() && showOptions() )">
+								<ul data-bind="foreach: options">
 									<li class="clearfix inputMarg">
 										<label><span data-bind="text: name"></span></label>
 										<!-- ko if: type.toLowerCase() == 'dropdown' || type.toLowerCase() == 'combo' || type.toLowerCase() == 'radio' -->
@@ -566,7 +568,7 @@ global $wb;
 						<!-- ko if: sale.discount().rate --><span data-bind="text: sale.discount().rate"></span><!-- /ko -->
 				</p>
 				<!-- /ko -->
-				<p data-bind="visible: discountCode() && !verifying() && !sale.discount()"><?php _e('Sorry, that discount or promotion code isn\'t valid.','arez'); ?></p>
+				<p data-bind="visible: !codeGood()"><?php _e('Sorry, that discount or promotion code isn\'t valid.','arez'); ?></p>
 			</form>
 		</div><!-- /promo codes -->
 

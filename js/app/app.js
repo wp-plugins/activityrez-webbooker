@@ -750,9 +750,15 @@ Path.map('#/Confirmation/:saleID').to(function(){
 		WebBooker.Analytics.trigger( WebBooker.Checkout.sale, 'action_Confirmation' );
 	});
 	
-	window.addEventListener('unload', function(event) {
-		WebBooker.Checkout.newSale();
-	});
+	if(window.addEvent){
+	    window.addEvent('onunload', function(event) {
+			WebBooker.Checkout.newSale();
+		});
+	} else if(window.addEventListener){
+        window.addEventListener('unload', function(event) {
+			WebBooker.Checkout.newSale();
+		});
+	}
 
 	// send confirmation email
 	if(!WebBooker.Sale.get('loadedConfirmation')) {

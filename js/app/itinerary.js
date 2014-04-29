@@ -62,7 +62,10 @@ WebBooker.Itinerary = (function(){
 			WebBooker.Analytics.trigger( result.data, 'action_viewItinerary' );
 		});
 	};
-
+	self.popupError = ko.observable(false);
+	self.popupErrorClose = function(){
+		self.popupError(false);
+	}
 	self.printTickets = function(args) {
 		var params = {
 			saleID: args.id || self.sale.id(),
@@ -71,6 +74,9 @@ WebBooker.Itinerary = (function(){
 		};
 		WebBooker.API.doItineraryAction(params, function(data) {
 			var itineraryWindow = window.open('');
+			if(!itineraryWindow || itineraryWindow.closed || typeof itineraryWindow.closed=='undefined'){ 
+				self.popupError(true);
+			}
 			if(itineraryWindow){
 				itineraryWindow.document.write(data.data);
 				itineraryWindow.focus();

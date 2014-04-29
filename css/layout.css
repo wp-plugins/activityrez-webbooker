@@ -1916,6 +1916,11 @@ g+text tspan { /* this gets rid of the highcharts link*/
 .heading-ticket .heading-text {
 	margin: 6px 0 0 0;
 }
+.heading-ticket .options-apply {
+	font-size: 0.8em;
+	float: left;
+	margin-right: 9px;
+}
 .heading-transpmini {
 	margin: 0 -9px -9px -9px;
 }
@@ -1943,11 +1948,6 @@ g+text tspan { /* this gets rid of the highcharts link*/
 }
 .heading-options .actions {
 	padding: 0 !important;
-}
-.heading-options .options-apply {
-	font-size: 0.8em;
-	float: left;
-	margin-right: 9px;
 }
 .heading-options .actions .buttonBlue {
 	float: left;
@@ -3141,6 +3141,25 @@ html[xmlns] .clearfix { display: block; }
 	.notifications{
 		font-size: .8em;
 	}
+}
+
+.popup-error{
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	background: red;
+	color: #fff;
+	padding: 10px;
+	z-index: 100000000;
+	text-align: center;
+}
+.popup-error div{
+	float: right;
+	cursor: pointer;
+}
+.popup-error div:hover{
+	color: #000;
 }
 
 @media all and (min-width: 400px) and (max-width: 640px){

@@ -150,7 +150,7 @@ $ar.CheckoutItemModel = function(data){
 	that.cfa = ko.observable(that.cfa);
 	that.inventory = ko.observable(that.inventory);
 
-	that.copyToAll = ko.observable(false); //keep this false. pleasant will lose their shit if this is checked by default.
+	that.copyToAll = ko.observable( (wb_global_vars.guest_copytoall == 'true') ? true : false ); //keep this false. pleasant will lose their shit if this is checked by default.
 	that.cartItem = (data?data.cartItem:false)||null;
 	that.pending = ko.observable(that.pending);
 	that.fees = ko.observableArray(that.fees||[]);
@@ -403,6 +403,8 @@ $ar.CheckoutItemModel = function(data){
 			dis = discount||{ rate: 0, amount: 0 },
 			taxRate = WebBooker.bootstrap.taxRate,
 			sub = 0,
+			dis_r = parseFloat(dis.rate),
+			dis_a = parseFloat(dis.amount),
 			ni, no, tix_sub;
 
 		for(ni = 0; ni < tix.length; ni++){
@@ -425,7 +427,7 @@ $ar.CheckoutItemModel = function(data){
 					tix_sub += tix[ni].transport().amount;
 				}
 			}
-			tix_sub = tix_sub - (dis.rate*tix_sub) - dis.amount;
+			tix_sub = tix_sub - (dis_r*tix_sub) - dis_a;
 			sub += Math.round(tix_sub * taxRate)/100;
 		}
 
@@ -1193,9 +1195,9 @@ $ar.LeadGuestInfoModel = function(data){
 				for ( ni = 0; ni < items.length; ni += 1) {
 					tix = items[ni].tickets();
 					for ( no = 0; no < tix.length; no += 1 ) {
-						if ( !tix[no].first_name() || tix[no].first_name() === '' )
+						//if ( !tix[no].first_name() || tix[no].first_name() === '' )
 							tix[no].first_name( that.first_name() );
-						if ( !tix[no].last_name() || tix[no].last_name() === '' )
+						//if ( !tix[no].last_name() || tix[no].last_name() === '' )
 							tix[no].last_name( that.last_name() );
 					}
 				}
@@ -1603,13 +1605,11 @@ $ar.SaleModel = function(data){
 
 	self.discountTotal = ko.computed(function(){
 		if(!self.discount() || !self.items().length) return 0;
-		console.log(self.discount());
 		var items = self.items(),
 			sub = 0,
 			amt,ni;
 		if(self.discount().rate){
 			amt = parseFloat( self.discount().rate.replace('%', '') )/100;
-			console.log(amt);
 			for(ni = 0; ni < items.length; ni++){
 				sub += items[ni].subtotal() * amt;
 			}
@@ -1994,10 +1994,10 @@ WebBooker.Checkout = (function(){
 		for(ni = 0; ni < item.length; ni++){
 			tix = item[ni].tickets();
 			for(no = 0; no < tix.length; no++){
-				if ( !tix[no].first_name() || tix[no].first_name() === '' )
-					tix[no].first_name( value ? self.sale.leadGuest.first_name() : '' );
-				if ( !tix[no].last_name() || tix[no].last_name() === '' )
-					tix[no].last_name( value ? self.sale.leadGuest.last_name() : '');
+				//if ( !tix[no].first_name() || tix[no].first_name() === '' )
+					tix[no].first_name( self.sale.leadGuest.first_name() );
+				//if ( !tix[no].last_name() || tix[no].last_name() === '' )
+					tix[no].last_name( self.sale.leadGuest.last_name() );
 			}
 		}
 	});
@@ -2067,6 +2067,7 @@ WebBooker.Checkout = (function(){
 
 	self.verifying = ko.observable(false);
 	self.discountCode = ko.observable();
+	self.codeGood = ko.observable(true);
 
 	self.enableSubmit = ko.computed(function() {
 		if(!self.paymentType()){
@@ -2177,15 +2178,17 @@ WebBooker.Checkout = (function(){
 		self.verifying(true);
 		if(!self.discountCode()){
 			self.verifying(false);
+			self.codeGood(false);
 			return;
 		}
 		WebBooker.API.validateDiscountCode(self.discountCode(), function(response){
 			self.verifying(false);
-			console.log(response);
 			if(response.status == 'valid' && response.discount_apr != 'true' ){
 				self.sale.discount($ar.DiscountModel(response));
+				self.codeGood(true);
 			} else {
 				self.sale.discount(null);
+				self.codeGood(false);
 			}
 		});
 	};
