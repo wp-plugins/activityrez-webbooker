@@ -1881,6 +1881,12 @@ Path.core.route.prototype = {
 	};
 
 }( window['jQuery'] || window['Zepto'] ));
+if(typeof String.prototype.trim !== 'function') {
+  String.prototype.trim = function() {
+    return this.replace(/^\s+|\s+$/g, ''); 
+  }
+}
+
 if (!Object.keys) {
 	Object.keys = (function () {
 		var hasOwnProperty = Object.prototype.hasOwnProperty,
@@ -2720,7 +2726,11 @@ WebBooker.About = {
 // postMessage for iFrame 
 WebBooker.postMessage = function(message) {
 	if(WebBooker.bootstrap.parent_url) {
-		if(parent.hasOwnProperty('postMessage')) parent.postMessage(message, WebBooker.bootstrap.parent_url);
+		
+		//if(parent.hasOwnProperty('postMessage')){
+		if(typeof window.parent !== 'undefined' && typeof window.parent.postMessage == 'function'){
+			window.parent.postMessage(message, WebBooker.bootstrap.parent_url);
+		}
 	}
 };
 
@@ -2777,8 +2787,12 @@ ko.bindingHandlers.hotelTypeahead = {
 							return $ar.HotelModel(item);
 						}
 					);
-					WebBooker.Checkout.hotels(mappedObjs);
-					process(names);
+					if (data.items.length) {
+						WebBooker.Checkout.hotels(mappedObjs);
+						process(names);
+					} else {
+						process(['No results found. Please use a local address.']);
+					}
 				});
 			},
 			property: 'name',
@@ -3361,7 +3375,7 @@ $ar.MiniActivityModel = (function() {
 				var media = beans.json_input.media, na, featured;
 				for( na in media ) {
 					if ( media[na].type != 'image' || !media[na].hash) continue;
-					if(media[na].featured){
+					if(media[na].hasOwnProperty('featured') && media[na].featured == 'true'){
 						that.thumbnail_url(WebBooker.mediaServer+'/media/'+media[na].hash+'/thumbnail/height/'+200);
 						break;
 					}
@@ -5345,26 +5359,25 @@ WebBooker.ActivityView = (function(){
 							full: WebBooker.timthumb + 'tth/' + WebBooker.galleryImageHeight + '/' + basename(activity.media[ni].url),
 							orig: activity.media[ni] 
 						} );
-					}
-					else if(activity.media[ni].hash){
-					    if(activity.media[ni].featured == 'true'){
-					        if(show.length > 0){
-					            show.unshift({
-                                    full: makeurl(activity.media[ni].hash,700),
-                                    standard: makeurl(activity.media[ni].hash,400)
-                                });
-                            }else{
-        						show.push({
-        							full: makeurl(activity.media[ni].hash,700),
-        							standard: makeurl(activity.media[ni].hash,400)
-        						});                                
-                            }
-                        }else{
-    						show.push({
-    							full: makeurl(activity.media[ni].hash,700),
-    							standard: makeurl(activity.media[ni].hash,400)
-    						});                            
-                        }
+					}else if (activity.media[ni].hash) {
+						if (activity.media[ni].hasOwnProperty('featured') && activity.media[ni].featured == 'true') {
+							if (show.length > 0) {
+								show.unshift({
+									full : makeurl(activity.media[ni].hash, 700),
+									standard : makeurl(activity.media[ni].hash, 400)
+								});
+							} else {
+								show.push({
+									full : makeurl(activity.media[ni].hash, 700),
+									standard : makeurl(activity.media[ni].hash, 400)
+								});
+							}
+						} else {
+							show.push({
+								full : makeurl(activity.media[ni].hash, 700),
+								standard : makeurl(activity.media[ni].hash, 400)
+							});
+						}
 					}
 				}
 			}
@@ -7788,8 +7801,8 @@ WebBooker.Dashboard = {
 		WebBooker.Dashboard.agentCommissionsTotal(0);
 
 		WebBooker.API.getAgentCommissions({
-			startDate: startDate,
-			endDate: endDate
+			startDate: createTimestamp(startDate),
+			endDate: createTimestamp(endDate)
 		}, function(results) {
 			var dataset = [],
 				obj = {},
@@ -7895,6 +7908,33 @@ WebBooker.Dashboard = {
 			WebBooker.Dashboard.agentCommissionsChart(null);
 		}
 		WebBooker.Dashboard.populateAgentCommissionsData();
+	},
+	
+	downLoadCSV: function() {
+		if(!WebBooker.Dashboard.agentCommissionsStartDate()) {
+			var date = new Date();
+			WebBooker.Dashboard.agentCommissionsStartDate(utils.getDateString(new Date(date.getFullYear(), date.getMonth(), 1)));
+		}
+		if(!WebBooker.Dashboard.agentCommissionsEndDate()) {
+			var date = new Date();
+			WebBooker.Dashboard.agentCommissionsEndDate(utils.getDateString(new Date(date.getFullYear(), date.getMonth()+1, 0)));
+		}
+		
+		var d = new Date(),
+		startDate = new Date(WebBooker.Dashboard.agentCommissionsStartDate()),
+		endDate = new Date(WebBooker.Dashboard.agentCommissionsEndDate());
+		
+		/*if(utils.getMonthName(new Date(startDate)) == utils.getMonthName(new Date(endDate)))
+			POSApp.Dashboard.Charts.commissionMonthName(utils.getMonthName(new Date(startDate)));
+		else
+			POSApp.Dashboard.Charts.commissionMonthName('');*/
+		
+		endDate.setHours(endDate.getHours()- d.getTimezoneOffset() / 60);
+		startDate.setHours(startDate.getHours()- d.getTimezoneOffset() / 60);
+			
+		var csvURL = WebBooker.bootstrap.api_url+'?nonce='+WebBooker.bootstrap.nonce+'&service=arezReporting&action=getMyCommissions&data[startDate]='+createTimestamp(startDate)+'&data[endDate]='+createTimestamp(endDate)+'&data[csv]=1&data[wb]=true&consumer-key=posapp';
+		window.open(csvURL,'_blank');
+		
 	}
 
 };
@@ -8109,16 +8149,20 @@ if(window.addEventListener) {
 		if(if_height_interval) {
 			clearInterval(if_height_interval);
 		}
-		WebBooker.bootstrap.parent_url = event.data;
-		setHeight(event.data);
-	}, false);
+		if(event.data.substring(0,4) !== '_FB_'){
+			WebBooker.bootstrap.parent_url = event.data;
+			setHeight(event.data);
+		}
+	});
 } else if(window.attachEvent) {
 	window.attachEvent('onmessage', function(event) {
 		if(if_height_interval) {
 			clearInterval(if_height_interval);
 		}
-		WebBooker.bootstrap.parent_url = event.data;
-		setHeight(event.data);
+		if(event.data.substring(0,4) !== '_FB_'){
+			WebBooker.bootstrap.parent_url = event.data;
+			setHeight(event.data);
+		}
 	});
 }
 

@@ -1,3 +1,9 @@
+if(typeof String.prototype.trim !== 'function') {
+  String.prototype.trim = function() {
+    return this.replace(/^\s+|\s+$/g, ''); 
+  }
+}
+
 if (!Object.keys) {
 	Object.keys = (function () {
 		var hasOwnProperty = Object.prototype.hasOwnProperty,
@@ -837,7 +843,11 @@ WebBooker.About = {
 // postMessage for iFrame 
 WebBooker.postMessage = function(message) {
 	if(WebBooker.bootstrap.parent_url) {
-		if(parent.hasOwnProperty('postMessage')) parent.postMessage(message, WebBooker.bootstrap.parent_url);
+		
+		//if(parent.hasOwnProperty('postMessage')){
+		if(typeof window.parent !== 'undefined' && typeof window.parent.postMessage == 'function'){
+			window.parent.postMessage(message, WebBooker.bootstrap.parent_url);
+		}
 	}
 };
 
@@ -894,8 +904,12 @@ ko.bindingHandlers.hotelTypeahead = {
 							return $ar.HotelModel(item);
 						}
 					);
-					WebBooker.Checkout.hotels(mappedObjs);
-					process(names);
+					if (data.items.length) {
+						WebBooker.Checkout.hotels(mappedObjs);
+						process(names);
+					} else {
+						process(['No results found. Please use a local address.']);
+					}
 				});
 			},
 			property: 'name',
@@ -1478,7 +1492,7 @@ $ar.MiniActivityModel = (function() {
 				var media = beans.json_input.media, na, featured;
 				for( na in media ) {
 					if ( media[na].type != 'image' || !media[na].hash) continue;
-					if(media[na].featured){
+					if(media[na].hasOwnProperty('featured') && media[na].featured == 'true'){
 						that.thumbnail_url(WebBooker.mediaServer+'/media/'+media[na].hash+'/thumbnail/height/'+200);
 						break;
 					}

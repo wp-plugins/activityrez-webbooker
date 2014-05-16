@@ -17,9 +17,8 @@ if(isset($wb['footer'])) echo $wb['footer'];
 	}
 	</script>-->
 <?php
-do_action('webbooker_footer_event', $wb);
-echo "<!-- include site wide footer -->";
 wp_footer();
+do_action('webbooker_footer_event', $wb);
 ?>
 </body>
 </html>

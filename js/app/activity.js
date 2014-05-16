@@ -721,26 +721,25 @@ WebBooker.ActivityView = (function(){
 							full: WebBooker.timthumb + 'tth/' + WebBooker.galleryImageHeight + '/' + basename(activity.media[ni].url),
 							orig: activity.media[ni] 
 						} );
-					}
-					else if(activity.media[ni].hash){
-					    if(activity.media[ni].featured == 'true'){
-					        if(show.length > 0){
-					            show.unshift({
-                                    full: makeurl(activity.media[ni].hash,700),
-                                    standard: makeurl(activity.media[ni].hash,400)
-                                });
-                            }else{
-        						show.push({
-        							full: makeurl(activity.media[ni].hash,700),
-        							standard: makeurl(activity.media[ni].hash,400)
-        						});                                
-                            }
-                        }else{
-    						show.push({
-    							full: makeurl(activity.media[ni].hash,700),
-    							standard: makeurl(activity.media[ni].hash,400)
-    						});                            
-                        }
+					}else if (activity.media[ni].hash) {
+						if (activity.media[ni].hasOwnProperty('featured') && activity.media[ni].featured == 'true') {
+							if (show.length > 0) {
+								show.unshift({
+									full : makeurl(activity.media[ni].hash, 700),
+									standard : makeurl(activity.media[ni].hash, 400)
+								});
+							} else {
+								show.push({
+									full : makeurl(activity.media[ni].hash, 700),
+									standard : makeurl(activity.media[ni].hash, 400)
+								});
+							}
+						} else {
+							show.push({
+								full : makeurl(activity.media[ni].hash, 700),
+								standard : makeurl(activity.media[ni].hash, 400)
+							});
+						}
 					}
 				}
 			}

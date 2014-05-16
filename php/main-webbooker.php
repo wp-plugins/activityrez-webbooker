@@ -61,7 +61,7 @@ global $wb;
 			}
 		?>
 			<div id="init-loader" data-bind="visible: WebBooker.showInitLoader">
-				<img src="<?php echo PLUGIN_DIR_URL . '/images/ajax-loader.gif'; ?>" alt="<?php _e('Image Loader','arez'); ?>"><br><br>
+				<img src="<?php echo PLUGIN_DIR_URL . 'images/ajax-loader.gif'; ?>" alt="<?php _e('Image Loader','arez'); ?>"><br><br>
 				<?php _e('Loading...','arez'); ?>
 			</div>
 	</div><!-- /webbooker-main -->

@@ -147,7 +147,7 @@ global $wb;
 					<div class="transportation" data-bind="attr: { id: row_id }, with: transportView">
 						<div class="heading-bar">
 							<div class="clearfix">
-								<span class="heading-icon"><img src="<?php echo PLUGIN_DIR_URL; ?>/images/transp_icon.png"></span>
+								<span class="heading-icon transp-icon"></span>
 								<h4 class="heading-text"><?php _e('Transportation','arez'); ?></h4>
 							</div>
 						</div>
@@ -300,7 +300,7 @@ global $wb;
 					<div class="guest clearfix" data-bind="attr: { id: row_id }">
 						<div class="heading-bar heading-ticket">
 							<div class="clearfix">
-								<span class="heading-icon"><img src="<?php echo PLUGIN_DIR_URL; ?>/images/ticket_icon.png"></span>
+								<span class="heading-icon ticket-icon"></span>
 								<h4 class="heading-text">
 									<strong data-bind="text: name"></strong><br>
 									<span data-bind="clean_money: price"></span>
@@ -339,14 +339,14 @@ global $wb;
 							</div>
 							<div style="clear:both"></div>
 							<!-- /ko -->
-							<div class="options" data-bind="visible: options().length > 0 && showOptions()">
+							<div class="options" data-bind="visible: options().length > 0">
 								<div class="heading-bar heading-options">
 									<div class="clearfix">
-										<span class="heading-icon"><img src="<?php echo PLUGIN_DIR_URL; ?>/images/icon_options.png"></span>
+										<span class="heading-icon icon-options"></span>
 										<h4 class="heading-text"><?php _e('Options','arez'); ?></h4>
-										<div class="actions clearfix">
+										<!-- <div class="actions clearfix">
 											<a href="#" class="buttonBlue" title="<?php _e('Edit Guest Options','arez'); ?>" data-bind="visible: $index() == 0 || ($index() != 0 && !$parent.copyToAll()), click: toggleOptions"><?php _e('Edit Options', 'arez'); ?></a>
-										</div>
+										</div> -->
 									</div>
 								</div>
 								<ul data-bind="foreach: options">
@@ -372,7 +372,7 @@ global $wb;
 							</div>
 							<div class="heading-bar heading-transpmini" data-bind="visible: transport">
 								<div class="clearfix">
-									<span class="heading-icon"><img src="<?php echo PLUGIN_DIR_URL; ?>/images/transp_icon_gray.png"></span>
+									<span class="heading-icon transp-icon-gray"></span>
 									<!-- ko if: transportView.selectTransport() == 'true' && transport() -->
 									<h4 class="heading-text" data-bind="text: transport().name"></h4>
 									<!-- /ko -->
@@ -842,10 +842,10 @@ global $wb;
 						</div>
 
 						<div class="help-block">
-							<img src="<?php echo PLUGIN_DIR_URL; ?>/images/americanexpress.gif" data-bind="fadeOpacity: card.type()=='amex'" alt="Amex Card" />
-							<img src="<?php echo PLUGIN_DIR_URL; ?>/images/mastercard.gif" data-bind="fadeOpacity: card.type()=='mastercard'" alt="Master Card" />
-							<img src="<?php echo PLUGIN_DIR_URL; ?>/images/visa.gif" data-bind="fadeOpacity: card.type()=='visa'" alt="Visa" />
-							<img src="<?php echo PLUGIN_DIR_URL; ?>/images/discover.gif" data-bind="fadeOpacity: card.type()=='discover'" alt="Discover" />
+							<span class="cc-type amex" data-bind="fadeOpacity: card.type()=='amex'" alt="Amex Card"></span>
+							<span class="cc-type mc" data-bind="fadeOpacity: card.type()=='mastercard'" alt="Master Card"></span>
+							<span class="cc-type visa" data-bind="fadeOpacity: card.type()=='visa'" alt="Visa"></span>
+							<span class="cc-type disc" data-bind="fadeOpacity: card.type()=='discover'" alt="Discover"></span>
 						</div>
 						<br />
 						<div class="selectMarg">

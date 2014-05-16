@@ -40,7 +40,7 @@ global $wb;
 	</div><!-- itinerary-retrieve -->
 	
 	<div id="itinerary-loading" class="content" data-bind="fadeVisible: loading">
-		<img src="<?php echo PLUGIN_DIR_URL . '/images/ajax-loader.gif'; ?>" alt="loading image"><br><br>
+		<img src="<?php echo PLUGIN_DIR_URL . 'images/ajax-loader.gif'; ?>" alt="loading image"><br><br>
 		<?php echo __('Finding Your Itinerary','arez') . '...'; ?>
 	</div><!-- /itinerary-loading -->
 	

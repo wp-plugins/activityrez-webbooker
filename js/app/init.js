@@ -64,16 +64,20 @@ if(window.addEventListener) {
 		if(if_height_interval) {
 			clearInterval(if_height_interval);
 		}
-		WebBooker.bootstrap.parent_url = event.data;
-		setHeight(event.data);
-	}, false);
+		if(event.data.substring(0,4) !== '_FB_'){
+			WebBooker.bootstrap.parent_url = event.data;
+			setHeight(event.data);
+		}
+	});
 } else if(window.attachEvent) {
 	window.attachEvent('onmessage', function(event) {
 		if(if_height_interval) {
 			clearInterval(if_height_interval);
 		}
-		WebBooker.bootstrap.parent_url = event.data;
-		setHeight(event.data);
+		if(event.data.substring(0,4) !== '_FB_'){
+			WebBooker.bootstrap.parent_url = event.data;
+			setHeight(event.data);
+		}
 	});
 }
 

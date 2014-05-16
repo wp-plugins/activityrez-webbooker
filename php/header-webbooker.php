@@ -20,7 +20,6 @@
 		// Queue your styles.
 		global $wb;
 		global $wp_styles;
-		echo "<!-- include site wide header -->";
 		wp_head();
 		include_once('datepicker.php');
 		global $jqueryLang;

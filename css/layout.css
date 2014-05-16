@@ -460,7 +460,7 @@ h6	{ font-size: 1em; }
 }
 
 .ribbonFold {
-	background: url(../images/ribbon_fold.png) no-repeat;
+	background: url(../images/wb_sprites.png) -60px -23px no-repeat;
 	height: 8px;
 	width: 9px;
 	position: relative;
@@ -469,7 +469,7 @@ h6	{ font-size: 1em; }
 }
 
 .ribbonFoldRight {
-	background: url(../images/ribbon_fold_right.png) no-repeat;
+	background: url(../images/wb_sprites.png) -60px -23px no-repeat;
 	height: 8px;
 	width: 9px;
 	position: relative;
@@ -527,7 +527,7 @@ h6	{ font-size: 1em; }
 	width: 110px;
 	padding: 22px 0 0 0;
 	overflow: hidden;
-	background: url(../images/arezLogo.png) no-repeat;
+	background: url(../images/wb_sprites.png) no-repeat;
 	position: relative;
 	top: 6px;
 	cursor: pointer;
@@ -1467,7 +1467,7 @@ h6	{ font-size: 1em; }
 #webbooker-activity-book #activity-time .time-icon {
 	display: block;
 	text-indent: -1000em;
-	background: url('../images/icon-time.png') no-repeat;
+	background: url(../images/wb_sprites.png) -64px -115px no-repeat;
 	width: 24px;
 	height: 23px;
 	margin-right: 13px;
@@ -1542,7 +1542,7 @@ ul.commission {
 ul.commission li {
 	width: 15px;
 	height: 16px;
-	background: url(../images/commission-coin.png) no-repeat;
+	background: url(../images/wb_sprites.png) -70px -73px no-repeat;
 	position: absolute;
 	top: 4;
 	right: 0;
@@ -1904,12 +1904,51 @@ g+text tspan { /* this gets rid of the highcharts link*/
 	margin: 16px 0 0 0;
 }
 .heading-bar .heading-icon {
-	background: #42c1ff;
+	background-color: #42c1ff;
 	padding: 3px;
 	display: block;
 	float: left;
 	margin: 0 13px 0 0;
 }
+
+.heading-bar .heading-icon.transp-icon{
+	background-image: url(../images/wb_sprites.png);
+	background-position: -215px -20px;
+	background-repeat: no-repeat;
+	height: 46px;
+	width: 46px;
+	display: block;
+}
+
+.heading-bar .heading-icon.ticket-icon{
+	background-image: url(../images/wb_sprites.png);
+	background-position: -119px -20px;
+	background-repeat: no-repeat;
+	height: 46px;
+	width: 44px;
+	display: block;
+}
+
+.heading-bar .heading-icon.icon-options{
+	background-image: url(../images/wb_sprites.png);
+	background-position: -58px -17px;
+	background-size: 534%;
+	background-repeat: no-repeat;
+	height: 36px;
+	width: 35px;
+	display: block;
+}
+
+.heading-bar .heading-icon.transp-icon-gray{
+	background-image: url(../images/wb_sprites.png);
+	background-position: -139px -17px;
+	background-size: 534%;
+	background-repeat: no-repeat;
+	height: 36px;
+	width: 35px;
+	display: block;
+}
+
 .heading-ticket h4 {
 	font-size: 1em;
 }
@@ -1943,6 +1982,13 @@ g+text tspan { /* this gets rid of the highcharts link*/
 .heading-transpmini .heading-text, .heading-options .heading-text {
 	margin: 11px 0 0 0;
 }
+
+.heading-transpmini .heading-text{
+	max-width: 70%;
+	margin: 6px 0px 0px;
+	line-height: 1.4;
+}
+
 .heading-transpmini .actions {
 	padding: 0 !important;
 }
@@ -2062,6 +2108,29 @@ ul.transport {
 	margin-left: 26%;
 }
 
+.help-block span.cc-type{
+	display: inline-block;
+	background: url(../images/wb_sprites.png) no-repeat;
+	height: 32px;
+	width: 60px;
+}
+
+.help-block span.cc-type.amex{
+	background-position: 0 -56px;
+}
+
+.help-block span.cc-type.mc{
+	background-position: 0 -23px;
+}
+
+.help-block span.cc-type.disc{
+	background-position: 0 -89px;
+}
+
+.help-block span.cc-type.visa{
+	background-position: 0 -121px;
+}
+
 .table.checkout-review * tr>*:last-child {
 	text-align: right;
 }
@@ -2162,7 +2231,7 @@ p.warning-shadow {
 }
 
 .inputMarg .reqSideGreen, .selectMarg .reqSideGreen, .nameMarg .reqSideRed{
-	background: url(../images/requireds.png);
+	background: url(../images/wb_sprites.png) -88px -75px no-repeat;
 	height: 0;
 	width: 60px;
 	padding: 14px 0 0 0;

@@ -2,7 +2,7 @@
 <div id="webbooker-home" data-bind="if: Homepage.show">
 	<div data-bind="visible: Homepage.show"   style="display:none">
 		<div class="heroWrap">
-			<img src="<?php echo (!empty($wb['hero_url'])) ? $wb['hero_url'] : PLUGIN_DIR_URL . '/images/defaultHero.jpg'; ?>" id="home-feature" alt="featured-image" />
+			<img src="<?php echo (!empty($wb['hero_url'])) ? $wb['hero_url'] : PLUGIN_DIR_URL . 'images/defaultHero.jpg'; ?>" id="home-feature" alt="featured-image" />
 			<?php echo (!empty($wb['hero_heading_text'])) ? '<div class="siteTitle"><h2 class="hero-heading">' . $wb['hero_heading_text'] . '</h2></div>' : ''; ?>
 		</div>
 		<?php include("mini-sidebar.php"); ?>

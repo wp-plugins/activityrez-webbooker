@@ -51,8 +51,8 @@ WebBooker.Dashboard = {
 		WebBooker.Dashboard.agentCommissionsTotal(0);
 
 		WebBooker.API.getAgentCommissions({
-			startDate: startDate,
-			endDate: endDate
+			startDate: createTimestamp(startDate),
+			endDate: createTimestamp(endDate)
 		}, function(results) {
 			var dataset = [],
 				obj = {},
@@ -158,6 +158,33 @@ WebBooker.Dashboard = {
 			WebBooker.Dashboard.agentCommissionsChart(null);
 		}
 		WebBooker.Dashboard.populateAgentCommissionsData();
+	},
+	
+	downLoadCSV: function() {
+		if(!WebBooker.Dashboard.agentCommissionsStartDate()) {
+			var date = new Date();
+			WebBooker.Dashboard.agentCommissionsStartDate(utils.getDateString(new Date(date.getFullYear(), date.getMonth(), 1)));
+		}
+		if(!WebBooker.Dashboard.agentCommissionsEndDate()) {
+			var date = new Date();
+			WebBooker.Dashboard.agentCommissionsEndDate(utils.getDateString(new Date(date.getFullYear(), date.getMonth()+1, 0)));
+		}
+		
+		var d = new Date(),
+		startDate = new Date(WebBooker.Dashboard.agentCommissionsStartDate()),
+		endDate = new Date(WebBooker.Dashboard.agentCommissionsEndDate());
+		
+		/*if(utils.getMonthName(new Date(startDate)) == utils.getMonthName(new Date(endDate)))
+			POSApp.Dashboard.Charts.commissionMonthName(utils.getMonthName(new Date(startDate)));
+		else
+			POSApp.Dashboard.Charts.commissionMonthName('');*/
+		
+		endDate.setHours(endDate.getHours()- d.getTimezoneOffset() / 60);
+		startDate.setHours(startDate.getHours()- d.getTimezoneOffset() / 60);
+			
+		var csvURL = WebBooker.bootstrap.api_url+'?nonce='+WebBooker.bootstrap.nonce+'&service=arezReporting&action=getMyCommissions&data[startDate]='+createTimestamp(startDate)+'&data[endDate]='+createTimestamp(endDate)+'&data[csv]=1&data[wb]=true&consumer-key=posapp';
+		window.open(csvURL,'_blank');
+		
 	}
 
 };

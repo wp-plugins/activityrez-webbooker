@@ -29,7 +29,7 @@ if ( WB_REMOTE == true ) {
 	
 	if ( array_key_exists( 'activitySlug', $wp_query->query_vars ) ) {
 		//we need google maps on activity pages
-		wp_enqueue_script('google-maps','https://maps.google.com/maps/api/js?sensor=true',array('jquery') );
+		wp_enqueue_script('google-maps','https://maps.google.com/maps/api/js?sensor=true',array('jquery'));
 		$wbArgs['slug'] = $wp_query->query_vars['activitySlug'];
 	}
 	if ( isset( $_REQUEST['i18N'] ) ) {
@@ -232,7 +232,7 @@ function arez_webbooker_loadScripts(){
 		wp_enqueue_script('store',ACTIVITYREZWB_PLUGIN_PATH.'js/lib/store.js',array('jquery'));
 		wp_enqueue_script('path',ACTIVITYREZWB_PLUGIN_PATH.'js/lib/path.js',array('jquery'));
 		wp_enqueue_script('lazyload',ACTIVITYREZWB_PLUGIN_PATH.'js/lib/lazyload-min.js',array('jquery'));
-		wp_enqueue_script('nouislider', ACTIVITYREZWB_PLUGIN_PATH . 'js/lib/jquery.nouislider.min.js', array('jquery'),'',1);
+		wp_enqueue_script('nouislider', ACTIVITYREZWB_PLUGIN_PATH . 'js/lib/jquery.nouislider.min.js', array('jquery'));
 		
 		//ActivityRez Required Scripts
 		wp_enqueue_script('ar-app',ACTIVITYREZWB_PLUGIN_PATH.'js/app/app.js',array('jquery','jquery-ui-datepicker','knockout','bootstrap','store','path','lazyload','nouislider'));
@@ -244,12 +244,8 @@ function arez_webbooker_loadScripts(){
 		wp_enqueue_script('ar-checkout',ACTIVITYREZWB_PLUGIN_PATH.'js/app/checkout.js',array('ar-app','ar-api','ar-catalog','ar-cart','ar-home','ar-activity'));
 		wp_enqueue_script('ar-dashboard',ACTIVITYREZWB_PLUGIN_PATH.'js/app/dashboard.js',array('ar-app','ar-api','ar-catalog','ar-cart','ar-home','ar-activity','ar-checkout'));
 		wp_enqueue_script('ar-itinerary',ACTIVITYREZWB_PLUGIN_PATH.'js/app/itinerary.js',array('ar-app','ar-api','ar-catalog','ar-cart','ar-home','ar-activity','ar-checkout','ar-dashboard'));
-		wp_enqueue_script('ar-analytics',ACTIVITYREZWB_PLUGIN_PATH.'js/app/analytics.js',
-			array('ar-app','ar-api','ar-catalog','ar-cart','ar-home','ar-activity','ar-checkout','ar-dashboard','ar-itinerary')
-		);
-		wp_enqueue_script('ar-init',ACTIVITYREZWB_PLUGIN_PATH.'js/app/init.js',
-			array('ar-app','ar-api','ar-catalog','ar-cart','ar-home','ar-activity','ar-checkout','ar-dashboard','ar-itinerary','ar-analytics')
-		);
+		wp_enqueue_script('ar-analytics',ACTIVITYREZWB_PLUGIN_PATH.'js/app/analytics.js',array('ar-app','ar-api','ar-catalog','ar-cart','ar-home','ar-activity','ar-checkout','ar-dashboard','ar-itinerary'));
+		wp_enqueue_script('ar-init',ACTIVITYREZWB_PLUGIN_PATH.'js/app/init.js',array('ar-app','ar-api','ar-catalog','ar-cart','ar-home','ar-activity','ar-checkout','ar-dashboard','ar-itinerary','ar-analytics'));
 	}else{
 		wp_enqueue_style('ar-vendor',ACTIVITYREZWB_PLUGIN_PATH.'css/vendor.css');
 		wp_enqueue_style('ar',ACTIVITYREZWB_PLUGIN_PATH.'css/ar.css');

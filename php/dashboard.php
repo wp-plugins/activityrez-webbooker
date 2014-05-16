@@ -76,6 +76,7 @@ global $wb;
 						<input type="text" class="input-small datepicker-dash" name="topgross-enddate" id="topgross-enddate" data-bind="value: agentCommissionsEndDate" />
 						&nbsp;
 						<button class="buttonBlue" title="Refresh My Commissions" data-bind="click: reloadAgentCommissionsChart"><i class="icon-refresh icon-white"></i> <?php _e('Refresh', 'arez')?></button>
+						<button class="buttonGray" title="Download CSV" data-bind="click: downLoadCSV"><i class="icon-download icon-white"></i> <?php _e('CSV', 'arez')?></button>
 					</form>
 					<div id="dash-commissions-chart" data-bind="visible: agentCommissionsData"></div>
 					<div id="dash-commissions-nodata" data-bind="visible: !agentCommissionsData()">
