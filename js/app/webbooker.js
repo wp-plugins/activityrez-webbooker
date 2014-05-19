@@ -2878,15 +2878,23 @@ ko.bindingHandlers.fadeVisible = {
 
 // Utilities
 // Calculates the distance between two locations.
-function getDistance(lat1,lon1,lat2,lon2) {
-	var R = 6371, // km
-		dLat = toRad(lat2-lat1),
-		dLon = toRad(lon2-lon1),
-		a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-			Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-			Math.sin(dLon/2) * Math.sin(dLon/2),
-		c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-	return Math.round((R * c)*Math.pow(10,2))/Math.pow(10,2);
+function getDistance(lat1, lon1, lat2, lon2, unit) {
+	var radlat1 = Math.PI * lat1/180,
+		radlat2 = Math.PI * lat2/180,
+		radlon1 = Math.PI * lon1/180,
+		radlon2 = Math.PI * lon2/180,
+		theta = lon1-lon2,
+		radtheta = Math.PI * theta/180,
+		dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+		
+	dist = Math.acos(dist);
+	dist = dist * 180/Math.PI;
+	dist = dist * 60 * 1.1515;
+	
+	if (unit=="K") { dist = dist * 1.609344 }
+	if (unit=="N") { dist = dist * 0.8684 }
+	
+	return +(Math.round(dist + 'e+2') + 'e-2');
 }
 
 // Converts numeric degrees to radians
@@ -6326,7 +6334,7 @@ $ar.TransportView = function(data){
 		
 		for ( var ni = 0; ni < self.transportation().length; ni += 1 ) {
 			var transport = self.transportation()[ni];
-			transport.distance = getDistance(transport.lat, transport.lng, location.lat, location.lng);
+			transport.distance = getDistance(transport.lat, transport.lng, location.lat, location.lng, 'M');
 			if ( self.selectedTransType() && ( self.selectedTransType() === __( transport.vehicle.charAt(0).toUpperCase() + transport.vehicle.slice(1) )() || self.selectedTransType() === __('Any')() ) ) {
 				transports.push(transport);
 			}

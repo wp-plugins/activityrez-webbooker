@@ -877,7 +877,7 @@ $ar.TransportView = function(data){
 		
 		for ( var ni = 0; ni < self.transportation().length; ni += 1 ) {
 			var transport = self.transportation()[ni];
-			transport.distance = getDistance(transport.lat, transport.lng, location.lat, location.lng);
+			transport.distance = getDistance(transport.lat, transport.lng, location.lat, location.lng, 'M');
 			if ( self.selectedTransType() && ( self.selectedTransType() === __( transport.vehicle.charAt(0).toUpperCase() + transport.vehicle.slice(1) )() || self.selectedTransType() === __('Any')() ) ) {
 				transports.push(transport);
 			}

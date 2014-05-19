@@ -61,6 +61,11 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 4. Web Booker Configuration Manager on ActivityRez ![](https://raw.github.com/ActivityRez/arez-web-booker/feature-wprepo/assets/screenshot-4.png)
 
 == Changelog ==
+= 2.3.9 =
+* Light optimization of CSS and JS for loading times
+* Fixed a bug with sprited images
+* Fixed a bug with displaying transportation pickup distances
+
 = 2.3.5 =
 * Default guest "copy to all" to OFF, with admin control to set it otherwise
 * Fixed confirmation email API call not firing in IE

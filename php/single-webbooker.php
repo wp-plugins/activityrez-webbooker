@@ -221,12 +221,6 @@ function arez_webbooker_loadScripts(){
 	
 	if($testMode){
 		//styles
-
-		wp_enqueue_style('bootstrap',ACTIVITYREZWB_PLUGIN_PATH.'css/bootstrap.min.css');
-		wp_enqueue_style('jquery-ui',ACTIVITYREZWB_PLUGIN_PATH.'css/jquery-ui.css');
-		wp_enqueue_style('layout',ACTIVITYREZWB_PLUGIN_PATH.'css/layout.css');
-		wp_enqueue_style('sticky',ACTIVITYREZWB_PLUGIN_PATH.'css/sticky.css');
-		wp_enqueue_style('print',ACTIVITYREZWB_PLUGIN_PATH.'css/print.css');
 		wp_enqueue_script('knockout',ACTIVITYREZWB_PLUGIN_PATH.'js/lib/knockout.min.js',array('jquery'));
 		wp_enqueue_script('bootstrap',ACTIVITYREZWB_PLUGIN_PATH.'js/lib/bootstrap.min.js',array('jquery'));
 		wp_enqueue_script('store',ACTIVITYREZWB_PLUGIN_PATH.'js/lib/store.js',array('jquery'));
@@ -247,10 +241,11 @@ function arez_webbooker_loadScripts(){
 		wp_enqueue_script('ar-analytics',ACTIVITYREZWB_PLUGIN_PATH.'js/app/analytics.js',array('ar-app','ar-api','ar-catalog','ar-cart','ar-home','ar-activity','ar-checkout','ar-dashboard','ar-itinerary'));
 		wp_enqueue_script('ar-init',ACTIVITYREZWB_PLUGIN_PATH.'js/app/init.js',array('ar-app','ar-api','ar-catalog','ar-cart','ar-home','ar-activity','ar-checkout','ar-dashboard','ar-itinerary','ar-analytics'));
 	}else{
-		wp_enqueue_style('ar-vendor',ACTIVITYREZWB_PLUGIN_PATH.'css/vendor.css');
-		wp_enqueue_style('ar',ACTIVITYREZWB_PLUGIN_PATH.'css/ar.css');
 		wp_enqueue_script('ar-webbooker',ACTIVITYREZWB_PLUGIN_PATH.'js/app/webbooker.min.js',array('jquery','jquery-ui-datepicker'));
 	}
+	
+	wp_enqueue_style('ar-vendor',ACTIVITYREZWB_PLUGIN_PATH.'css/vendor.css');
+	wp_enqueue_style('ar',ACTIVITYREZWB_PLUGIN_PATH.'css/ar.css');
 }
 if ( !bot_detected() ) {
 	add_action( 'wp_enqueue_scripts', 'arez_webbooker_loadScripts',99 );//load it last
