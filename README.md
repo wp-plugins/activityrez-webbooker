@@ -61,6 +61,11 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 
 # Changelog #
 
+# 2.4.0 #
+* Fixed IE8 issues
+* Enhancements to Travel Agent Dashboard
+* Fixed transportation pickup distance estimates to be more accurate
+
 # 2.3.9 #
 * Light optimization of CSS and JS for loading times
 * Fixed a bug with sprited images

@@ -75,6 +75,12 @@ var WebBooker = {
 	mediaServer: (wb_global_vars && wb_global_vars.server == 'training') ? '//devmedia.activityrez.com' : '//media.activityrez.com',
 	selectedLanguage: ko.observable(),
 	available_langs: ko.observableArray([]),
+	
+	isOldIE: (function(){
+		if(navigator.appName != "Microsoft Internet Explorer")
+			return false;
+		return parseInt(/MSIE\s(\d)/.exec(navigator.appVersion)[1],10) < 9
+	})(),
 
 	us_states: [
 		'Alabama',

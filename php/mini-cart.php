@@ -33,6 +33,7 @@
 					</div>
 				</div>
 				<div class="commissions clearfix" data-bind="visible: r2">
+					<!--ko if: !WebBooker.isOldIE -->
 					<ul class="commission clearfix" data-bind="visible: r2, attr:{title: r2 + '%' }">
 						<!-- ko if: r2 > 0 -->
 						<li class="one"></li>
@@ -50,6 +51,12 @@
 						<li class="five"></li>
 						<!-- /ko -->
 					</ul>
+					<!-- /ko -->
+					<!--ko if: WebBooker.isOldIE -->
+						<div class="commValue" data-bind="visible: r2 > 0, attr: { title: r2 + '%' }">
+							<span data-bind="html: ((r2/100) * display_price).toFixed(2)"></span>
+						</div>
+					<!-- /ko -->
 					<span class="no-commission" data-bind="visible: !r2"><?php _e('No commission found.','arez'); ?></span>
 				</div>
 			</div>

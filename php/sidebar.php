@@ -61,11 +61,11 @@
 							<input type="text" name="keywords" id="search-keywords" data-bind="value: search_params.keywords, valueUpdate: 'afterkeydown'" />
 						</div>
 					</div><!-- /search-filters-keywords -->
+					<div class="actions">
+						<button type="reset" data-bind="click: clearFilters" class="buttonGray buttonBig"><i class="icon-refresh icon-white"></i> <?php _e('Reset Filters','arez'); ?></button>
+						<button type="submit" data-bind="click: loadWithFilters, enable: !isSearching()" title="<?php _e('Search Activities','arez'); ?>" id="searchActivitiesButton" class="buttonBlue buttonBig"><i class="icon-search icon-white"></i> <?php _e('Search','arez'); ?></button>
+					</div>
 				</form>
-				<div class="actions">
-					<button data-bind="click: clearFilters" class="buttonGray buttonBig"><i class="icon-refresh icon-white"></i> <?php _e('Reset Filters','arez'); ?></button>
-					<button data-bind="click: loadWithFilters, enable: !isSearching()" title="<?php _e('Search Activities','arez'); ?>" id="searchActivitiesButton" class="buttonBlue buttonBig"><i class="icon-search icon-white"></i> <?php _e('Search','arez'); ?></button>
-				</div>
 				<div style="clear:both"></div>
 				<p style="display:block !important;visibility:visible !important;" class="powered">Powered by <a style="display:inline-block !important;visibility:visible !important;" class="arezLogo" href="https://www.activityrez.com/?utm_source=booking+engine&utm_medium=referral&utm_campaign=powered+by" target="_blank">ActivityRez.com</a></p>
 			</div><!-- /content -->

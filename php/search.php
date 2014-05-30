@@ -53,6 +53,7 @@ global $wb;
 						<div class="ribbonFoldRight"></div>
 						<a class="buttonGray buttonBig" data-bind="attr: { 'href': url }" title="<?php _e('View Activity Details','arez'); ?>"><?php _e('Details','arez'); ?>&nbsp;<i class="icon-arrow-right icon-white"></i></a>
 						<div class="searchCommissions"  data-bind="visible: WebBooker.hasReseller">
+							<!--ko if: !WebBooker.isOldIE -->
 							<ul class="commission" data-bind="visible: r2 > 0, attr: { title: r2 + '%' }">
 								<!-- ko if: r2 > 0 -->
 								<li class="one"></li>
@@ -70,6 +71,12 @@ global $wb;
 								<li class="five"></li>
 								<!-- /ko -->
 							</ul>
+							<!-- /ko -->
+							<!--ko if: WebBooker.isOldIE -->
+								<div class="commValue" data-bind="visible: r2 > 0, attr: { title: r2 + '%' }">
+									<span data-bind="html: ((r2/100) * display_price).toFixed(2)"></span>
+								</div>
+							<!-- /ko -->
 						</div>
 					</div><!-- /price -->
 					<div class="info">
