@@ -242,6 +242,7 @@ function arez_webbooker_loadScripts(){
 		wp_enqueue_script('ar-analytics',ACTIVITYREZWB_PLUGIN_PATH.'js/app/analytics.js',array('ar-app','ar-api','ar-catalog','ar-cart','ar-home','ar-activity','ar-checkout','ar-dashboard','ar-itinerary'));
 		wp_enqueue_script('ar-init',ACTIVITYREZWB_PLUGIN_PATH.'js/app/init.js',array('ar-app','ar-api','ar-catalog','ar-cart','ar-home','ar-activity','ar-checkout','ar-dashboard','ar-itinerary','ar-analytics'));
 	}else{
+		wp_enqueue_script('google-maps','https://maps.google.com/maps/api/js?sensor=true',array('jquery'));
 		wp_enqueue_script('ar-webbooker',ACTIVITYREZWB_PLUGIN_PATH.'js/app/webbooker.min.js',array('jquery','jquery-ui-datepicker'));
 	}
 	
