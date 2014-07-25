@@ -905,7 +905,7 @@ ko.bindingHandlers.hotelTypeahead = {
 	init: function(element, valueAccessor) {
 		var option = valueAccessor()['value'],
 			saved_query = '',
-			elem = $(element),
+			elem = jQuery(element),
 			no_results;
 		if(WebBooker.bootstrap.agencyID == 1260) return false;
 		jQuery(element).typeahead({

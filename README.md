@@ -61,7 +61,7 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 
 # Changelog #
 
-# 2.4.2 #
+# 2.4.3 #
 * Bug fixes
 * Resellers can now set display prices
 
