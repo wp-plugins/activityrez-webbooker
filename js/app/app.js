@@ -856,14 +856,14 @@ WebBooker.postMessage = function(message) {
 };
 
 jQuery.fn.typeahead.Constructor.prototype.show = function () {
-	var pos = $.extend({}, this.$element.offset(), {
+	var pos = jQuery.extend({}, this.$element.offset(), {
 		height: this.$element[0].offsetHeight
 	}),
 	menu = this.$menu,
 	elem = this.$element;
 	menu.show(function(){
 		menu.insertAfter(elem);
-		if(pos.top + pos.height + menu.outerHeight() > window.outerHeight && pos.top - menu.outerHeight() > $(window).scrollTop()){
+		if(pos.top + pos.height + menu.outerHeight() > window.outerHeight && pos.top - menu.outerHeight() > jQuery(window).scrollTop()){
 			menu.css({
 	          top: 0 - menu[0].offsetHeight + 25
 	        , left: 0
@@ -943,7 +943,7 @@ ko.bindingHandlers.hotelTypeahead = {
 					} else {
 						no_results = true;
 						process([]);
-						$(elem).after('<ul class="typeahead dropdown-menu no-results" style="top: 55px; left: 0px; display: block">' +
+						jQuery(elem).after('<ul class="typeahead dropdown-menu no-results" style="top: 55px; left: 0px; display: block">' +
 								           '<li class="active"><a href="#">No Results Found</a></li>' +
 									   '</ul>');
 					}
@@ -974,11 +974,11 @@ ko.bindingHandlers.hotelTypeahead = {
 				return;
 			}
 			
-			$('.typeahead.dropdown-menu.no-results').remove();
+			jQuery('.typeahead.dropdown-menu.no-results').remove();
 		});
 		
 		elem.on('blur',function(){
-			$('.typeahead.dropdown-menu.no-results').remove();
+			jQuery('.typeahead.dropdown-menu.no-results').remove();
 		});
 	},
 	update: function(element, valueAccessor) {
@@ -1300,7 +1300,7 @@ ko.bindingHandlers.clean_money = {
 };
 /* TODO, figure out why this is here
 jQuery(document).ready(function(){
-	 if($.browser.msie){
+	 if(jQuery.browser.msie){
 		 jQuery(function() {
 			jQuery('[placeholder]').focus(function() {
 			  if(jQuery(this).val() == jQuery(this).attr('placeholder')) {
