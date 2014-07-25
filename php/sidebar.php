@@ -95,7 +95,7 @@
 					<ul class="guests" data-bind="foreach: guests">
 						<!-- ko if: qty() > 0 -->
 						<li>
-							<strong><span data-bind="text: qty"></span> <span data-bind="text: name"></span>:</strong>
+							<strong><span data-bind="text: qty"></span> <span data-bind="html: name"></span>:</strong>
 							<span data-bind="money: subtotal"></span>
 						</li>
 						<!-- /ko -->
@@ -117,7 +117,7 @@
 		</div><!-- /cart-sidebar -->
 
 		<?php
-		if(!$reseller_passed) {
+		if(!isset($reseller_passed) || !$reseller_passed) {
 		?>
 		<div id="agents-sidebar" class="sidebar-container" data-bind="with: WebBooker.Agent">
 			<div class="header gradient-light">

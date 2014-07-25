@@ -227,6 +227,7 @@ function arez_webbooker_loadScripts(){
 		wp_enqueue_script('path',ACTIVITYREZWB_PLUGIN_PATH.'js/lib/path.js',array('jquery'));
 		wp_enqueue_script('lazyload',ACTIVITYREZWB_PLUGIN_PATH.'js/lib/lazyload-min.js',array('jquery'));
 		wp_enqueue_script('nouislider', ACTIVITYREZWB_PLUGIN_PATH . 'js/lib/jquery.nouislider.min.js', array('jquery'));
+		wp_enqueue_script('google-maps','https://maps.google.com/maps/api/js?sensor=true',array('jquery'));
 		
 		//ActivityRez Required Scripts
 		wp_enqueue_script('ar-app',ACTIVITYREZWB_PLUGIN_PATH.'js/app/app.js',array('jquery','jquery-ui-datepicker','knockout','bootstrap','store','path','lazyload','nouislider'));

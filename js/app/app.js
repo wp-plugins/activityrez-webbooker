@@ -849,13 +849,36 @@ WebBooker.About = {
 // postMessage for iFrame 
 WebBooker.postMessage = function(message) {
 	if(WebBooker.bootstrap.parent_url) {
-		
-		//if(parent.hasOwnProperty('postMessage')){
 		if(typeof window.parent !== 'undefined' && typeof window.parent.postMessage == 'function'){
 			window.parent.postMessage(message, WebBooker.bootstrap.parent_url);
 		}
 	}
 };
+
+jQuery.fn.typeahead.Constructor.prototype.show = function () {
+	var pos = $.extend({}, this.$element.offset(), {
+		height: this.$element[0].offsetHeight
+	}),
+	menu = this.$menu,
+	elem = this.$element;
+	menu.show(function(){
+		menu.insertAfter(elem);
+		if(pos.top + pos.height + menu.outerHeight() > window.outerHeight && pos.top - menu.outerHeight() > $(window).scrollTop()){
+			menu.css({
+	          top: 0 - menu[0].offsetHeight + 25
+	        , left: 0
+	        })	
+		}else{
+			menu.css({
+	          top: pos.height
+	        , left: 0
+	        })
+		}
+		
+	});
+	this.shown = true;
+	return this;
+}
 
 // Binding Handlers
 ko.bindingHandlers.collapseSidebarBox = {
@@ -880,8 +903,10 @@ ko.bindingHandlers.collapseSidebarBox = {
 
 ko.bindingHandlers.hotelTypeahead = {
 	init: function(element, valueAccessor) {
-		var option = valueAccessor()['value'];
-		var saved_query = '';
+		var option = valueAccessor()['value'],
+			saved_query = '',
+			elem = $(element),
+			no_results;
 		if(WebBooker.bootstrap.agencyID == 1260) return false;
 		jQuery(element).typeahead({
 			source: function(query,process) {
@@ -903,6 +928,7 @@ ko.bindingHandlers.hotelTypeahead = {
 					var names = [];
 					var mappedObjs = jQuery.map(data.items,
 						function(item) {
+							item.name = item.name.trim();
 							var n = item.name + ' - ';
 							if ( item.hotel_st ) n = n + item.hotel_st + ', ';
 							n += item.hotel_country;
@@ -912,9 +938,14 @@ ko.bindingHandlers.hotelTypeahead = {
 					);
 					if (data.items.length) {
 						WebBooker.Checkout.hotels(mappedObjs);
+						no_results = false;
 						process(names);
 					} else {
-						process(['No results found. Please use a local address.']);
+						no_results = true;
+						process([]);
+						$(elem).after('<ul class="typeahead dropdown-menu no-results" style="top: 55px; left: 0px; display: block">' +
+								           '<li class="active"><a href="#">No Results Found</a></li>' +
+									   '</ul>');
 					}
 				});
 			},
@@ -935,6 +966,19 @@ ko.bindingHandlers.hotelTypeahead = {
 				// we return true because the ajax livesearch handles the matching.
 				return true;
 			}
+		});
+		
+		elem.keydown(function(e){
+			if(e.keyCode == '13' && no_results){
+				e.preventDefault();
+				return;
+			}
+			
+			$('.typeahead.dropdown-menu.no-results').remove();
+		});
+		
+		elem.on('blur',function(){
+			$('.typeahead.dropdown-menu.no-results').remove();
 		});
 	},
 	update: function(element, valueAccessor) {
@@ -1579,14 +1623,13 @@ $ar.Taxonomy = function(data){
 	return that;
 };
 $ar.Geocoder = (function() {
-	var google = google || {};
-	if(google && google.maps){
-		var that = {
-			geocoder: new google.maps.Geocoder()
-		};
+	var that = {
+		geocoder: function() {
+			return new google.maps.Geocoder();
+		},
 	
-		that.geocode = function(object, callback) {
-			that.geocoder.geocode(
+		geocode: function(object, callback) {
+			that.geocoder().geocode(
 				object,
 				function(results, status) {
 					if(status == google.maps.GeocoderStatus.OK) {
@@ -1597,10 +1640,9 @@ $ar.Geocoder = (function() {
 					}
 				}
 			);
-		};
-	
-		return that;
-	}
+		}
+	};
+	return that;
 })();
 jQuery(document).ready(function(){
 	setTimeout(function(){

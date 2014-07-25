@@ -221,7 +221,7 @@ global $wb;
 			<div class="cb"></div>
 			<div class="ribbonFold"></div>
 			<br><br>
-			<div class="alert alert-success"><strong><?php _e('Congratulations!','arez');?></strong> <?php _e('Your travel agent sign-up is complete. You may log-in now to the left.', 'arez'); ?></div>
+			<div class="alert alert-success"><strong><?php _e('Congratulations!','arez');?></strong> <?php _e('Your travel agent sign up is complete. Log in to view and earn commissions.', 'arez'); ?></div>
 			<br><br>
 		</div>
 	</div>

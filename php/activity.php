@@ -41,6 +41,20 @@ function getChildURL( $child ){
 	global $wb;
 	return $wb['wb_url'] .'/'. $child['slug'];
 }
+$activityDefault = array(
+	'title'=>'',
+	'activityID'=>'',
+	'duration'=>'',
+	'description'=>'',
+	'destination'=>'',
+	'children'=>'',
+	'instructions'=>'',
+	'address'=>''
+);
+if(!isset($wb['activity'])){
+	$wb['activity'] = array();
+}
+$wb['activity'] = array_merge($activityDefault,$wb['activity']);
 /*
 <!--
 <div id="broken-webbooker-activity" data-bind="with: ActivityView.activity, visible: ActivityView.show() && ActivityView.invalidLanguage()" style="display:none">
@@ -196,39 +210,4 @@ function getChildURL( $child ){
 <div id="qrcode-wrapper" style="display:none;">
 	<div id="qrcode"></div>
 	<p><?php _e("Use your smartphone's QR reader to visit this activity page.",'arez');?></p>
-</div>
-
-<div id="imageModal" class="modal hide fade modal-fullscreen" tabindex="-1" role="dialog" aria-labelledby="activityImageModalLabel" aria-hidden="true" data-bind="if: ActivityView.fullScreenShow() == true, visible: ActivityView.fullScreenShow() == true">
-	<div class="modal-header">
-		<button type="button" class="btn btn-danger" data-dismiss="modal" aria-hidden="true">
-			<i class="icon-remove icon-white"></i>
-			<span>Close</span>
-		</button>
-	</div>
-	<div class="modal-body">
-		<div id="activityCarouselFullScreen" class="carousel slide carousel-fit carousel-caption-active" data-bind="visible: ActivityView.slideshow().length">
-			<ol class="carousel-indicators" data-bind="foreach: ActivityView.slideshow">
-				<!-- ko if: $index() == 0 -->
-				<li data-target="#activityCarousel" class="active" data-bind="attr: {'data-slide-to': $index}"></li>
-				<!-- /ko -->
-				
-				<!-- ko ifnot: $index() == 0 -->
-				<li data-target="#activityCarousel" data-bind="attr: {'data-slide-to': $index}"></li>
-				<!-- /ko -->
-			</ol>
-			<!-- Carousel items -->
-			<div class="carousel-inner"  data-bind="foreach: ActivityView.slideshow">
-				<!-- ko if: $index() == 0 -->
-				<div class="item active"><img data-bind="attr: { src: full }" alt="Slideshow Image" /></div>
-				<!-- /ko -->
-				
-				<!-- ko ifnot: $index() == 0 -->
-				<div class="item"><img data-bind="attr: { src: full }" alt="Slideshow Image" /></div>
-				<!-- /ko -->
-			</div>
-			<!-- Carousel nav -->
-			<a class="carousel-control left" href="#imageModal" data-slide="prev">&lsaquo;</a>
-			<a class="carousel-control right" href="#imageModal" data-slide="next">&rsaquo;</a>
-		</div><!-- /webbooker-activity-slideshow -->
-	</div>
 </div>

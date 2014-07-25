@@ -61,6 +61,10 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 4. Web Booker Configuration Manager on ActivityRez ![](https://raw.github.com/ActivityRez/arez-web-booker/feature-wprepo/assets/screenshot-4.png)
 
 == Changelog ==
+= 2.4.1 =
+* Bug fixes
+* Resellers can now set display prices
+
 = 2.4.0 =
 * Fixed IE8 issues
 * Enhancements to Travel Agent Dashboard

@@ -82,9 +82,18 @@ if(window.addEventListener) {
 }
 
 jQuery(document).ready(function(){
-	ko.applyBindings(WebBooker, jQuery('#multi-everything')[0]);
-	ko.applyBindings(WebBooker, jQuery('#webbooker-sidebar')[0]);
-	ko.applyBindings(WebBooker, jQuery('#webbooker-main')[0]);//don't bind the same object to different places in ie8
+	if(jQuery('#multi-everything').length){
+		ko.applyBindings(WebBooker, jQuery('#multi-everything')[0]);
+	}
+	if(jQuery('#webbooker-sidebar').length){
+		ko.applyBindings(WebBooker, jQuery('#webbooker-sidebar')[0]);
+	}
+	if(jQuery('#webbooker-modals').length){
+		ko.applyBindings(WebBooker, jQuery('#webbooker-modals')[0]);
+	}
+	if(jQuery('#webbooker-main').length){
+		ko.applyBindings(WebBooker, jQuery('#webbooker-main')[0]);//don't bind the same object to different places in ie8
+	}
 
 	WebBooker.init();
 	WebBooker.wbLoaded(true);

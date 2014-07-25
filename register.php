@@ -3,7 +3,7 @@
 Plugin Name: ActivityRez Wordpress Web Booker Plugin
 Plugin URI: http://www.activityrez.com/features/booking-engine/
 Description: ActivityRez plugin to show your ActivityRez booking engine on your site
-Version: 2.4.0
+Version: 2.4.1
 Author: ActivityRez LLC
 Author URI: http://ActivityRez.com/
 
@@ -463,7 +463,7 @@ function arez_travel_agent_login($args) {
 	
 		<div class="content">
 			<div data-bind="visible: user_id() > 0">
-				<p><strong><?php _e('Welcome back,','arez'); ?> <span class="agent-name" data-bind="text: name"></span>!</strong></p>
+				<p><strong><?php _e('Welcome back,','arez'); ?> <span class="agent-name" data-bind="html: name"></span>!</strong></p>
 				<div class="actions">
 					<a href="<?php echo $wb['wb_url']; ?>/#/Dashboard" class="buttonBlue" data-bind="scrollTopOnClick: true"><i class="icon-list-alt icon-white"></i> <?php _e('Dashboard','arez'); ?></a>
 					<button class="buttonGray" data-bind="click: logout"><i class="icon-ban-circle icon-white"></i> <?php _e('Log Out','arez'); ?></button>

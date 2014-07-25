@@ -34,44 +34,6 @@ global $wb;
 		<p><?php _e("You don't have any activities added yet.","arez"); ?></p>
 	</div><!-- /checkout-empty -->
 
-	<div id="reseller-privacy-policy" class="modal hide">
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal">x</button>
-			<h3><?php _e('Privacy Policy','arez'); ?></h3>
-		</div>
-		<div class="modal-body" data-bind="html: WebBooker.bootstrap.privacy"></div>
-		<div class="modal-footer">
-			<a href="#" class="btn" data-dismiss="modal"><?php _e('Close','arez'); ?></a>
-		</div>
-	</div>
-
-	<div id="reseller-agreement" class="modal hide">
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal">x</button>
-			<h3><?php _e('Terms and Conditions','arez'); ?></h3>
-		</div>
-		<div class="modal-body">
-			<?php echo $wb['terms']; ?>
-		</div>
-		<div class="modal-footer">
-			<a href="#" class="btn" data-dismiss="modal" data-bind="click: unsetAgreement"><?php _e('Cancel','arez'); ?></a>
-			<a href="#" class="btn btn-success-primary" data-dismiss="modal" data-bind="click: setAgreement"><?php _e('I Accept','arez'); ?></a>
-		</div>
-	</div>
-
-	<div id="checkout-processing" class="modal hide">
-		<div class="modal-header">
-			<h3><?php _e('Processing Payment','arez'); ?></h3>
-		</div>
-		<div class="modal-body">
-			<p><?php _e('We are processing your payment information. Please wait a minute.', 'arez'); ?></p>
-			<p><?php _e('You might be redirected to a different website to finish your payment.', 'arez'); ?></p>
-			<div class="progress progress-striped active">
-				<div class="bar" style="width: 55%"></div>
-			</div>
-		</div>
-	</div>
-
 	<div id="checkout-customize" class="content" data-bind="visible: WebBooker.CheckoutNav.showNav() && WebBooker.CheckoutNav.showCustomize() && sale.items().length">
 		<div data-bind="if: WebBooker.CheckoutNav.show">
 			<p>
@@ -302,7 +264,7 @@ global $wb;
 							<div class="clearfix">
 								<span class="heading-icon ticket-icon"></span>
 								<h4 class="heading-text">
-									<strong data-bind="text: name"></strong><br>
+									<strong data-bind="html: name"></strong><br>
 									<span data-bind="clean_money: price"></span>
 								</h4>
 								<div class="actions">
@@ -404,7 +366,7 @@ global $wb;
 								</div>
 							</div>
 							<div class="transport-option" data-bind="visible: transportation().length && wantsTransport()">
-								<div class="location-select" data-bind="visible: (!$parents[1].transportMaster() || master())">
+								<div class="location-select">
 									<p><?php _e("We need to know where you're staying at so we can suggest the nearest transportation option.","arez"); ?></p>
 									<input type="radio" value="hotel" data-bind="checked: locationSelect" /> <label><?php _e('Hotel','arez'); ?></label> &nbsp;
 									<input type="radio" value="address" data-bind="checked: locationSelect" /> <label><?php _e('Local Address','arez'); ?></label>
@@ -493,7 +455,7 @@ global $wb;
 								<!-- ko if: wantsTransport() && locationSelect() && locationSelect() == 'address' -->
 								<div class="map-canvas"></div>
 								<!-- /ko -->
-								<!-- ko if: wantsTransport() && locationSelect() && ((locationSelect() == 'hotel' && hotel()) || (locationSelect() == 'address' && lat() && lng())) && (!$parents[1].transportMaster() || master()) -->
+								<!-- ko if: wantsTransport() && locationSelect() && ((locationSelect() == 'hotel' && hotel()) || (locationSelect() == 'address' && lat() && lng())) -->
 								<div class="transTop">
 									<p data-bind="css: {required: !$parent.transport() && wantsTransport}"><strong><?php _e('Transportation Pickup Location','arez'); ?></strong></p>
 									<span><?php _e('Showing the nearest pickup locations.','arez'); ?></span>
@@ -527,9 +489,6 @@ global $wb;
 										</div>
 									</li>
 								</ul>
-								<!-- /ko -->
-								<!-- ko if: $parents[1].transportMaster() && !master() -->
-								<p><?php _e('Transport option for this guest has already been set to the default from another guest.','arez'); ?></p>
 								<!-- /ko -->
 							</div>
 							<!-- /ko -->

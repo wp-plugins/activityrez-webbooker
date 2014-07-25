@@ -23,7 +23,7 @@
 		<div id="activity-prices" class="section" data-bind="foreach: guests">
 			<div class="price-type">
 				<div class="clearfix">
-					<strong data-bind="text: name"></strong> &nbsp; <span data-bind="money: price"></span>
+					<strong data-bind="html: name"></strong> &nbsp; <span data-bind="money: price"></span>
 					<div class="price-action">
 						<input type="text" class="input-mini qty" disabled="disabled" data-bind="value: qty" />
 						<div class="btn-group shift-qty">
@@ -32,7 +32,8 @@
 						</div>
 					</div>
 				</div>
-				<div class="commissions clearfix" data-bind="visible: r2">
+				<!--ko if: r2-->
+				<div class="commissions clearfix">
 					<!--ko if: !WebBooker.isOldIE -->
 					<ul class="commission clearfix" data-bind="visible: r2, attr:{title: r2 + '%' }">
 						<!-- ko if: r2 > 0 -->
@@ -54,11 +55,12 @@
 					<!-- /ko -->
 					<!--ko if: WebBooker.isOldIE -->
 						<div class="commValue" data-bind="visible: r2 > 0, attr: { title: r2 + '%' }">
-							<span data-bind="html: ((r2/100) * display_price).toFixed(2)"></span>
+							<span data-bind="html: ((r2/100) * price()).toFixed(2)"></span>
 						</div>
 					<!-- /ko -->
 					<span class="no-commission" data-bind="visible: !r2"><?php _e('No commission found.','arez'); ?></span>
 				</div>
+				<!--/ko-->
 			</div>
 		</div><!-- /activity-prices -->
 		<!-- /ko -->

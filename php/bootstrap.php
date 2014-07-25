@@ -9,6 +9,6 @@
 
 define( 'PLUGIN_DIR_URL', plugin_dir_url( dirname( __FILE__ ) ) );
 
-include_once( 'header-webbooker.php' );
-include_once( 'main-webbooker.php' );
-include_once( 'footer-webbooker.php' );
+arez_include( 'header-webbooker.php' );
+arez_include( 'main-webbooker.php' );
+arez_include( 'footer-webbooker.php' );

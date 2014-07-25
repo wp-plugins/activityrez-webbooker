@@ -107,7 +107,7 @@ global $wb;
 				<!-- ko foreach: guests -->
 				<div class="guest clearfix">
 					<div class="padding">
-						<strong><span data-bind="text: name"></span>:</strong> <span data-bind="text: qty"></span>
+						<strong><span data-bind="html: name"></span>:</strong> <span data-bind="text: qty"></span>
 					</div>
 				</div>
 				<!-- /ko -->
@@ -120,7 +120,7 @@ global $wb;
 				<!-- ko if: transportation.length > 0 -->
 				<br><br><strong><?php _e('Transportation Pickup','arez'); ?></strong><br><br>
 				<div class="transportation" data-bind="foreach: transportation">
-					<p><span data-bind="text: name"></span></p>
+					<p><span data-bind="html: name"></span></p>
 					<span data-bind="html: instructions"></span><br><br>
 				</div>
 				<!-- /ko -->

@@ -61,6 +61,10 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 
 # Changelog #
 
+# 2.4.1 #
+* Bug fixes
+* Resellers can now set display prices
+
 # 2.4.0 #
 * Fixed IE8 issues
 * Enhancements to Travel Agent Dashboard

@@ -37,7 +37,7 @@ global $wb;
 					<?php _e('Loading activities...','arez'); ?>
 				</div>
 			</div>
-			<div class="results" data-bind="foreach: searchResults, visible: WebBooker.Catalog.searchResults().length > 0">
+			<div class="results clearfix" data-bind="foreach: searchResults, visible: WebBooker.Catalog.searchResults().length > 0">
 				<div class="activity" data-bind="click: link">
 					<div class="clearfix">
 					<div class="price">

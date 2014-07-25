@@ -2732,13 +2732,36 @@ WebBooker.About = {
 // postMessage for iFrame 
 WebBooker.postMessage = function(message) {
 	if(WebBooker.bootstrap.parent_url) {
-		
-		//if(parent.hasOwnProperty('postMessage')){
 		if(typeof window.parent !== 'undefined' && typeof window.parent.postMessage == 'function'){
 			window.parent.postMessage(message, WebBooker.bootstrap.parent_url);
 		}
 	}
 };
+
+jQuery.fn.typeahead.Constructor.prototype.show = function () {
+	var pos = $.extend({}, this.$element.offset(), {
+		height: this.$element[0].offsetHeight
+	}),
+	menu = this.$menu,
+	elem = this.$element;
+	menu.show(function(){
+		menu.insertAfter(elem);
+		if(pos.top + pos.height + menu.outerHeight() > window.outerHeight && pos.top - menu.outerHeight() > $(window).scrollTop()){
+			menu.css({
+	          top: 0 - menu[0].offsetHeight + 25
+	        , left: 0
+	        })	
+		}else{
+			menu.css({
+	          top: pos.height
+	        , left: 0
+	        })
+		}
+		
+	});
+	this.shown = true;
+	return this;
+}
 
 // Binding Handlers
 ko.bindingHandlers.collapseSidebarBox = {
@@ -2763,8 +2786,10 @@ ko.bindingHandlers.collapseSidebarBox = {
 
 ko.bindingHandlers.hotelTypeahead = {
 	init: function(element, valueAccessor) {
-		var option = valueAccessor()['value'];
-		var saved_query = '';
+		var option = valueAccessor()['value'],
+			saved_query = '',
+			elem = $(element),
+			no_results;
 		if(WebBooker.bootstrap.agencyID == 1260) return false;
 		jQuery(element).typeahead({
 			source: function(query,process) {
@@ -2786,6 +2811,7 @@ ko.bindingHandlers.hotelTypeahead = {
 					var names = [];
 					var mappedObjs = jQuery.map(data.items,
 						function(item) {
+							item.name = item.name.trim();
 							var n = item.name + ' - ';
 							if ( item.hotel_st ) n = n + item.hotel_st + ', ';
 							n += item.hotel_country;
@@ -2795,9 +2821,14 @@ ko.bindingHandlers.hotelTypeahead = {
 					);
 					if (data.items.length) {
 						WebBooker.Checkout.hotels(mappedObjs);
+						no_results = false;
 						process(names);
 					} else {
-						process(['No results found. Please use a local address.']);
+						no_results = true;
+						process([]);
+						$(elem).after('<ul class="typeahead dropdown-menu no-results" style="top: 55px; left: 0px; display: block">' +
+								           '<li class="active"><a href="#">No Results Found</a></li>' +
+									   '</ul>');
 					}
 				});
 			},
@@ -2818,6 +2849,19 @@ ko.bindingHandlers.hotelTypeahead = {
 				// we return true because the ajax livesearch handles the matching.
 				return true;
 			}
+		});
+		
+		elem.keydown(function(e){
+			if(e.keyCode == '13' && no_results){
+				e.preventDefault();
+				return;
+			}
+			
+			$('.typeahead.dropdown-menu.no-results').remove();
+		});
+		
+		elem.on('blur',function(){
+			$('.typeahead.dropdown-menu.no-results').remove();
 		});
 	},
 	update: function(element, valueAccessor) {
@@ -3462,14 +3506,13 @@ $ar.Taxonomy = function(data){
 	return that;
 };
 $ar.Geocoder = (function() {
-	var google = google || {};
-	if(google && google.maps){
-		var that = {
-			geocoder: new google.maps.Geocoder()
-		};
+	var that = {
+		geocoder: function() {
+			return new google.maps.Geocoder();
+		},
 	
-		that.geocode = function(object, callback) {
-			that.geocoder.geocode(
+		geocode: function(object, callback) {
+			that.geocoder().geocode(
 				object,
 				function(results, status) {
 					if(status == google.maps.GeocoderStatus.OK) {
@@ -3480,10 +3523,9 @@ $ar.Geocoder = (function() {
 					}
 				}
 			);
-		};
-	
-		return that;
-	}
+		}
+	};
+	return that;
 })();
 jQuery(document).ready(function(){
 	setTimeout(function(){
@@ -3570,6 +3612,7 @@ WebBooker.API = {
 				moods.push(WebBooker.Catalog.search_params.moods()[i].name());
 
 		WebBooker.API.request('lookup','activities',{
+			i18n: WebBooker.bootstrap['i18n'],
 			des: (destination) ? destination.name : '',
 			s: (keywords) ? keywords : '',
 			tag: (tag) ? tag : '',
@@ -3604,6 +3647,7 @@ WebBooker.API = {
 	
 	getFeaturedActivities: function (dest, callback) {
 		WebBooker.API.request('lookup','activities',{
+			i18n: WebBooker.bootstrap['i18n'],
 			des: dest,
 			featured: true,
 			count: 100,
@@ -3813,7 +3857,8 @@ WebBooker.API = {
 		WebBooker.API.raw(WebBooker.bootstrap.api_url,{
 			nonce: WebBooker.bootstrap.nonce,
 			service: 'validateDiscount',
-			code: promo_code
+			code: promo_code,
+			pos: WebBooker.bootstrap.webBookerID
 		},callback);
 	},
 
@@ -3829,6 +3874,7 @@ WebBooker.API = {
 		WebBooker.API.request('arezReporting','getMyCommissions',{
 			startDate: params.startDate,
 			endDate: params.endDate,
+			tz: params.tz,
 			wb: true
 		},function(data){
 			if(data.status == 1 && typeof callback == 'function'){
@@ -4819,10 +4865,11 @@ WebBooker.MiniCart = (function(){
 	};
 	self.checkInventory = function() {
 		var date = self.date(),
-		time = self.time()=='Open'?'':self.time();
+			time = self.time()=='Open'?'':self.time(),
+			saved_time = self.time();
 
 		self.checkingInventory(true);
-		if(!self.time()){
+		if(!saved_time){
 			jQuery('#activity-availability > span').effect('pulsate', {times: 2}, 500);
 			self.checkingInventory(false);
 			return;
@@ -4830,8 +4877,9 @@ WebBooker.MiniCart = (function(){
 
 		WebBooker.API.checkAvailability({
 			id: self.activity().id,
-			datetime: createTimestamp(new Date(self.date() + ' ' + (self.time()=='Open'?'':self.time())))
+			datetime: createTimestamp(new Date(self.date() + ' ' + time))
 		}, function(data){
+			self.time(saved_time);
 			self.checkingInventory(false);
 			
 			if(data.status > 0){
@@ -4849,7 +4897,7 @@ WebBooker.MiniCart = (function(){
 
 			self.cartItem(null);
 			var i = WebBooker.Cart.items(), ni,
-				bookDate = ( new Date( self.date() + ' ' + ( self.time() == 'Open' ? '' : self.time() ) ) ).getTime(),
+				bookDate = ( new Date( self.date() + ' ' + time ) ).getTime(),
 				today = ( new Date() ).getTime(),
 				time_diff = bookDate - today,
 				cutoff,
@@ -5163,7 +5211,6 @@ WebBooker.MiniCart = (function(){
 		self.times([]);
 
 		if(!newValue) return;
-
 		
 		var day = new Date(newValue),
 			date = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][day.getDay()],
@@ -5186,18 +5233,28 @@ WebBooker.MiniCart = (function(){
 				if(self.times.indexOf(time.startTime)>=0){
 					continue;
 				}
-				if ( date_diff == 0 && today.getTime() >= ( new Date( newValue + ' ' + time.startTime ).getTime() ) ) {
+				if ( date_diff == 0 && today.getTime() >= ( new Date( newValue + ' ' + (time.startTime === 'Open' ? '' : time.startTime) ).getTime() ) ) {
 					continue;
 				}
 				self.times.push(time.startTime);
 			}
-			if(self.times().length === 1)
+			if(self.times().length === 1) {
 				self.time(self.times()[0]);
+			}
 			break;
 		}
 		self.times.sort( function( a, b ) {
 			return new Date('1970/01/01 ' + a) - new Date('1970/01/01 ' + b);
 		} );
+		// sort "Open"
+		var o = -1
+		for( ni=0; ni < self.times().length; ni++ ) {
+			if( jQuery.trim(self.times()[ni]) == 'Open' ) o = ni;
+		}
+		if( o >= 0 ) {
+			var _times = self.times.splice( o, 1 );
+			self.times.unshift(_times[0]);
+		}
 	});
 	self.time.subscribe(function(newValue){
 		if(newValue){
@@ -5624,7 +5681,10 @@ $ar.CheckoutItemModel = function(data){
 	});
 	that.transportation = ko.observableArray(that.transportation||[]);
 	that.transportation.subscribe(function(nval){
-		var no, out = [], outtix = [];
+		var no, ni, out = [], outtix = [], tickets = that.tickets();
+		if ( that.transport() ) {
+			return false;
+		}
 		for(no = 0; no < nval.length; no++){
 			// don't add transp options that are outside the date range
 			var date_start = (nval[no].start && nval[no].start != '0000/00/00 00:00:00') ? (new Date(nval[no].start)).getTime() : false,
@@ -5646,11 +5706,16 @@ $ar.CheckoutItemModel = function(data){
 			}
 			
 			out.push($ar.TransportationModel(nval[no].json()));
-			outtix.push($ar.TransportationModel(nval[no].json()));
+			outtix.push(nval[no].json());
 		}
 		that.transportView.transportation( out );
-		for ( no = 0; no < that.tickets().length; no += 1 ) {
-			that.tickets()[no].transportView.transportation( outtix );
+		for ( no = 0; no < tickets.length; no += 1 ) {
+			if ( tickets[no].transport() ) {
+				continue;
+			}
+			for ( ni = 0; ni < outtix.length; ni += 1 ) {
+				tickets[no].transportView.transportation.push( $ar.TransportationModel( outtix[ni] ) );
+			}
 		}
 	});
 	that.transportView = $ar.TransportView();
@@ -5794,9 +5859,18 @@ $ar.CheckoutItemModel = function(data){
 	};
 
 	that.removeGuest = function(poo){
+		var ni, guests;
 		that.tickets.remove(poo);
-		if(!that.tickets().length)
+		if(!that.tickets().length) {
 			that.remove();
+		} else if( that.cartItem ) {
+			guests = that.cartItem.guests();
+			for ( ni = 0; ni < guests.length; ni += 1 ) {
+				if ( guests[ni].id === poo.id ) {
+					guests[ni].qty( guests[ni].qty() - 1 );
+				}
+			}
+		}
 	};
 
 	that.ticketTotal = ko.computed(function(){
@@ -5834,21 +5908,21 @@ $ar.CheckoutItemModel = function(data){
 			ni;
 		for(ni = 0; ni < tix.length; ni++){
 			if(!tix[ni].transportView.wantsTransport()) continue;
-			if(that.transportMaster() && that.transportMaster().transport()){
+			/*if(that.transportMaster() && that.transportMaster().transport()){
 				if ( that.transportMaster().transportView.hotel() ) {
 					WebBooker.Checkout.sale.leadGuest.hotel( $ar.HotelModel(that.transportMaster().transportView.hotel().json()) );
 					WebBooker.Checkout.sale.leadGuest.room( that.transportMaster().transportView.room() );
 				}
 				sub += that.transportMaster().transport().amount;
 				continue;
-			}
+			}*/
 			if(tix[ni].transport() && tix[ni].transport().amount) {
 				sub += tix[ni].transport().amount;
 			}
-			if ( !that.transportMaster() && tix[ni].transport() && tix[ni].transportView.hotel() ) {
+			/*if ( !that.transportMaster() && tix[ni].transport() && tix[ni].transportView.hotel() ) {
 				WebBooker.Checkout.sale.leadGuest.hotel( $ar.HotelModel(tix[ni].transportView.hotel().json()) );
 				WebBooker.Checkout.sale.leadGuest.room( tix[ni].transportView.room() );
-			}
+			}*/
 		}
 		return sub;
 	}).extend({ throttle: 10 });
@@ -5862,7 +5936,7 @@ $ar.CheckoutItemModel = function(data){
 		var tix = that.tickets()||[],
 			fees = that.fees()||[],
 			toAll = that.copyToAll()&&tix[0]?tix[0].options():false,
-			masterTran = that.transportMaster() && that.transportMaster().transport()?that.transportMaster().transport().amount:false,
+			//masterTran = that.transportMaster() && that.transportMaster().transport()?that.transportMaster().transport().amount:false,
 			dis = discount||{ rate: 0, amount: 0 },
 			taxRate = WebBooker.bootstrap.taxRate,
 			sub = 0,
@@ -5884,9 +5958,10 @@ $ar.CheckoutItemModel = function(data){
 			}
 
 			if(tix[ni].transportView.wantsTransport()){
-				if(masterTran){
-					tix_sub += masterTran;
-				} else if(tix[ni].transport() && tix[ni].transport().amount){
+				//if(masterTran){
+				//	tix_sub += masterTran;
+				//} else 
+				if(tix[ni].transport() && tix[ni].transport().amount){
 					tix_sub += tix[ni].transport().amount;
 				}
 			}
@@ -5973,7 +6048,7 @@ $ar.CheckoutItemModel = function(data){
 				crit[ni] = $ar.OptionModel(crit[ni]);
 			}
 			that.options(crit);
-
+			
 			var transport = result.transport||[];
 			for(ni=0;ni<transport.length;ni++){
 				transport[ni] = $ar.TransportationModel(transport[ni]);
@@ -5996,11 +6071,11 @@ $ar.CheckoutItemModel = function(data){
 			tix_num = 0,
 			ni;
 
-		if(that.transportMaster() && that.transportMaster().transport()){
-			for(ni = 0; ni < tix.length; ni++){
-				tix[ni].transport($ar.TransportationModel(that.transportMaster().transport().json()));
-			}
-		}
+		//if(that.transportMaster() && that.transportMaster().transport()){
+		//	for(ni = 0; ni < tix.length; ni++){
+		//		tix[ni].transport($ar.TransportationModel(that.transportMaster().transport().json()));
+		//	}
+		//}
 		var parse_tix = function(result){
 			if(!--tix_num && typeof _callback == 'function'){
 				_callback();
@@ -6023,7 +6098,7 @@ $ar.CheckoutItemModel = function(data){
 			tix[ni].transportView.wantsTransport(true);
 			tix[ni].transportView.selectedTransType(item.selectedTransType());
 			tix[ni].transportView.locationSelect(item.locationSelect());
-			tix[ni].transport(that.transport());
+			tix[ni].transport( $ar.TransportationModel( that.transport().json() ) );
 			if(item.locationSelect() == 'hotel' && item.hotel()) {
 				tix[ni].transportView.hotel($ar.HotelModel(item.hotel().json()));
 				tix[ni].transportView.room(item.room());
@@ -6036,28 +6111,28 @@ $ar.CheckoutItemModel = function(data){
 				tix[ni].transportView.home.postal(item.home.postal());
 				tix[ni].transportView.home.country(item.home.country());
 			}
-			if(tix[ni].transportView == item){
-				that.transportMaster(!!!tix[ni].transportView.master()?tix[ni]:null);
-				tix[ni].transportView.master(!!!tix[ni].transportView.master());
-				continue;
-			}
-			tix[ni].transportView.master(false);
+			//if(tix[ni].transportView == item){
+			//	that.transportMaster(!!!tix[ni].transportView.master()?tix[ni]:null);
+			//	tix[ni].transportView.master(!!!tix[ni].transportView.master());
+			//	continue;
+			//}
+			//tix[ni].transportView.master(false);
 			for ( var no = 0; no < tix[ni].transportView.transportation().length; no += 1 ) {
 				var transp = tix[ni].transportView.transportation()[no];
 				if ( transp.name == that.transport().name ) {
-					tix[ni].transportView.transportation()[no].selected(true);
+					transp.selected(true);
 				} else {
-					tix[ni].transportView.transportation()[no].selected(false);
+					transp.selected(false);
 				}
 			}
 		}
 	};
 	that.undoTransportMaster = function() {
 		var tix = that.tickets(), ni;
-		that.transportMaster(false);
+		//that.transportMaster(false);
 		for ( ni = 0; ni < tix.length; ni += 1 ) {
 			tix[ni].transport(null);
-			tix[ni].transportView.master(false);
+			//tix[ni].transportView.master(false);
 			tix[ni].transportView.selectTransport('empty');
 			tix[ni].transportView.wantsTransport(false);
 			tix[ni].transportView.selectedTransType(null);
@@ -6075,10 +6150,10 @@ $ar.CheckoutItemModel = function(data){
 	};
 	that.makeTransportsFalse = function() {
 		var tix = that.tickets(), ni;
-		that.transportMaster(false);
+		//that.transportMaster(false);
 		for ( ni = 0; ni < tix.length; ni += 1 ) {
 			tix[ni].transport(null);
-			tix[ni].transportView.master(false);
+			//tix[ni].transportView.master(false);
 			tix[ni].transportView.selectTransport('false');
 			tix[ni].transportView.wantsTransport(false);
 		}
@@ -6160,48 +6235,9 @@ $ar.TransportView = function(data){
 		stored_lng: null,
 		showMoreTransports: false,
 		map: null,
-		marker: null,
-		previous_address: null,
 		row_id: null,
 		map_container: null
 	});
-
-	var getLat = function(nval){
-		if(!self.home.address() || !self.home.city() || !self.home.state() || !self.home.postal() || !self.home.country()) return;
-		var address = self.home.address() + ' ' + self.home.city() + ' ' + self.home.state() + ' ' + self.home.postal() + ' ' + self.home.country()['alpha-2'];
-
-		// do we have a map yet?
-		if(!self.map) {
-			self.drawMap();
-			getLat(nval);
-			return false;
-		}
-
-		// did they enter this address before?
-		if(self.previous_address && self.previous_address === address) {
-			return false;
-		}
-		self.previous_address = address;
-
-		if(self.marker) {
-			self.marker.setMap(null);
-		}
-
-		$ar.Geocoder.geocode({ address: address }, function(results) {
-			var loc = results[0].geometry.location;
-			self.marker = new google.maps.Marker({
-				map: self.map,
-				position: loc,
-				draggable: false,
-				animation: google.maps.Animation.DROP
-			});
-			self.map.setCenter(loc);
-			self.stored_lat(loc.lat());
-			self.stored_lng(loc.lng());
-			self.map_container.style.display = 'block';
-			google.maps.event.trigger(self.map, 'resize');
-		});
-	};
 
 	self.drawMap = function() {
 		if(!self.map_container)
@@ -6220,13 +6256,31 @@ $ar.TransportView = function(data){
 	};
 
 	self.doGeocode = function() {
-		if(!self.map) {
-			self.drawMap();
-			self.doGeocode();
-			return false;
+		if(!self.home.address() || !self.home.city() || !self.home.state() || !self.home.postal() || !self.home.country()) return;
+		var address = self.home.address() + ' ' + self.home.city() + ' ' + self.home.state() + ' ' + self.home.postal() + ' ' + self.home.country()['alpha-2'];
+		if(!self.map_container) {
+			self.map_container = document.getElementById(self.row_id).getElementsByClassName('map-canvas')[0];
 		}
 
-		getLat();
+		$ar.Geocoder.geocode({ address: address }, function(results) {
+			var loc = results[0].geometry.location;
+			self.stored_lat(loc.lat());
+			self.stored_lng(loc.lng());
+			self.map_container.style.display = 'block';
+			self.map = new google.maps.Map(self.map_container, {
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+				maxZoom: 22,
+				scrollwheel: false,
+				zoom: 18,
+				center: new google.maps.LatLng(loc.lat(), loc.lng())
+			});
+			new google.maps.Marker({
+				map: self.map,
+				position: loc,
+				draggable: false,
+				animation: google.maps.Animation.DROP
+			});
+		});
 	};
 
 	self.acceptGeocode = function() {
@@ -6235,6 +6289,7 @@ $ar.TransportView = function(data){
 		self.stored_lat(null);
 		self.stored_lng(null);
 		self.map_container.style.display = 'none';
+		self.map = null;
 	};
 
 	self._json_callback = function(beans){
@@ -7632,9 +7687,13 @@ WebBooker.Checkout = (function(){
 	};
 	self.setAgreement = function() {
 		self.termsAccepted(true);
+		$('#reseller-agreement').modal('hide');
+		return false;
 	};
 	self.unsetAgreement = function() {
 		self.termsAccepted(false);
+		$('#reseller-agreement').modal('hide');
+		return false;
 	};
 
 	self.getDiscount = function(){
@@ -7800,38 +7859,31 @@ WebBooker.Dashboard = {
 		var d = new Date(),
 			startDate = new Date(WebBooker.Dashboard.agentCommissionsStartDate()),
 			endDate = new Date(WebBooker.Dashboard.agentCommissionsEndDate());
-			
-		startDate.setHours(0 - d.getTimezoneOffset() / 60);
-		endDate.setHours(23 - d.getTimezoneOffset() / 60);
 
-		startDate.setMinutes(0);
-		endDate.setMinutes(59);
-
-		startDate.setSeconds(0);
-		endDate.setSeconds(59);
-
+		//adjust endDate for end of day
+		endDate.setHours(23,59,59);
+		
 		WebBooker.Dashboard.agentCommissionsData(null);
 		WebBooker.Dashboard.agentCommissionsReport(null);
 		WebBooker.Dashboard.agentCommissionsTotal(0);
 
 		WebBooker.API.getAgentCommissions({
 			startDate: createTimestamp(startDate),
-			endDate: createTimestamp(endDate)
+			endDate: createTimestamp(endDate), 
+			tz: d.getTimezoneOffset()
 		}, function(results) {
 			var dataset = [],
 				obj = {},
 				_date, ni;
 
 			for ( ni = 0; ni < results.data.length; ni += 1 ) { //sum all the commissions on the same date for the chart
-				tmpDate = new Date( (parseInt(results.data[ni].date,10) + ( (new Date()).getTimezoneOffset() * 60 ) )  * 1000);
-
-				results.data[ni].date = ((tmpDate.getMonth()+1)<10?'0'+(tmpDate.getMonth()+1):(tmpDate.getMonth()+1)) + '/' + (tmpDate.getDate()<10?'0'+tmpDate.getDate():tmpDate.getDate()) + '/' + tmpDate.getFullYear();
-
-
-				if(!obj.hasOwnProperty(results.data[ni].date))
+				b = new Date((parseInt(results.data[ni].date,10) ) * 1000);
+				tmpDate = new Date((parseInt(results.data[ni].date,10) + (new Date()).getTimezoneOffset() * 60) * 1000);
+				results.data[ni].date = ((tmpDate.getMonth()+1)<10?'0'+(tmpDate.getMonth()+1):(tmpDate.getMonth()+1)) + '/' +(tmpDate.getDate()<10?'0'+tmpDate.getDate():tmpDate.getDate()) + '/' + tmpDate.getFullYear();
+				if(!obj.hasOwnProperty(results.data[ni].date)){
 					obj[results.data[ni].date] = 0;
-
-				obj[results.data[ni].date] += betterRounding( results.data[ni].amount );
+				}
+				obj[results.data[ni].date] += parseFloat(results.data[ni].amount);
 			}
 			
 			var someDate = new Date(WebBooker.Dashboard.agentCommissionsStartDate());
@@ -7881,6 +7933,11 @@ WebBooker.Dashboard = {
 		var data = WebBooker.Dashboard.agentCommissionsData();
 		if(!data) return false;
 
+		Highcharts.setOptions({
+			global: {
+				useUTC: false 
+			}
+		});
 		var chart = new Highcharts.Chart({
 			chart: {
 				renderTo: 'dash-commissions-chart',
@@ -7912,6 +7969,7 @@ WebBooker.Dashboard = {
 			}
 		});
 		chart.addSeries(data);
+
 		WebBooker.Dashboard.agentCommissionsChart(chart);
 	},
 
@@ -7943,10 +8001,10 @@ WebBooker.Dashboard = {
 		else
 			POSApp.Dashboard.Charts.commissionMonthName('');*/
 		
-		endDate.setHours(endDate.getHours()- d.getTimezoneOffset() / 60);
-		startDate.setHours(startDate.getHours()- d.getTimezoneOffset() / 60);
+		endDate.setHours(endDate.getHours()+ d.getTimezoneOffset() / 60);
+		startDate.setHours(startDate.getHours()+ d.getTimezoneOffset() / 60);
 			
-		var csvURL = WebBooker.bootstrap.api_url+'?nonce='+WebBooker.bootstrap.nonce+'&service=arezReporting&action=getMyCommissions&data[startDate]='+createTimestamp(startDate)+'&data[endDate]='+createTimestamp(endDate)+'&data[csv]=1&data[wb]=true&consumer-key=posapp';
+		var csvURL = WebBooker.bootstrap.api_url+'?nonce='+WebBooker.bootstrap.nonce+'&service=arezReporting&action=getMyCommissions&data[startDate]='+createTimestamp(startDate)+'&data[endDate]='+createTimestamp(endDate)+'&data[csv]=1&data[tz]='+(d.getTimezoneOffset())+'&data[wb]=true&consumer-key=posapp';
 		window.open(csvURL,'_blank');
 		
 	}
@@ -8181,9 +8239,18 @@ if(window.addEventListener) {
 }
 
 jQuery(document).ready(function(){
-	ko.applyBindings(WebBooker, jQuery('#multi-everything')[0]);
-	ko.applyBindings(WebBooker, jQuery('#webbooker-sidebar')[0]);
-	ko.applyBindings(WebBooker, jQuery('#webbooker-main')[0]);//don't bind the same object to different places in ie8
+	if(jQuery('#multi-everything').length){
+		ko.applyBindings(WebBooker, jQuery('#multi-everything')[0]);
+	}
+	if(jQuery('#webbooker-sidebar').length){
+		ko.applyBindings(WebBooker, jQuery('#webbooker-sidebar')[0]);
+	}
+	if(jQuery('#webbooker-modals').length){
+		ko.applyBindings(WebBooker, jQuery('#webbooker-modals')[0]);
+	}
+	if(jQuery('#webbooker-main').length){
+		ko.applyBindings(WebBooker, jQuery('#webbooker-main')[0]);//don't bind the same object to different places in ie8
+	}
 
 	WebBooker.init();
 	WebBooker.wbLoaded(true);

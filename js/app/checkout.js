@@ -161,7 +161,10 @@ $ar.CheckoutItemModel = function(data){
 	});
 	that.transportation = ko.observableArray(that.transportation||[]);
 	that.transportation.subscribe(function(nval){
-		var no, out = [], outtix = [];
+		var no, ni, out = [], outtix = [], tickets = that.tickets();
+		if ( that.transport() ) {
+			return false;
+		}
 		for(no = 0; no < nval.length; no++){
 			// don't add transp options that are outside the date range
 			var date_start = (nval[no].start && nval[no].start != '0000/00/00 00:00:00') ? (new Date(nval[no].start)).getTime() : false,
@@ -183,11 +186,16 @@ $ar.CheckoutItemModel = function(data){
 			}
 			
 			out.push($ar.TransportationModel(nval[no].json()));
-			outtix.push($ar.TransportationModel(nval[no].json()));
+			outtix.push(nval[no].json());
 		}
 		that.transportView.transportation( out );
-		for ( no = 0; no < that.tickets().length; no += 1 ) {
-			that.tickets()[no].transportView.transportation( outtix );
+		for ( no = 0; no < tickets.length; no += 1 ) {
+			if ( tickets[no].transport() ) {
+				continue;
+			}
+			for ( ni = 0; ni < outtix.length; ni += 1 ) {
+				tickets[no].transportView.transportation.push( $ar.TransportationModel( outtix[ni] ) );
+			}
 		}
 	});
 	that.transportView = $ar.TransportView();
@@ -331,9 +339,18 @@ $ar.CheckoutItemModel = function(data){
 	};
 
 	that.removeGuest = function(poo){
+		var ni, guests;
 		that.tickets.remove(poo);
-		if(!that.tickets().length)
+		if(!that.tickets().length) {
 			that.remove();
+		} else if( that.cartItem ) {
+			guests = that.cartItem.guests();
+			for ( ni = 0; ni < guests.length; ni += 1 ) {
+				if ( guests[ni].id === poo.id ) {
+					guests[ni].qty( guests[ni].qty() - 1 );
+				}
+			}
+		}
 	};
 
 	that.ticketTotal = ko.computed(function(){
@@ -371,21 +388,21 @@ $ar.CheckoutItemModel = function(data){
 			ni;
 		for(ni = 0; ni < tix.length; ni++){
 			if(!tix[ni].transportView.wantsTransport()) continue;
-			if(that.transportMaster() && that.transportMaster().transport()){
+			/*if(that.transportMaster() && that.transportMaster().transport()){
 				if ( that.transportMaster().transportView.hotel() ) {
 					WebBooker.Checkout.sale.leadGuest.hotel( $ar.HotelModel(that.transportMaster().transportView.hotel().json()) );
 					WebBooker.Checkout.sale.leadGuest.room( that.transportMaster().transportView.room() );
 				}
 				sub += that.transportMaster().transport().amount;
 				continue;
-			}
+			}*/
 			if(tix[ni].transport() && tix[ni].transport().amount) {
 				sub += tix[ni].transport().amount;
 			}
-			if ( !that.transportMaster() && tix[ni].transport() && tix[ni].transportView.hotel() ) {
+			/*if ( !that.transportMaster() && tix[ni].transport() && tix[ni].transportView.hotel() ) {
 				WebBooker.Checkout.sale.leadGuest.hotel( $ar.HotelModel(tix[ni].transportView.hotel().json()) );
 				WebBooker.Checkout.sale.leadGuest.room( tix[ni].transportView.room() );
-			}
+			}*/
 		}
 		return sub;
 	}).extend({ throttle: 10 });
@@ -399,7 +416,7 @@ $ar.CheckoutItemModel = function(data){
 		var tix = that.tickets()||[],
 			fees = that.fees()||[],
 			toAll = that.copyToAll()&&tix[0]?tix[0].options():false,
-			masterTran = that.transportMaster() && that.transportMaster().transport()?that.transportMaster().transport().amount:false,
+			//masterTran = that.transportMaster() && that.transportMaster().transport()?that.transportMaster().transport().amount:false,
 			dis = discount||{ rate: 0, amount: 0 },
 			taxRate = WebBooker.bootstrap.taxRate,
 			sub = 0,
@@ -421,9 +438,10 @@ $ar.CheckoutItemModel = function(data){
 			}
 
 			if(tix[ni].transportView.wantsTransport()){
-				if(masterTran){
-					tix_sub += masterTran;
-				} else if(tix[ni].transport() && tix[ni].transport().amount){
+				//if(masterTran){
+				//	tix_sub += masterTran;
+				//} else 
+				if(tix[ni].transport() && tix[ni].transport().amount){
 					tix_sub += tix[ni].transport().amount;
 				}
 			}
@@ -510,7 +528,7 @@ $ar.CheckoutItemModel = function(data){
 				crit[ni] = $ar.OptionModel(crit[ni]);
 			}
 			that.options(crit);
-
+			
 			var transport = result.transport||[];
 			for(ni=0;ni<transport.length;ni++){
 				transport[ni] = $ar.TransportationModel(transport[ni]);
@@ -533,11 +551,11 @@ $ar.CheckoutItemModel = function(data){
 			tix_num = 0,
 			ni;
 
-		if(that.transportMaster() && that.transportMaster().transport()){
-			for(ni = 0; ni < tix.length; ni++){
-				tix[ni].transport($ar.TransportationModel(that.transportMaster().transport().json()));
-			}
-		}
+		//if(that.transportMaster() && that.transportMaster().transport()){
+		//	for(ni = 0; ni < tix.length; ni++){
+		//		tix[ni].transport($ar.TransportationModel(that.transportMaster().transport().json()));
+		//	}
+		//}
 		var parse_tix = function(result){
 			if(!--tix_num && typeof _callback == 'function'){
 				_callback();
@@ -560,7 +578,7 @@ $ar.CheckoutItemModel = function(data){
 			tix[ni].transportView.wantsTransport(true);
 			tix[ni].transportView.selectedTransType(item.selectedTransType());
 			tix[ni].transportView.locationSelect(item.locationSelect());
-			tix[ni].transport(that.transport());
+			tix[ni].transport( $ar.TransportationModel( that.transport().json() ) );
 			if(item.locationSelect() == 'hotel' && item.hotel()) {
 				tix[ni].transportView.hotel($ar.HotelModel(item.hotel().json()));
 				tix[ni].transportView.room(item.room());
@@ -573,28 +591,28 @@ $ar.CheckoutItemModel = function(data){
 				tix[ni].transportView.home.postal(item.home.postal());
 				tix[ni].transportView.home.country(item.home.country());
 			}
-			if(tix[ni].transportView == item){
-				that.transportMaster(!!!tix[ni].transportView.master()?tix[ni]:null);
-				tix[ni].transportView.master(!!!tix[ni].transportView.master());
-				continue;
-			}
-			tix[ni].transportView.master(false);
+			//if(tix[ni].transportView == item){
+			//	that.transportMaster(!!!tix[ni].transportView.master()?tix[ni]:null);
+			//	tix[ni].transportView.master(!!!tix[ni].transportView.master());
+			//	continue;
+			//}
+			//tix[ni].transportView.master(false);
 			for ( var no = 0; no < tix[ni].transportView.transportation().length; no += 1 ) {
 				var transp = tix[ni].transportView.transportation()[no];
 				if ( transp.name == that.transport().name ) {
-					tix[ni].transportView.transportation()[no].selected(true);
+					transp.selected(true);
 				} else {
-					tix[ni].transportView.transportation()[no].selected(false);
+					transp.selected(false);
 				}
 			}
 		}
 	};
 	that.undoTransportMaster = function() {
 		var tix = that.tickets(), ni;
-		that.transportMaster(false);
+		//that.transportMaster(false);
 		for ( ni = 0; ni < tix.length; ni += 1 ) {
 			tix[ni].transport(null);
-			tix[ni].transportView.master(false);
+			//tix[ni].transportView.master(false);
 			tix[ni].transportView.selectTransport('empty');
 			tix[ni].transportView.wantsTransport(false);
 			tix[ni].transportView.selectedTransType(null);
@@ -612,10 +630,10 @@ $ar.CheckoutItemModel = function(data){
 	};
 	that.makeTransportsFalse = function() {
 		var tix = that.tickets(), ni;
-		that.transportMaster(false);
+		//that.transportMaster(false);
 		for ( ni = 0; ni < tix.length; ni += 1 ) {
 			tix[ni].transport(null);
-			tix[ni].transportView.master(false);
+			//tix[ni].transportView.master(false);
 			tix[ni].transportView.selectTransport('false');
 			tix[ni].transportView.wantsTransport(false);
 		}
@@ -697,48 +715,9 @@ $ar.TransportView = function(data){
 		stored_lng: null,
 		showMoreTransports: false,
 		map: null,
-		marker: null,
-		previous_address: null,
 		row_id: null,
 		map_container: null
 	});
-
-	var getLat = function(nval){
-		if(!self.home.address() || !self.home.city() || !self.home.state() || !self.home.postal() || !self.home.country()) return;
-		var address = self.home.address() + ' ' + self.home.city() + ' ' + self.home.state() + ' ' + self.home.postal() + ' ' + self.home.country()['alpha-2'];
-
-		// do we have a map yet?
-		if(!self.map) {
-			self.drawMap();
-			getLat(nval);
-			return false;
-		}
-
-		// did they enter this address before?
-		if(self.previous_address && self.previous_address === address) {
-			return false;
-		}
-		self.previous_address = address;
-
-		if(self.marker) {
-			self.marker.setMap(null);
-		}
-
-		$ar.Geocoder.geocode({ address: address }, function(results) {
-			var loc = results[0].geometry.location;
-			self.marker = new google.maps.Marker({
-				map: self.map,
-				position: loc,
-				draggable: false,
-				animation: google.maps.Animation.DROP
-			});
-			self.map.setCenter(loc);
-			self.stored_lat(loc.lat());
-			self.stored_lng(loc.lng());
-			self.map_container.style.display = 'block';
-			google.maps.event.trigger(self.map, 'resize');
-		});
-	};
 
 	self.drawMap = function() {
 		if(!self.map_container)
@@ -757,13 +736,31 @@ $ar.TransportView = function(data){
 	};
 
 	self.doGeocode = function() {
-		if(!self.map) {
-			self.drawMap();
-			self.doGeocode();
-			return false;
+		if(!self.home.address() || !self.home.city() || !self.home.state() || !self.home.postal() || !self.home.country()) return;
+		var address = self.home.address() + ' ' + self.home.city() + ' ' + self.home.state() + ' ' + self.home.postal() + ' ' + self.home.country()['alpha-2'];
+		if(!self.map_container) {
+			self.map_container = document.getElementById(self.row_id).getElementsByClassName('map-canvas')[0];
 		}
 
-		getLat();
+		$ar.Geocoder.geocode({ address: address }, function(results) {
+			var loc = results[0].geometry.location;
+			self.stored_lat(loc.lat());
+			self.stored_lng(loc.lng());
+			self.map_container.style.display = 'block';
+			self.map = new google.maps.Map(self.map_container, {
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+				maxZoom: 22,
+				scrollwheel: false,
+				zoom: 18,
+				center: new google.maps.LatLng(loc.lat(), loc.lng())
+			});
+			new google.maps.Marker({
+				map: self.map,
+				position: loc,
+				draggable: false,
+				animation: google.maps.Animation.DROP
+			});
+		});
 	};
 
 	self.acceptGeocode = function() {
@@ -772,6 +769,7 @@ $ar.TransportView = function(data){
 		self.stored_lat(null);
 		self.stored_lng(null);
 		self.map_container.style.display = 'none';
+		self.map = null;
 	};
 
 	self._json_callback = function(beans){
@@ -2169,9 +2167,13 @@ WebBooker.Checkout = (function(){
 	};
 	self.setAgreement = function() {
 		self.termsAccepted(true);
+		$('#reseller-agreement').modal('hide');
+		return false;
 	};
 	self.unsetAgreement = function() {
 		self.termsAccepted(false);
+		$('#reseller-agreement').modal('hide');
+		return false;
 	};
 
 	self.getDiscount = function(){

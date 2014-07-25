@@ -167,10 +167,11 @@ WebBooker.MiniCart = (function(){
 	};
 	self.checkInventory = function() {
 		var date = self.date(),
-		time = self.time()=='Open'?'':self.time();
+			time = self.time()=='Open'?'':self.time(),
+			saved_time = self.time();
 
 		self.checkingInventory(true);
-		if(!self.time()){
+		if(!saved_time){
 			jQuery('#activity-availability > span').effect('pulsate', {times: 2}, 500);
 			self.checkingInventory(false);
 			return;
@@ -178,8 +179,9 @@ WebBooker.MiniCart = (function(){
 
 		WebBooker.API.checkAvailability({
 			id: self.activity().id,
-			datetime: createTimestamp(new Date(self.date() + ' ' + (self.time()=='Open'?'':self.time())))
+			datetime: createTimestamp(new Date(self.date() + ' ' + time))
 		}, function(data){
+			self.time(saved_time);
 			self.checkingInventory(false);
 			
 			if(data.status > 0){
@@ -197,7 +199,7 @@ WebBooker.MiniCart = (function(){
 
 			self.cartItem(null);
 			var i = WebBooker.Cart.items(), ni,
-				bookDate = ( new Date( self.date() + ' ' + ( self.time() == 'Open' ? '' : self.time() ) ) ).getTime(),
+				bookDate = ( new Date( self.date() + ' ' + time ) ).getTime(),
 				today = ( new Date() ).getTime(),
 				time_diff = bookDate - today,
 				cutoff,
@@ -511,7 +513,6 @@ WebBooker.MiniCart = (function(){
 		self.times([]);
 
 		if(!newValue) return;
-
 		
 		var day = new Date(newValue),
 			date = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][day.getDay()],
@@ -534,18 +535,28 @@ WebBooker.MiniCart = (function(){
 				if(self.times.indexOf(time.startTime)>=0){
 					continue;
 				}
-				if ( date_diff == 0 && today.getTime() >= ( new Date( newValue + ' ' + time.startTime ).getTime() ) ) {
+				if ( date_diff == 0 && today.getTime() >= ( new Date( newValue + ' ' + (time.startTime === 'Open' ? '' : time.startTime) ).getTime() ) ) {
 					continue;
 				}
 				self.times.push(time.startTime);
 			}
-			if(self.times().length === 1)
+			if(self.times().length === 1) {
 				self.time(self.times()[0]);
+			}
 			break;
 		}
 		self.times.sort( function( a, b ) {
 			return new Date('1970/01/01 ' + a) - new Date('1970/01/01 ' + b);
 		} );
+		// sort "Open"
+		var o = -1
+		for( ni=0; ni < self.times().length; ni++ ) {
+			if( jQuery.trim(self.times()[ni]) == 'Open' ) o = ni;
+		}
+		if( o >= 0 ) {
+			var _times = self.times.splice( o, 1 );
+			self.times.unshift(_times[0]);
+		}
 	});
 	self.time.subscribe(function(newValue){
 		if(newValue){

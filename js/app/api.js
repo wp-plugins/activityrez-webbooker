@@ -59,6 +59,7 @@ WebBooker.API = {
 				moods.push(WebBooker.Catalog.search_params.moods()[i].name());
 
 		WebBooker.API.request('lookup','activities',{
+			i18n: WebBooker.bootstrap['i18n'],
 			des: (destination) ? destination.name : '',
 			s: (keywords) ? keywords : '',
 			tag: (tag) ? tag : '',
@@ -93,6 +94,7 @@ WebBooker.API = {
 	
 	getFeaturedActivities: function (dest, callback) {
 		WebBooker.API.request('lookup','activities',{
+			i18n: WebBooker.bootstrap['i18n'],
 			des: dest,
 			featured: true,
 			count: 100,
@@ -302,7 +304,8 @@ WebBooker.API = {
 		WebBooker.API.raw(WebBooker.bootstrap.api_url,{
 			nonce: WebBooker.bootstrap.nonce,
 			service: 'validateDiscount',
-			code: promo_code
+			code: promo_code,
+			pos: WebBooker.bootstrap.webBookerID
 		},callback);
 	},
 
@@ -318,6 +321,7 @@ WebBooker.API = {
 		WebBooker.API.request('arezReporting','getMyCommissions',{
 			startDate: params.startDate,
 			endDate: params.endDate,
+			tz: params.tz,
 			wb: true
 		},function(data){
 			if(data.status == 1 && typeof callback == 'function'){
