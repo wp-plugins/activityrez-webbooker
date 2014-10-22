@@ -77,6 +77,12 @@ if ( isset( $query['page'] ) && $query['page'] > 1 ) {
 	}
 }
 $paginateLinks .= "</p>";
+$mediaServer =  ( isset($wb['server']) &&  $wb['server'] == 'training') ? '//devmedia.activityrez.com' : '//media.activityrez.com';
+
+function make_image_url($hash, $height){
+	return $mediaServer+'/media/'+$hash+'/thumbnail/height/'+$height;
+}
+
 ?>
 <div id="webbooker-search">
 	<div class="header gradient-light">
@@ -102,14 +108,27 @@ $paginateLinks .= "</p>";
 					//print_r(var_dump($activity['json_input']));
 					//Activity SEO URL
 					$activityURL = '';
-					$activityURL = get_bloginfo('wpurl') . '/wb/' . $post->post_name . '/' . $activity['slug'] . '/';
+					$activityURL = $wb['wb_url'] . '/' . $activity['slug'] . '/';
 
 					//Handle Images
 					$images = array();
 					if ( isset( $activity['json_input']['media'] ) && !empty( $activity['json_input']['media'] ) ) {
 						if ( is_array( $activity['json_input']['media'] ) ) {
 							foreach ( $activity['json_input']['media'] as $media ) {
-								$images[] = str_replace( 'httpss', 'https', str_replace( 'http', 'https', $media['url'] ) );
+								if(isset($media['url'])){
+									$images[] = str_replace( 'httpss', 'https', str_replace( 'http', 'https', $media['url'] ) );									
+								}else if($media['hash']){
+									if( isset($media['featured']) && true == $media['featured']){
+										if(count($images) > 0){
+											array_unshift($images,make_image_url($media['hash'],400));
+										}else{
+											$images[] = make_image_url($media['hash'],400);
+										}
+									}else{
+										$images[] = make_image_url($media['hash'],400);
+									}				
+								}
+
 							}
 						}
 					}

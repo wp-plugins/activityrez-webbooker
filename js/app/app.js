@@ -170,6 +170,13 @@ var WebBooker = {
 				break;
 			}
 		}
+		
+		if ( wb_global_vars.default_cutoff_hrs ) {
+			wb_global_vars.default_cutoff_hrs = parseInt( wb_global_vars.default_cutoff_hrs, 10 );
+		}
+		if ( wb_global_vars.default_cutoff_mins ) {
+			wb_global_vars.default_cutoff_mins = parseInt( wb_global_vars.default_cutoff_mins, 10 );
+		}
 
 		for(ni=0; ni<wb_global_vars.languages.length; ni++){
 			WebBooker.available_langs.push(wb_global_vars.languages[ni]);
@@ -751,7 +758,7 @@ Path.map('#/Confirmation/:saleID').to(function(){
 	WebBooker.CheckoutNav.showConfirmation(true);
 	WebBooker.CheckoutNav.progress(71);
 	var sale = WebBooker.Sale.get('sale');
-	if( !sale.leadGuest.email ) {
+	if( !sale || !sale.leadGuest.email ) {
 		WebBooker.Checkout.moreErrorMsg(__('Unable to retrieve sale; Missing e-mail.'));
 		return;
 	}
@@ -763,11 +770,11 @@ Path.map('#/Confirmation/:saleID').to(function(){
 	});
 	
 	if(window.addEvent){
-	    window.addEvent('onunload', function(event) {
+		window.addEvent('onunload', function(event) {
 			WebBooker.Checkout.newSale();
 		});
 	} else if(window.addEventListener){
-        window.addEventListener('unload', function(event) {
+		window.addEventListener('unload', function(event) {
 			WebBooker.Checkout.newSale();
 		});
 	}
@@ -919,12 +926,24 @@ ko.bindingHandlers.hotelTypeahead = {
 
 				saved_query = query;
 				option(null);
-
-				WebBooker.API.request('lookup','liveSearch',{
+				
+				var searchArgs = {
 					object: 'hotel',
 					property: 'post_title',
 					query: query
-				},function(data){
+				};
+
+				if( WebBooker.Cart.items().length > 0 ){
+					searchArgs.activities = [];
+					acts = WebBooker.Cart.items();
+					for( var ne = 0; ne < acts.length; ne++ ){
+						if( $.inArray( acts[ne].activity, searchArgs.activities ) == -1 )
+							searchArgs.activities.push( acts[ne].activity );
+					}
+				}
+				
+				WebBooker.API.request('lookup','liveSearch', searchArgs,
+				function(data){
 					var names = [];
 					var mappedObjs = jQuery.map(data.items,
 						function(item) {
@@ -1109,6 +1128,10 @@ function createTimestamp(now) {
 	var minute = "" + now.getMinutes();if (minute.length == 1) {minute = "0" + minute;}
 	var second = "" + now.getSeconds();if (second.length == 1) {second = "0" + second;}
 	return year + "/" + month + "/" + day + " " + hour + ":" + minute + ":" + second;
+}
+
+function cleanTimestamp(stamp) {
+	return stamp.replace('-', '/');
 }
 
 function getDateString(date) {

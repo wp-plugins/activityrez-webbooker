@@ -61,6 +61,10 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 
 # Changelog #
 
+# 2.4.6 #
+* Bug fixes
+* Changes to activity cutoff handling
+
 # 2.4.5 #
 * Bug fixes
 * Resellers can now set display prices

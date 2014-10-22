@@ -132,14 +132,18 @@ $ar.CheckoutItemModel = function(data){
 		}
 
 		var ni;
-		for(ni = 0; ni < beans.tickets.length; ni++)
+		for(ni = 0; ni < beans.tickets.length; ni++) {
 			beans.tickets[ni] = $ar.CheckoutTicketModel(beans.tickets[ni]);
-		for(ni = 0; ni < beans.fees.length; ni++)
+		}
+		for(ni = 0; ni < beans.fees.length; ni++) {
 			beans.fees[ni] = $ar.FeeModel(beans.fees[ni]);
-		for(ni = 0; ni < beans.options.length; ni++)
+		}
+		for(ni = 0; ni < beans.options.length; ni++) {
 			beans.options[ni] = $ar.OptionModel(beans.options[ni]);
-		for(ni = 0; ni < beans.transportation.length; ni++)
+		}
+		for(ni = 0; ni < beans.transportation.length; ni++) {
 			beans.transportation[ni] = $ar.TransportationModel(beans.transportation[ni]);
+		}
 	};
 	that.json(data);
 
@@ -445,7 +449,7 @@ $ar.CheckoutItemModel = function(data){
 					tix_sub += tix[ni].transport().amount;
 				}
 			}
-			tix_sub = tix_sub - (dis_r*tix_sub) - dis_a;
+			tix_sub = tix_sub - ((dis_r*tix_sub) / 100) - dis_a;
 			sub += Math.round(tix_sub * taxRate)/100;
 		}
 
@@ -640,8 +644,12 @@ $ar.CheckoutItemModel = function(data){
 	};
 	
 	that.i18n_date = function(){
-		var time = new Date(that.date + (that.time == 'Open'?'': ' ' + that.time)),
-			i18n = WebBooker.Settings.get('i18n') || wb_global_vars.i18n,
+		if( typeof that.time === 'object' ) {
+			var time = new Date(that.date + (that.time.startTime=='Open'?' ':' ' + that.time.startTime));
+		} else {
+			var time = new Date(that.date + (that.time == 'Open'?'': ' ' + that.time));
+		}
+		var i18n = WebBooker.Settings.get('i18n') || wb_global_vars.i18n,
 				   date;
 		switch( i18n ) {
 			case 'ja' 	:	//iso
@@ -987,7 +995,7 @@ $ar.CheckoutTicketModel = function(data){
 		var ticket = {
 			aid: guest.activity,
 			sid: sale_id,
-			timestamp: createTimestamp(new Date(guest.date + (guest.time=='Open'?' ':' ' + guest.time))),
+			timestamp: createTimestamp(new Date(guest.date + (guest.time.startTime=='Open'?' ':' ' + guest.time.startTime))),
 			guest_type_id: that.id,
 			guest_type: that.name,
 			//leadGuest: guest.lead(),
@@ -1738,7 +1746,11 @@ $ar.SaleModel = function(data){
 					})(type,options));
 					types.push(type);
 				}
-
+				
+				if ( tix[ni].cfa ) {
+					type.pending(true);
+				}
+				
 				tix[ni] = $ar.CheckoutTicketModel($ar.data_mapper({
 					'ID':'ticket_id',
 					'guest_type_id':'id',
@@ -1756,6 +1768,7 @@ $ar.SaleModel = function(data){
 						},options[no])));
 					}
 				}
+				
 				type.tickets.push(tix[ni]);
 			}
 			self.items(types);

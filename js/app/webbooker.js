@@ -2053,6 +2053,13 @@ var WebBooker = {
 				break;
 			}
 		}
+		
+		if ( wb_global_vars.default_cutoff_hrs ) {
+			wb_global_vars.default_cutoff_hrs = parseInt( wb_global_vars.default_cutoff_hrs, 10 );
+		}
+		if ( wb_global_vars.default_cutoff_mins ) {
+			wb_global_vars.default_cutoff_mins = parseInt( wb_global_vars.default_cutoff_mins, 10 );
+		}
 
 		for(ni=0; ni<wb_global_vars.languages.length; ni++){
 			WebBooker.available_langs.push(wb_global_vars.languages[ni]);
@@ -2634,7 +2641,7 @@ Path.map('#/Confirmation/:saleID').to(function(){
 	WebBooker.CheckoutNav.showConfirmation(true);
 	WebBooker.CheckoutNav.progress(71);
 	var sale = WebBooker.Sale.get('sale');
-	if( !sale.leadGuest.email ) {
+	if( !sale || !sale.leadGuest.email ) {
 		WebBooker.Checkout.moreErrorMsg(__('Unable to retrieve sale; Missing e-mail.'));
 		return;
 	}
@@ -2646,11 +2653,11 @@ Path.map('#/Confirmation/:saleID').to(function(){
 	});
 	
 	if(window.addEvent){
-	    window.addEvent('onunload', function(event) {
+		window.addEvent('onunload', function(event) {
 			WebBooker.Checkout.newSale();
 		});
 	} else if(window.addEventListener){
-        window.addEventListener('unload', function(event) {
+		window.addEventListener('unload', function(event) {
 			WebBooker.Checkout.newSale();
 		});
 	}
@@ -2802,12 +2809,24 @@ ko.bindingHandlers.hotelTypeahead = {
 
 				saved_query = query;
 				option(null);
-
-				WebBooker.API.request('lookup','liveSearch',{
+				
+				var searchArgs = {
 					object: 'hotel',
 					property: 'post_title',
 					query: query
-				},function(data){
+				};
+
+				if( WebBooker.Cart.items().length > 0 ){
+					searchArgs.activities = [];
+					acts = WebBooker.Cart.items();
+					for( var ne = 0; ne < acts.length; ne++ ){
+						if( $.inArray( acts[ne].activity, searchArgs.activities ) == -1 )
+							searchArgs.activities.push( acts[ne].activity );
+					}
+				}
+				
+				WebBooker.API.request('lookup','liveSearch', searchArgs,
+				function(data){
 					var names = [];
 					var mappedObjs = jQuery.map(data.items,
 						function(item) {
@@ -2992,6 +3011,10 @@ function createTimestamp(now) {
 	var minute = "" + now.getMinutes();if (minute.length == 1) {minute = "0" + minute;}
 	var second = "" + now.getSeconds();if (second.length == 1) {second = "0" + second;}
 	return year + "/" + month + "/" + day + " " + hour + ":" + minute + ":" + second;
+}
+
+function cleanTimestamp(stamp) {
+	return stamp.replace('-', '/');
 }
 
 function getDateString(date) {
@@ -4057,6 +4080,7 @@ WebBooker.Catalog = (function(){
 			WebBooker.API.queryCatalog(function(results) {
 				self.isSearching(false);
 				self.hasSearched(true);
+				self.searchResults([]);
 				self.totalResults(0);
 
 				var destination = WebBooker.Catalog.search_params.destination(),
@@ -4539,9 +4563,10 @@ $ar.CartItemModel = function(data){
 	};
 	
 	that.i18n_date = function(){
-		var time = new Date(that.date + (that.time == 'Open'?'': ' ' + that.time)),
+		var time = new Date(that.date + (that.time.startTime === 'Open' ? '' : ' ' + that.time.startTime)),
 			i18n = WebBooker.Settings.get('i18n') || wb_global_vars.i18n,
-				   date;
+			date;
+			
 		switch( i18n ) {
 			case 'ja' 	:	//iso
 			case 'zh_SG':
@@ -4549,8 +4574,8 @@ $ar.CartItemModel = function(data){
 			case 'zh_HK':
 			case 'zh_CN':
 			case 'ko_KR':
-							date =  time.getFullYear() + '/' + (time.getMonth() + 1) + '/' + time.getDate();
-							break;			
+				date =  time.getFullYear() + '/' + (time.getMonth() + 1) + '/' + time.getDate();
+				break;
 			case 'en_GB':	//euro
 			case 'en_AU':
 			case 'en_AG':
@@ -4581,12 +4606,14 @@ $ar.CartItemModel = function(data){
 			case 'es':
 			case 'sv_se':
 			case 'th':
-			case 'vi':			
-							date = time.getDate() + '/' + (time.getMonth() + 1) + '/' + time.getFullYear();
-							break;
+			case 'vi':
+				date = time.getDate() + '/' + (time.getMonth() + 1) + '/' + time.getFullYear();
+				break;
 			case 'en_US':	//us original
 			case 'en_CA':
-			default		:	date = (time.getMonth() + 1) + '/' + time.getDate() + '/' + time.getFullYear();
+			default:
+				date = (time.getMonth() + 1) + '/' + time.getDate() + '/' + time.getFullYear();
+				break;
 		}
 		return date;
 	};
@@ -4722,6 +4749,7 @@ WebBooker.MiniCart = (function(){
 	self.inventory = ko.observable();
 	self.cfa = ko.observable();
 	self.notPastCutoff = ko.observable();
+	self.notPastDeadline = ko.observable();
 
 	self.guests = ko.computed(function(){
 		if(!self.cartItem() || !Object.keys(self.cartItem().guests()).length) return [];
@@ -4764,22 +4792,26 @@ WebBooker.MiniCart = (function(){
 			return false;
 		}
 	});
+
 	self.availabilityStatus = ko.computed(function() {
 		if(self.checkingInventory()) {
 			return __('Checking')() + '...';
 		}
 		if(self.date()) {
 			if(self.time()) {
-				if(self.notPastCutoff()) {
-					if(self.guests().length) {
-						if(self.canBook()) {
-							return __('Available')();
+				if( self.notPastDeadline() ) {
+					if(self.notPastCutoff()) {
+						if(self.guests().length) {
+							if(self.canBook()) {
+								return __('Available')();
+							}
+							return __('Unavailable')();
 						}
-						return __('Unavailable')();
+						return __('No Pricing Available')();
 					}
-					return __('No Pricing Available')();
+					return __('Past cutoff time')();
 				}
-				return __('Past cutoff time')();
+				return __('Unavailable')();
 			}
 			return __('Select a time')();
 		}
@@ -4795,12 +4827,12 @@ WebBooker.MiniCart = (function(){
 				self.cartUpdateNotificationStart();
 			}
 		};
-		
+/*		
 		if ( !self.notPastCutoff() ) {
 			$ar.Notification( __('Past cutoff time.'), 'error' );
 			return false;
 		}
-		
+*/		
 		switch(true) {
 			case ( nval < 0 ):
 				return false;
@@ -4863,94 +4895,83 @@ WebBooker.MiniCart = (function(){
 		
 		return true;
 	};
+
 	self.checkInventory = function() {
 		var date = self.date(),
-			time = self.time()=='Open'?'':self.time(),
+			_date = new Date( self.date() ),
+			time = self.time().startTime == 'Open' ? '' : self.time().startTime,
 			saved_time = self.time();
-
+			
 		self.checkingInventory(true);
 		if(!saved_time){
 			jQuery('#activity-availability > span').effect('pulsate', {times: 2}, 500);
 			self.checkingInventory(false);
 			return;
 		}
-
+			
+		self.cartItem(null);
+		
 		WebBooker.API.checkAvailability({
 			id: self.activity().id,
 			datetime: createTimestamp(new Date(self.date() + ' ' + time))
 		}, function(data){
-			self.time(saved_time);
+
 			self.checkingInventory(false);
 			
 			if(data.status > 0){
 				self.inventory(data);
 				self.cfa(data.cfa);
-			} else {
-				if(data.status == -10){
-					self.inventory(false);
-					return false;
-				} else if(data.status < 0){
-					self.inventory(false);
-					return false;
-				}
-			}
-
-			self.cartItem(null);
-			var i = WebBooker.Cart.items(), ni,
-				bookDate = ( new Date( self.date() + ' ' + time ) ).getTime(),
-				today = ( new Date() ).getTime(),
-				time_diff = bookDate - today,
-				cutoff,
-				cutoff_hrs = parseInt( self.activity().cutoff_hours ),
-				cutoff_mins = parseInt( self.activity().cutoff_minutes );
-			
-			if ( data.cfa ) {
-				// zero inventory left and time left is 48hrs or under, cutoff enabled.
-				if ( !data.available && ( time_diff / 3600000 ) <= 48 ) {
-					self.notPastCutoff(false);
-					self.inventory(false);
-					return false;
-				}
-				else if ( data.available ) {
-					// if has inventory left and vendor cutoff is higher than 48hrs, use vendor cutoff
-					if ( cutoff_hrs > 48 ) {
-						cutoff = new Date( today + ( cutoff_hrs * 3600000 ) + ( cutoff_mins * 60000 ) );
-						if ( bookDate <= cutoff.getTime() ) {
-							self.notPastCutoff(false);
-							self.inventory(false);
-							return false;
-						} else {
-							self.notPastCutoff(true);
-						}
-					// else default 48 hrs
-					} else if ( ( time_diff / 3600000 ) <= 48 ) {
-						self.notPastCutoff(false);
-						self.inventory(false);
-						return false;
-					}
-				}
-			}
-			// else if cfa not enabled and vendor set their own cutoff
-			else if ( !data.cfa && !isNaN( cutoff_hrs ) && !isNaN( cutoff_mins ) ) {
-				cutoff = new Date( today + ( cutoff_hrs * 3600000 ) + ( cutoff_mins * 60000 ) );
-				if ( bookDate <= cutoff.getTime() ) {
-					self.notPastCutoff(false);
-					self.inventory(false);
-					return false;
-				} else {
-					self.notPastCutoff(true);
-				}
-			}
-			// else if activity already started, cutoff enabled.
-			else if ( ( time_diff / 60000 ) < 1 ) {
-				self.notPastCutoff(false);
+			} else if(data.status < 0 && data.status != -10){
 				self.inventory(false);
-				self.date(false);
 				return false;
 			}
+
+			var ni,
+				i = WebBooker.Cart.items(), 
+				//bookDate = new Date( self.date() + ' ' + time ),
+				today = new Date(),
+				cutoff_timestamp = self.getCutoffTimestamp({
+					book_date: today,
+				}),
+				deadline_time = self.getStopSellingTime({
+					book_date: today,
+				}),
+				_time = function() {
+					if( self.activity().book_until_end ) {
+						_t = self.time().endTime == 'Open' ? '' : self.time().endTime;
+					} else {
+						_t = self.time().startTime == 'Open' ? '' : self.time().startTime;
+					}
+					return _t;
+				},
+				selected_date_time = new Date(self.date() + ' ' + _time());
+				selected_start_time = new Date(self.date() + ' ' + _time());
+
+			if( selected_date_time.getTime() - deadline_time <= 0 ) {
+				self.notPastCutoff(false);
+				self.notPastDeadline(false);
+				self.inventory(false);
+				return false;
+			} else {
+				self.notPastDeadline(true);
+			}
 			
-			// all clear, no cutoff
-			self.notPastCutoff(true);
+			if ( data.cfa ) {
+				// zero available and past cutoff
+				if ( !data.available ) {
+					self.notPastCutoff(false);
+					self.inventory(false);
+				}
+				else if ( selected_start_time.getTime() - deadline_time <= 0 ) {
+					self.notPastCutoff(false);
+					self.inventory(false);
+				} else {
+					self.notPastCutoff(true);
+					self.notPastDeadline(true);
+				}
+			} else {
+				self.notPastCutoff(true);
+			}
 
 			//wraps the validation script to maintain object's presence in the cart
 			var valFunc = function(obj){
@@ -5020,35 +5041,35 @@ WebBooker.MiniCart = (function(){
 			self.cartItem(_ci);
 		});
 	};
+	
 	//check all the days in the calendar against the dates in blackoutDays then check to see if the activity is available on that day
 	self.dayAvailable = function(date) {
-		if('0000-00-00 00:00:00' == self.activity().date_start){
-			var ds = '2001/01/01 00:00:00';
-		}else{
-			var ds = self.activity().date_start;
-		}
-		if('0000-00-00 00:00:00' == self.activity().date_end){
-			var de = '2037/01/01 00:00:00';
-		}else{
-			var de = self.activity().date_end;
-		}
-		
-		ds = ds.replace(/-/g, '/');
-		de = de.replace(/-/g, '/');
-		
 		var weekday = [ 'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday' ],
 			times = self.activity().times,
-			lifespanDateStart = new Date(ds),
-			lifespanDateEnd = new Date(de),
 			today = new Date(),
-			ni, diff;
+			diff = Math.floor( ( today.getTime() - date.getTime() ) / 86400000 ),
+			ni, lifespanDateStart, lifespanDateEnd, ds, de;
 			
+		if('0000-00-00 00:00:00' == self.activity().date_start){
+			ds = '2001/01/01 00:00:00';
+		}else{
+			ds = cleanTimestamp( self.activity().date_start );
+		}
+		if('0000-00-00 00:00:00' == self.activity().date_end){
+			de = '2037/01/01 00:00:00';
+		}else{
+			de = cleanTimestamp( self.activity().date_end );
+		}
+		
+		lifespanDateEnd = new Date(de);
+		lifespanDateStart = new Date(ds);
 			
-		diff = Math.floor( ( today.getTime() - date.getTime() ) / 86400000 );
-
+		today.setHours(0, 0, 0);
+		
 		// reject old dates
-		if(today > date && diff != 0)
+		if(today > date && diff != 0) {
 			return [false];
+		}
 		// check lifespan dates
 		if(lifespanDateStart && lifespanDateEnd ){
 			if( lifespanDateStart.getTime() > date.getTime() || lifespanDateEnd.getTime() < date.getTime() ){
@@ -5058,23 +5079,45 @@ WebBooker.MiniCart = (function(){
 
 		// check blackout days
 		for(ni = 0; ni < (self.blackoutDays||[]).length; ni++){
-			if(self.blackoutDays[ni].valueOf() != date.valueOf())
+			if(self.blackoutDays[ni].valueOf() != date.valueOf()) {
 				continue;
+			}
 			return [false];
 		}
 
 		var _date = date.valueOf(),
-			today = new Date(),
 			cutoff_hrs = parseInt(self.activity().cutoff_hours || 0),
 			cutoff_minutes = parseInt(self.activity().cutoff_minutes || 0),
-			clean;
+			cutoff_mins = ( cutoff_hrs * 60 ) + cutoff_minutes,
+			book_until_end = self.activity().book_until_end,
+			cfa = parseInt( self.cfa(), 10) === 1 ? true : false,
+			time,
+			time_diff,
+			clean,
+			cutoff_timestamp,
+			start_date,
+			end_date,
+			_ret = [false];
+		
+		//reset today to new date for processing below
+		today = new Date();
+		
 		//check the calendar date against all the days the activity is on
 		for(ni = 0; ni < times.length; ni++){
-
-			if(times[ni].startDayOfWeek && times[ni].startDayOfWeek != weekday[date.getDay()]){
+			start_date = new Date( times[ni].startDate === '0000-00-00 00:00:00' ? '2001/01/01 00:00:00' : cleanTimestamp( times[ni].startDate ) );
+			end_date = new Date( times[ni].endDate === '0000-00-00 00:00:00' ? '2037/01/01 00:00:00' : cleanTimestamp(times[ni].endDate) );
+			
+			if ( !book_until_end && times[ni].startDayOfWeek && times[ni].startDayOfWeek != weekday[date.getDay()]){
+				continue;
+			} else if ( book_until_end && times[ni].endDayOfWeek && times[ni].endDayOfWeek != weekday[date.getDay()] ) {
 				continue;
 			}
-			if(times[ni].startDate != "0000-00-00 00:00:00"){
+			
+			if ( start_date >= date || end_date <= date ) {
+				continue;
+			}
+			
+			/*if(times[ni].startDate != "0000-00-00 00:00:00"){
 				clean = times[ni].startDate.split('/');
 				if(clean.length > 1 && clean[2].length == 2) clean[2] = '20'+clean[2];
 				times[ni].startDate = clean.join('/');
@@ -5083,21 +5126,17 @@ WebBooker.MiniCart = (function(){
 				clean = times[ni].endDate.split('/');
 				if(clean.length > 1 && clean[2].length == 2) clean[2] = '20'+clean[2];
 				times[ni].endDate = clean.join('/');
+			}*/
+			
+			if ( book_until_end ) {
+				time = times[ni].endTime;
+			} else {
+				time = times[ni].startTime;
 			}
 			
-			var time_diff = Math.floor( ( ( new Date( date.getFullYear() + '/' + (date.getMonth()+1) + '/' + date.getDate() + ' ' + times[ni].startTime ) ).getTime() - today.getTime() ) / 60000 ),
-				cutoff_mins = ( cutoff_hrs * 60 ) + cutoff_minutes;
-			
-			if( time_diff <= 0 || ( cutoff_mins >= time_diff && !self.cfa() ) ){
-				return[false];
-			}
-			if(
-				( times[ni].startDate == "0000-00-00 00:00:00" || ( new Date(times[ni].startDate.replace(/-/g, '/')) ).valueOf() <= _date ) &&
-				( times[ni].endDate == "0000-00-00 00:00:00" || ( new Date(times[ni].endDate.replace(/-/g, '/')) ).valueOf() >= _date )
-			)
-				return [true];
+			_ret = [true];
 		}
-		return [false];
+		return _ret;
 	};
 	self.showDatePicker = function(){
 		jQuery('#activity-date .datepicker').datepicker('show');
@@ -5132,7 +5171,43 @@ WebBooker.MiniCart = (function(){
 		
 		item.qty( item.qty() - 1 );
 	};
-	self._grabDays = function(){
+
+	self.getCutoffTimestamp = function(args) {
+		// {
+		//	book_date: Date object,
+		// }
+		var unit = 60000, //60,000 milliseconds in a minute
+			_date = new Date( args.book_date.getTime() ),
+			//cutoff times are in minutes
+			_cutoff = ( self.activity().cutoff_hours ? parseInt( self.activity().cutoff_hours, 10 ) * 60 : 0 ) + ( self.activity().cutoff_minutes ? parseInt( self.activity().cutoff_minutes, 10 ) : 0 );
+			
+		_date = new Date( _date.getTime() + ( _cutoff * unit ) );
+		return _date;
+	};
+
+	self.getStopSellingTime = function(args) {
+		// {
+		//	book_date: Date object,
+		// }
+		var unit = 60000, //60,000 milliseconds in a minute
+			cfa = parseInt( self.cfa(), 10 ) === 1 ? true : false,
+			_date = new Date( args.book_date.getTime() ),
+			//cutoff times are in minutes
+			activity_deadline = ( self.activity().cutoff_hours ? parseInt( self.activity().cutoff_hours, 10 ) * 60 : 0 ) + ( self.activity().cutoff_minutes ? parseInt( self.activity().cutoff_minutes, 10 ) : 0 ),
+			default_deadline = ( WebBooker.bootstrap.default_cutoff_hrs ? parseInt( WebBooker.bootstrap.default_cutoff_hrs, 10 ) * 60 : 0 ) + ( WebBooker.bootstrap.default_cutoff_mins ? parseInt( WebBooker.bootstrap.default_cutoff_mins, 10 ) : 0 );
+
+		// if CFA off, then respect activity deadline when activity > default
+		if( !cfa ) {
+			_date = new Date( _date.getTime() + ( ( activity_deadline > default_deadline ? activity_deadline : default_deadline ) * unit ) );
+		// otherwise, default deadline is always deadline.	
+		} else {
+			_date = new Date( _date.getTime() + ( default_deadline * unit ) );
+		}
+		
+		return _date.getTime();
+	};
+
+	self._grabDays = function(day){
 		var times = self.activity().times,
 			days = {},
 			d = {
@@ -5144,35 +5219,58 @@ WebBooker.MiniCart = (function(){
 				'Friday': 5,
 				'Saturday': 6
 			},
+			start_date,
+			end_date,
 			out = [], ni;
 		for(ni = 0; ni < times.length; ni += 1){
-			if(!days.hasOwnProperty(times[ni].startDayOfWeek))
+			start_date = new Date( times[ni].startDate === '0000-00-00 00:00:00' ? '2001/01/01 00:00:00' : cleanTimestamp(times[ni].startDate) );
+			end_date = new Date( times[ni].endDate === '0000-00-00 00:00:00' ? '2037/01/01 00:00:00' : cleanTimestamp(times[ni].endDate) );
+			
+			if ( start_date >= day || end_date <= day ) {
+				continue;
+			}
+			
+			if(!days.hasOwnProperty(times[ni].startDayOfWeek)) {
 				days[times[ni].startDayOfWeek] = {
 					name: times[ni].startDayOfWeek,
 					times: [],
 					name_abbrv: times[ni].startDayOfWeek.substr(0,3)
 				};
+			}
+			
 			days[times[ni].startDayOfWeek].times.push({
 				startDate: times[ni].startDate,
 				endDate: times[ni].endDate,
-				startTime: times[ni].startTime
+				startTime: times[ni].startTime,
+				endTime: times[ni].endTime
 			});
 		}
 		//sort on key
-		for(ni in days)
+		for(ni in days) {
 			out.push(days[ni]);
-		out.sort(function(a,b){ return d[a.name] > d[b.name]; });
+		}
+		out.sort(function(a,b){
+			return d[a.name] > d[b.name];
+		});
 		return out;
 	};
 	self.getTimestamp = ko.computed(function() {
 		if(!self.date() || !self.time())
 			return;
-		var time = (self.time() == 'Open') ? '' : self.time();
+		var time = (self.time().startTime == 'Open') ? '' : self.time().startTime;
 		return createTimestamp(new Date(self.date() + ' ' + time));
 	});
 
 	self.activity.subscribe(function(activity){
-		self.date(null);
+	
+		var today = function() {
+			var d = new Date();
+			var month = mm = ('0' + (d.getMonth() + 1)).slice(-2),
+				day = ('0' + d.getDate()).slice(-2);
+			return month + "/" + day + "/" + d.getFullYear();
+		}
+
+		self.date(today());
 		self.blackoutDays = [];
 		self.cfa(activity.cfa);
 
@@ -5182,12 +5280,9 @@ WebBooker.MiniCart = (function(){
 		//get the dates for each blackout date range and append them to blackoutDays
 
 		for(ni = 0; ni < blackouts.length; ni++) {
-			//ff and IE are dumb
-			blackouts[ni].startDate = blackouts[ni].startDate.replace(/-/g, '/');
-			blackouts[ni].endDate = blackouts[ni].endDate.replace(/-/g, '/');		
 			//generate a list of dates from a range
-			curr_date = new Date(blackouts[ni].startDate);
-			end_date = new Date(blackouts[ni].endDate);
+			curr_date = new Date( cleanTimestamp( blackouts[ni].startDate ) );
+			end_date = new Date( cleanTimestamp( blackouts[ni].endDate ) );
 			while(curr_date <= end_date){
 				self.blackoutDays.push(new Date(curr_date.getTime()));
 				curr_date.setDate(curr_date.getDate() + 1);
@@ -5214,42 +5309,37 @@ WebBooker.MiniCart = (function(){
 		
 		var day = new Date(newValue),
 			date = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][day.getDay()],
-			days = self._grabDays(),
+			days = self._grabDays(day),
 			today = new Date(),
 			date_diff = Math.floor( ( today.getTime() - day.getTime() ) / 86400000 ),
+			book_until_end = self.activity().book_until_end,
 			ni,no;
-
+			
 		for(ni = 0; ni < days.length; ni++){
 			if(days[ni].name != date) continue;
+
 			for(no = 0; no < days[ni].times.length; no++){
+			
 				var time = days[ni].times[no];
-				
-				if(time.startDate && time.startDate !== '' && time.startDate !== '0000-00-00 00:00:00' && (new Date(time.startDate)) > day){
+
+				if ( self.times.indexOf( time ) >= 0 ) {
 					continue;
 				}
-				if(time.endDate && time.endDate !== '' && time.endDate !== '0000-00-00 00:00:00' && (new Date(time.endDate)) < day){
-					continue;
-				}
-				if(self.times.indexOf(time.startTime)>=0){
-					continue;
-				}
-				if ( date_diff == 0 && today.getTime() >= ( new Date( newValue + ' ' + (time.startTime === 'Open' ? '' : time.startTime) ).getTime() ) ) {
-					continue;
-				}
-				self.times.push(time.startTime);
+				self.times.push(time);
 			}
 			if(self.times().length === 1) {
 				self.time(self.times()[0]);
 			}
+			
 			break;
 		}
 		self.times.sort( function( a, b ) {
-			return new Date('1970/01/01 ' + a) - new Date('1970/01/01 ' + b);
+			return new Date('1970/01/01 ' + a.startTime) - new Date('1970/01/01 ' + b.startTime);
 		} );
 		// sort "Open"
 		var o = -1
 		for( ni=0; ni < self.times().length; ni++ ) {
-			if( jQuery.trim(self.times()[ni]) == 'Open' ) o = ni;
+			if( jQuery.trim(self.times()[ni].startTime) == 'Open' ) o = ni;
 		}
 		if( o >= 0 ) {
 			var _times = self.times.splice( o, 1 );
@@ -5261,8 +5351,10 @@ WebBooker.MiniCart = (function(){
 			self.checkInventory();
 		}
 	});
+	
 	return self;
 })();
+
 WebBooker.ChildActivityView = function(data){
 	var self = {
 		title: data.title,
@@ -5505,15 +5597,18 @@ WebBooker.ActivityView = (function(){
 	});
 
 	self.init = function(){
-		if(!WebBooker.bootstrap.activity)
+
+		if(!WebBooker.bootstrap.activity) {
 			return;
+		}
 			
 		if ( WebBooker.bootstrap.activity.status == -1 ) {
 			WebBooker.errorMsg('There was a problem loading this activity.');
 			return;
 		}
-
 		self.activity(WebBooker.bootstrap.activity);
+		self.activity().stop_sell_hours = ( WebBooker.bootstrap.default_cutoff_hrs ? parseInt( WebBooker.bootstrap.default_cutoff_hrs, 10 ) : 0 ) + ( WebBooker.bootstrap.default_cutoff_mins ? parseInt( WebBooker.bootstrap.default_cutoff_mins, 10 ) / 60  : 0 );
+		jQuery('.carousel').carousel({pause: 'hover'});
 	};
 
 	return self;
@@ -5652,14 +5747,18 @@ $ar.CheckoutItemModel = function(data){
 		}
 
 		var ni;
-		for(ni = 0; ni < beans.tickets.length; ni++)
+		for(ni = 0; ni < beans.tickets.length; ni++) {
 			beans.tickets[ni] = $ar.CheckoutTicketModel(beans.tickets[ni]);
-		for(ni = 0; ni < beans.fees.length; ni++)
+		}
+		for(ni = 0; ni < beans.fees.length; ni++) {
 			beans.fees[ni] = $ar.FeeModel(beans.fees[ni]);
-		for(ni = 0; ni < beans.options.length; ni++)
+		}
+		for(ni = 0; ni < beans.options.length; ni++) {
 			beans.options[ni] = $ar.OptionModel(beans.options[ni]);
-		for(ni = 0; ni < beans.transportation.length; ni++)
+		}
+		for(ni = 0; ni < beans.transportation.length; ni++) {
 			beans.transportation[ni] = $ar.TransportationModel(beans.transportation[ni]);
+		}
 	};
 	that.json(data);
 
@@ -5965,7 +6064,7 @@ $ar.CheckoutItemModel = function(data){
 					tix_sub += tix[ni].transport().amount;
 				}
 			}
-			tix_sub = tix_sub - (dis_r*tix_sub) - dis_a;
+			tix_sub = tix_sub - ((dis_r*tix_sub) / 100) - dis_a;
 			sub += Math.round(tix_sub * taxRate)/100;
 		}
 
@@ -6160,8 +6259,12 @@ $ar.CheckoutItemModel = function(data){
 	};
 	
 	that.i18n_date = function(){
-		var time = new Date(that.date + (that.time == 'Open'?'': ' ' + that.time)),
-			i18n = WebBooker.Settings.get('i18n') || wb_global_vars.i18n,
+		if( typeof that.time === 'object' ) {
+			var time = new Date(that.date + (that.time.startTime=='Open'?' ':' ' + that.time.startTime));
+		} else {
+			var time = new Date(that.date + (that.time == 'Open'?'': ' ' + that.time));
+		}
+		var i18n = WebBooker.Settings.get('i18n') || wb_global_vars.i18n,
 				   date;
 		switch( i18n ) {
 			case 'ja' 	:	//iso
@@ -6507,7 +6610,7 @@ $ar.CheckoutTicketModel = function(data){
 		var ticket = {
 			aid: guest.activity,
 			sid: sale_id,
-			timestamp: createTimestamp(new Date(guest.date + (guest.time=='Open'?' ':' ' + guest.time))),
+			timestamp: createTimestamp(new Date(guest.date + (guest.time.startTime=='Open'?' ':' ' + guest.time.startTime))),
 			guest_type_id: that.id,
 			guest_type: that.name,
 			//leadGuest: guest.lead(),
@@ -7258,7 +7361,11 @@ $ar.SaleModel = function(data){
 					})(type,options));
 					types.push(type);
 				}
-
+				
+				if ( tix[ni].cfa ) {
+					type.pending(true);
+				}
+				
 				tix[ni] = $ar.CheckoutTicketModel($ar.data_mapper({
 					'ID':'ticket_id',
 					'guest_type_id':'id',
@@ -7276,6 +7383,7 @@ $ar.SaleModel = function(data){
 						},options[no])));
 					}
 				}
+				
 				type.tickets.push(tix[ni]);
 			}
 			self.items(types);
@@ -8221,6 +8329,7 @@ if(window.addEventListener) {
 		if(if_height_interval) {
 			clearInterval(if_height_interval);
 		}
+		console.log(event.data);
 		if(event.data.substring(0,4) !== '_FB_'){
 			WebBooker.bootstrap.parent_url = event.data;
 			setHeight(event.data);

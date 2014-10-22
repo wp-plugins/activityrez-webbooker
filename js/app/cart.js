@@ -155,9 +155,10 @@ $ar.CartItemModel = function(data){
 	};
 	
 	that.i18n_date = function(){
-		var time = new Date(that.date + (that.time == 'Open'?'': ' ' + that.time)),
+		var time = new Date(that.date + (that.time.startTime === 'Open' ? '' : ' ' + that.time.startTime)),
 			i18n = WebBooker.Settings.get('i18n') || wb_global_vars.i18n,
-				   date;
+			date;
+			
 		switch( i18n ) {
 			case 'ja' 	:	//iso
 			case 'zh_SG':
@@ -165,8 +166,8 @@ $ar.CartItemModel = function(data){
 			case 'zh_HK':
 			case 'zh_CN':
 			case 'ko_KR':
-							date =  time.getFullYear() + '/' + (time.getMonth() + 1) + '/' + time.getDate();
-							break;			
+				date =  time.getFullYear() + '/' + (time.getMonth() + 1) + '/' + time.getDate();
+				break;
 			case 'en_GB':	//euro
 			case 'en_AU':
 			case 'en_AG':
@@ -197,12 +198,14 @@ $ar.CartItemModel = function(data){
 			case 'es':
 			case 'sv_se':
 			case 'th':
-			case 'vi':			
-							date = time.getDate() + '/' + (time.getMonth() + 1) + '/' + time.getFullYear();
-							break;
+			case 'vi':
+				date = time.getDate() + '/' + (time.getMonth() + 1) + '/' + time.getFullYear();
+				break;
 			case 'en_US':	//us original
 			case 'en_CA':
-			default		:	date = (time.getMonth() + 1) + '/' + time.getDate() + '/' + time.getFullYear();
+			default:
+				date = (time.getMonth() + 1) + '/' + time.getDate() + '/' + time.getFullYear();
+				break;
 		}
 		return date;
 	};

@@ -90,7 +90,7 @@
 					<div class="info">
 						<strong><?php _e('Location','arez'); ?>:</strong> <span data-bind="text: __(destination)()"></span><br>
 						<strong><?php _e('Date','arez'); ?>:</strong> <span data-bind="text: i18n_date()"></span><br>
-						<strong><?php _e('Time','arez'); ?>:</strong> <span data-bind="text: time"></span>
+						<strong><?php _e('Time','arez'); ?>:</strong> <span data-bind="text: time.startTime"></span>
 					</div>
 					<ul class="guests" data-bind="foreach: guests">
 						<!-- ko if: qty() > 0 -->
@@ -143,7 +143,7 @@
 						<div class="alert alert-success" data-bind="text: loginSuccess, visible: loginSuccess"></div>
 						<input type="text" title="<?php _e('Username','arez'); ?>" placeholder="<?php _e('Username','arez'); ?>" autocorrect="off" autocapitalize="off" data-bind="value: email" />
 						<input type="password" autocomplete="off" title="<?php _e('Password','arez'); ?>" placeholder="<?php _e('Password','arez'); ?>" data-bind="value: password" />
-						<a class="lostPass" href="#/PasswordResetRequest"><?php _e("Forgot Password?",'arez');?></a>
+						<a class="lostPass" href="#" data-bind="attr: { href: wb_global_vars.wb_url + '/#/PasswordResetRequest' }"><?php _e("Forgot Password?",'arez');?></a>
 						<div style="clear:both"></div>
 						<button type="submit" class="buttonBlue" data-bind="click: login"><i class="icon-lock icon-white" data-bind="css: {'icon-processing': WebBooker.Agent.isLoggingIn}"></i> <?php _e('Log In','arez'); ?></button>
 						<button class="buttonGray" data-bind="click: doShowSignup, scrollTopOnClick: true"><i class="icon-pencil icon-white"></i> <?php _e('Sign Up','arez'); ?></button>
