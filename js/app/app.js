@@ -1558,7 +1558,11 @@ $ar.MiniActivityModel = (function() {
 
 		that._json_callback = function( beans ) {
 			//need to normalize this on the backend
-			beans.id = beans.json_input.id;
+			if( beans.json_input.id ){
+				beans.id = beans.json_input.id;	
+			}else{
+				beans.id = null;
+			}
 			beans.prices = beans.json_input.prices;
 			beans.times = beans.json_input.times;
 

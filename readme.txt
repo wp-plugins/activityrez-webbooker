@@ -62,7 +62,7 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 
 == Changelog ==
 
-= 2.4.6 =
+= 2.4.7 =
 * Bug fixes
 * Changes to activity cutoff handling
 

@@ -151,7 +151,6 @@ WebBooker.Catalog = (function(){
 			WebBooker.API.queryCatalog(function(results) {
 				self.isSearching(false);
 				self.hasSearched(true);
-				self.searchResults([]);
 				self.totalResults(0);
 
 				var destination = WebBooker.Catalog.search_params.destination(),
