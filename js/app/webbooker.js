@@ -5330,9 +5330,6 @@ WebBooker.MiniCart = (function(){
 				}
 				self.times.push(time);
 			}
-			if(self.times().length === 1) {
-				self.time(self.times()[0]);
-			}
 			
 			break;
 		}
@@ -5340,13 +5337,19 @@ WebBooker.MiniCart = (function(){
 			return new Date('1970/01/01 ' + a.startTime) - new Date('1970/01/01 ' + b.startTime);
 		} );
 		// sort "Open"
-		var o = -1
+		var o = -1;
 		for( ni=0; ni < self.times().length; ni++ ) {
-			if( jQuery.trim(self.times()[ni].startTime) == 'Open' ) o = ni;
+			if( jQuery.trim(self.times()[ni].startTime) == 'Open' ) {
+				o = ni;
+			}
 		}
 		if( o >= 0 ) {
 			var _times = self.times.splice( o, 1 );
 			self.times.unshift(_times[0]);
+		}
+		
+		if(self.times().length === 1) {
+			self.time(self.times()[0]);
 		}
 	});
 	self.time.subscribe(function(newValue){
