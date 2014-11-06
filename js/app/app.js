@@ -937,7 +937,7 @@ ko.bindingHandlers.hotelTypeahead = {
 					searchArgs.activities = [];
 					acts = WebBooker.Cart.items();
 					for( var ne = 0; ne < acts.length; ne++ ){
-						if( $.inArray( acts[ne].activity, searchArgs.activities ) == -1 )
+						if( jQuery.inArray( acts[ne].activity, searchArgs.activities ) == -1 )
 							searchArgs.activities.push( acts[ne].activity );
 					}
 				}

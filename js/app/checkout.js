@@ -490,7 +490,7 @@ $ar.CheckoutItemModel = function(data){
 
 		var params = {
 			id: that.activity,
-			date: createTimestamp(new Date(that.date + (that.time == 'Open'?'': ' ' + that.time))),
+			date: createTimestamp(new Date(that.date + (that.time.startTime == 'Open'?'': ' ' + that.time.startTime))),
 			currency: WebBooker.selectedCurrency().title
 		};
 		WebBooker.API.betterGetActivity(params,function(result){

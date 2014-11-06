@@ -41,6 +41,7 @@
         this.defaults = defaults || {};
         this.watcherSpeed = watcherSpeed || 500;
         this.listeners = {};
+        this.ls = {};
         
         // Apply defaults
         this.applyDefaults();
@@ -93,8 +94,32 @@
     };
     
     Store.prototype.get = function (name) {
-        var value = localStorage.getItem("store." + this.name + "." + name);
-        if (value === null) { return undefined; }
+	    var _n = "store." + this.name + "." + name;
+	    var value = null;
+	    try{
+        	value = localStorage.getItem(_n);
+        }
+        catch (e) {
+	        if( typeof this.ls[_n] != 'undefined'){
+		        value = this.ls[_n];
+	        }
+        }
+        if (value === null) {
+	        //lets see if we have a local version
+	        if( typeof this.ls[_n] != 'undefined'){
+		        value = this.ls[_n];
+	        }
+	        
+	        //check cookie
+		    if (value === null) {
+		    	value = readCookie(_n);    
+	        }
+	        
+		    if (value === null) {
+		    	return undefined;    
+	        }
+	        
+		}
         try { return JSON.parse(value); } catch (e) { return null; }
     };
     
@@ -104,23 +129,58 @@
         } else {
             if (typeof value === "function") { value = null; }
             try { value = JSON.stringify(value); } catch (e) { value = null; }
-            localStorage.setItem("store." + this.name + "." + name, value);
+            
+            var _n = "store." + this.name + "." + name;
+            
+            try{
+            	localStorage.setItem(_n, value);
+            }
+            catch (e){
+				this.ls[_n] = value;
+				createCookie(_n,value);
+				$ar.Notification('Booking may not work while in private browsing on Safari!','error');
+			}
         }
         
         return this;
     };
     
     Store.prototype.remove = function (name) {
-        localStorage.removeItem("store." + this.name + "." + name);
+	    var _n = "store." + this.name + "." + name;
+	    try{
+	        localStorage.removeItem(_n);
+			delete this.ls[_n];
+		}
+		catch (e){
+			//no nothing
+			if( typeof this.ls[_n] != 'undefined' ){
+				eraseCookie(_n);
+				delete this.ls[_n];	
+			}
+		}
+        
         return this.applyDefaults();
     };
     
     Store.prototype.reset = function () {
         var name = "store." + this.name + ".";
-        for (var i = (localStorage.length - 1); i >= 0; i--) {
-            if (localStorage.key(i).substring(0, name.length) === name) {
-                localStorage.removeItem(localStorage.key(i));
-            }
+        
+        try{
+	        for (var i = (localStorage.length - 1); i >= 0; i--) {
+	            if (localStorage.key(i).substring(0, name.length) === name) {
+	                localStorage.removeItem(localStorage.key(i));
+	            }
+	        }
+			for ( var k in this.ls ){
+				delete this.ls[k];
+				eraseCookie(k);
+			}
+        }
+        catch (e){
+			for ( var k in this.ls ){
+				delete this.ls[k];
+				eraseCookie(k);
+			}
         }
         
         return this.applyDefaults();
@@ -129,13 +189,22 @@
     Store.prototype.toObject = function () {
         var values = {};
         var name = "store." + this.name + ".";
-        for (var i = (localStorage.length - 1); i >= 0; i--) {
-            if (localStorage.key(i).substring(0, name.length) === name) {
-                var key = localStorage.key(i).substring(name.length);
-                var value = this.get(key);
-                if (value !== undefined) { values[key] = value; }
-            }
+        
+        try{
+	        for (var i = (localStorage.length - 1); i >= 0; i--) {
+	            if (localStorage.key(i).substring(0, name.length) === name) {
+	                var key = localStorage.key(i).substring(name.length);
+	                var value = this.get(key);
+	                if (value !== undefined) { values[key] = value; }
+	            }
+	        }
         }
+        catch (e){
+			for ( var k in this.ls ){
+				var key = k.substr(name.length);
+				values[k] = this.ls[k];
+			}
+		}
         
         return values;
     };
@@ -180,4 +249,30 @@
         
         return this;
     };
+    
+	function createCookie(name,value,days) {
+		if (days) {
+			var date = new Date();
+			date.setTime(date.getTime()+(days*24*60*60*1000));
+			var expires = "; expires="+date.toGMTString();
+		}
+		else var expires = "";
+		document.cookie = name+"="+value+expires+"; path=/";
+	}
+	
+	function readCookie(name) {
+		var nameEQ = name + "=";
+		var ca = document.cookie.split(';');
+		for(var i=0;i < ca.length;i++) {
+			var c = ca[i];
+			while (c.charAt(0)==' ') c = c.substring(1,c.length);
+			if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+		}
+		return null;
+	}
+	
+	function eraseCookie(name) {
+		createCookie(name,"",-1);
+	}
+	
 }());

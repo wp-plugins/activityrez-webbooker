@@ -84,7 +84,7 @@ WebBooker.MiniCart = (function(){
 						}
 						return __('No Pricing Available')();
 					}
-					return __('Past cutoff time')();
+					return __(' ')();
 				}
 				return __('Unavailable')();
 			}
@@ -369,7 +369,6 @@ WebBooker.MiniCart = (function(){
 			time,
 			time_diff,
 			clean,
-			cutoff_timestamp,
 			start_date,
 			end_date,
 			_ret = [false];
@@ -448,9 +447,6 @@ WebBooker.MiniCart = (function(){
 	};
 
 	self.getCutoffTimestamp = function(args) {
-		// {
-		//	book_date: Date object,
-		// }
 		var unit = 60000, //60,000 milliseconds in a minute
 			_date = new Date( args.book_date.getTime() ),
 			//cutoff times are in minutes
@@ -461,9 +457,6 @@ WebBooker.MiniCart = (function(){
 	};
 
 	self.getStopSellingTime = function(args) {
-		// {
-		//	book_date: Date object,
-		// }
 		var unit = 60000, //60,000 milliseconds in a minute
 			cfa = parseInt( self.cfa(), 10 ) === 1 ? true : false,
 			_date = new Date( args.book_date.getTime() ),
