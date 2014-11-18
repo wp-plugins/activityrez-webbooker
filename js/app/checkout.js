@@ -78,14 +78,18 @@ $ar.CreditCardModel = function(data){
 		return that.errors().length === 0;
 	};
 	that.type = ko.computed(function(){
-		if(/^4[0-9]{12}(?:[0-9]{3})?$/.test(that.number()))
+		if(/^4[0-9]{12}(?:[0-9]{3})?$/.test(that.number())) {
 			return 'visa';
-		if(/^5[1-5][0-9]{14}$/.test(that.number()))
+		}
+		if(/^5[1-5][0-9]{14}$/.test(that.number())) {
 			return 'mastercard';
-		if(/^3[47][0-9]{13}$/.test(that.number()))
+		}
+		if(/^3[47][0-9]{13}$/.test(that.number())) {
 			return 'amex';
-		if(/^6(?:011|5[0-9]{2})[0-9]{12}$/.test(that.number()))
+		}
+		if(/^6(?:011|5[0-9]{2})[0-9]{12}$/.test(that.number()) || /^35(?:2[89]|[3-8]\d)([\ \-]?)\d{4}\1\d{4}\1\d{4}$/.test(that.number())) {
 			return 'discover';
+		}
 		return false;
 	});
 
