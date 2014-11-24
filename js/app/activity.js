@@ -351,7 +351,7 @@ WebBooker.MiniCart = (function(){
 				return [false];
 			}
 		}
-
+		
 		// check blackout days
 		for(ni = 0; ni < (self.blackoutDays||[]).length; ni++){
 			if(self.blackoutDays[ni].valueOf() != date.valueOf()) {
@@ -359,7 +359,7 @@ WebBooker.MiniCart = (function(){
 			}
 			return [false];
 		}
-
+		
 		var _date = date.valueOf(),
 			cutoff_hrs = parseInt(self.activity().cutoff_hours || 0),
 			cutoff_minutes = parseInt(self.activity().cutoff_minutes || 0),
@@ -387,25 +387,8 @@ WebBooker.MiniCart = (function(){
 				continue;
 			}
 			
-			if ( start_date >= date || end_date <= date ) {
+			if ( start_date > date || end_date < date ) {
 				continue;
-			}
-			
-			/*if(times[ni].startDate != "0000-00-00 00:00:00"){
-				clean = times[ni].startDate.split('/');
-				if(clean.length > 1 && clean[2].length == 2) clean[2] = '20'+clean[2];
-				times[ni].startDate = clean.join('/');
-			}
-			if(times[ni].endDate != "0000-00-00 00:00:00"){
-				clean = times[ni].endDate.split('/');
-				if(clean.length > 1 && clean[2].length == 2) clean[2] = '20'+clean[2];
-				times[ni].endDate = clean.join('/');
-			}*/
-			
-			if ( book_until_end ) {
-				time = times[ni].endTime;
-			} else {
-				time = times[ni].startTime;
 			}
 			
 			_ret = [true];
@@ -533,7 +516,7 @@ WebBooker.MiniCart = (function(){
 	
 		var today = function() {
 			var d = new Date();
-			var month = mm = ('0' + (d.getMonth() + 1)).slice(-2),
+			var month = ('0' + (d.getMonth() + 1)).slice(-2),
 				day = ('0' + d.getDate()).slice(-2);
 			return month + "/" + day + "/" + d.getFullYear();
 		}

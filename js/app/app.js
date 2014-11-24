@@ -1131,7 +1131,7 @@ function createTimestamp(now) {
 }
 
 function cleanTimestamp(stamp) {
-	return stamp.replace('-', '/');
+	return stamp.replace(/-/g, '/');
 }
 
 function getDateString(date) {

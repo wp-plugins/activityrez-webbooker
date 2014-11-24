@@ -61,6 +61,9 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 
 # Changelog #
 
+# 2.5.1 #
+* Bug Fixes
+
 # 2.5.0 #
 * Add JCB card validation
 
