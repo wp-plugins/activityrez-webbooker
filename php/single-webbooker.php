@@ -34,6 +34,8 @@ if ( WB_REMOTE == true ) {
 	}
 	if ( isset( $_REQUEST['i18N'] ) ) {
 		$wbArgs['i18n'] = $_REQUEST['i18N'];
+	}else if( defined('AREZ_LANG') ){
+		$wbArgs['i18n'] = AREZ_LANG;
 	}
 	global $wbCacheFields;
 	$wb = $arezApi->bootstrap($wbArgs);//update translation files
@@ -54,6 +56,8 @@ if ( WB_REMOTE == true ) {
 	if( isset($wbMeta['include_footer']) && 'off' != $wbMeta['include_footer'][0]) $wb['include_footer'] = true;
 	else $wb['include_footer'] = false;
 	
+	
+	/*
 	foreach($wbCacheFields as $field){
 		if(isset($wbMeta[$field])){
 			$d = @unserialize($wbMeta[$field][0]);
@@ -61,6 +65,7 @@ if ( WB_REMOTE == true ) {
 			else $wb[$field] = $d;
 		}
 	}
+	*/
 	
 } else {
 	//local call internally

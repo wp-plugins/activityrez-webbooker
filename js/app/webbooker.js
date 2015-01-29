@@ -2834,7 +2834,8 @@ WebBooker.About = {
 // postMessage for iFrame 
 WebBooker.postMessage = function(message) {
 	if(WebBooker.bootstrap.parent_url) {
-		if(typeof window.parent !== 'undefined' && typeof window.parent.postMessage == 'function'){
+		var matcher = new RegExp(WebBooker.bootstrap.parent_url, 'gi');
+		if(typeof window.parent !== 'undefined' && typeof window.parent.postMessage == 'function' && matcher.test(window.parent.location.origin)){
 			window.parent.postMessage(message, WebBooker.bootstrap.parent_url);
 		}
 	}
@@ -3852,7 +3853,8 @@ WebBooker.API = {
 			firstName: ticket.firstName,
 			lastName: ticket.lastName,
 			currency: WebBooker.selectedCurrency().title,
-			lead_guest_hotel: ticket.lead_guest_hotel
+			guest_hotel: ticket.guest_hotel,
+			guest_room: ticket.guest_room
 		}, function(tix){
 			if(tix.status == 1 && typeof callback == 'function'){
 				callback(tix);
@@ -4834,61 +4836,114 @@ WebBooker.Homepage.show.subscribe(function(newValue){
 
 WebBooker.MiniCart = (function(){
 	var self = {};
-
 	self.activity = ko.observable(null);
 	self.cartItem = ko.observable(null);
 	self.checkingInventory = ko.observable(false);
 	self.date = ko.observable('');
 	self.time = ko.observable('');
 	self.blackoutDays = [];
-
 	self.times = ko.observableArray([]);
-
 	self.inventory = ko.observable();
 	self.cfa = ko.observable();
-	self.notPastCutoff = ko.observable();
-	self.notPastDeadline = ko.observable();
-
-	self.guests = ko.computed(function(){
-		if(!self.cartItem() || !Object.keys(self.cartItem().guests()).length) return [];
-		return self.cartItem().guests();
-	});
-	self.canAdd = ko.computed(function(){
-		if(!self.cartItem || !self.cartItem() ) return false;
-		if(!Object.keys(self.cartItem).length) return false;
-		var total = 0,
-			g = self.cartItem().guests(),
-			ni;
-		for(ni = 0; ni < g.length; ++ni)
-			total += g[ni].qty();
-		return total > 0;
-	});
-	self.canBook = ko.computed(function() {
-		if(!self.inventory()) return false;
-		if(!self.cartItem) return false;
-
-		var avai = self.inventory().available,
-			inv = self.inventory().inventory,
-			cfa = self.cfa();
-
-		if(!self.notPastCutoff())
-			return false;
-		if(inv === 0 && self.guests().length)
-			return true;
-		if(avai === 0 && cfa === 0)
-			return false;
-		if(inv === 0 && avai === 0)
-			return false;
-		if(inv > 0 || avai > 0){
-			if(self.guests().length && (avai <= inv || (avai > inv && cfa))) {
-				return true;
+	self.canBook = ko.observable(true);
+	self.unlBooking = ko.observable(false);
+	self.showTicketsLeft = true;
+	
+	self.getDeadline = function() {
+		var unit = 60000, //60,000 milliseconds in a minute
+			cfa = parseInt( self.cfa(), 10 ) === 1 ? true : false,
+			//cutoff values are converted to minutes
+			activity_deadline = ( self.activity().cutoff_hours ? parseInt( self.activity().cutoff_hours, 10 ) * 60 : 0 ) + ( self.activity().cutoff_minutes ? parseInt( self.activity().cutoff_minutes, 10 ) : 0 ),
+			default_deadline = ( WebBooker.bootstrap.default_cutoff_hrs ? parseInt( WebBooker.bootstrap.default_cutoff_hrs, 10 ) * 60 : 0 ) + ( WebBooker.bootstrap.default_cutoff_mins ? parseInt( WebBooker.bootstrap.default_cutoff_mins, 10 ) : 0 ),
+			_date;
+			
+		if( self.activity().book_until_end ) {
+			if ( self.time().endTime === 'Open' ) {
+				_date = new Date( self.date() );
+				_date.setHours(23,59,59);
+			} else {
+				_date = new Date( self.date() + ' ' + self.time().endTime );
 			}
 		} else {
+			if ( self.time().startTime === 'Open' ) {
+				_date = new Date( self.date() );
+			} else {
+				_date = new Date( self.date() + ' ' + self.time().startTime );
+			}
+		}
+		
+		// if CFA off, then respect activity deadline when activity > default
+		if( !cfa ) {
+			_date = new Date( _date.getTime() - ( ( activity_deadline > default_deadline ? activity_deadline : default_deadline ) * unit ) );
+		// otherwise, default deadline is always deadline.
+		} else {
+			_date = new Date( _date.getTime() - ( default_deadline * unit ) );
+		}
+		
+		return _date;
+	};
+
+	self.guests = ko.computed(function(){
+		if(!self.cartItem() || !Object.keys(self.cartItem().guests()).length) {
+			return [];
+		}
+		return self.cartItem().guests();
+	});
+	
+	self.ticketsLeft = ko.computed(function() {
+		if ( !self.showTicketsLeft ) {
 			return false;
 		}
-		if(!self.guests().length){
+		
+		var inv = self.inventory(),
+			cfa = self.cfa();
+		
+		if ( !inv || cfa ) {
 			return false;
 		}
+		
+		if ( !inv.inventory || inv.inventory === 0 ) {
+			return false;
+		}
+		
+		var max = inv.available || 0,
+			guests = self.guests(),
+			ni;
+			
+		for ( ni = 0; ni < guests.length; ni += 1 ) {
+			max -= guests[ni].qty();
+		}
+		
+		if ( inv.inventory > 0 && max > 0 ) {
+			if ( max <= 5 ) {
+				return __('Only')() + ' ' + max + ' ' + __('tickets left!')();
+			} if ( max === 1 ) {
+				return __('Only')() + ' 1 ' + __('ticket left!')();
+			} else {
+				return false;
+			}
+		} else if ( inv.inventory > 0 && max <= 0 ) {
+			return __('No more tickets left!')();
+		}
+		return false;
+	});
+	
+	self.canCheckout = ko.computed(function(){
+		if ( WebBooker.Cart.items().length > 0 ) {
+			return true;
+		}
+		if ( self.cartItem() ) {
+			var total = 0,
+				g = self.guests(),
+				ni;
+			for ( ni = 0; ni < g.length; ni += 1 ) {
+				total += g[ni].qty();
+			}
+			if ( total > 0 ) {
+				return true;
+			}
+		}
+		return false;
 	});
 
 	self.availabilityStatus = ko.computed(function() {
@@ -4897,17 +4952,8 @@ WebBooker.MiniCart = (function(){
 		}
 		if(self.date()) {
 			if(self.time()) {
-				if( self.notPastDeadline() ) {
-					if(self.notPastCutoff()) {
-						if(self.guests().length) {
-							if(self.canBook()) {
-								return __('Available')();
-							}
-							return __('Unavailable')();
-						}
-						return __('No Pricing Available')();
-					}
-					return __(' ')();
+				if(self.canBook()) {
+					return __('Available')();
 				}
 				return __('Unavailable')();
 			}
@@ -4918,25 +4964,24 @@ WebBooker.MiniCart = (function(){
 
 	self.isAvailable = function(nval, pid) {
 		function doNotification() {
-			if(!self.cartUpdateNotification) {
+			jQuery('#activity-subtotal').addClass('pulsate');
+			setTimeout(function() {
+				jQuery('#activity-subtotal').removeClass('pulsate');
+			}, 1000);
+			/*if(!self.cartUpdateNotification) {
 				self.cartUpdateNotificationStart();
 			} else {
 				clearTimeout(self.cartUpdateNotification);
 				self.cartUpdateNotificationStart();
-			}
+			}*/
 		};
-/*		
-		if ( !self.notPastCutoff() ) {
-			$ar.Notification( __('Past cutoff time.'), 'error' );
-			return false;
-		}
-*/		
+		
 		switch(true) {
 			case ( nval < 0 ):
 				return false;
 				break;
 				
-			case ( self.cfa() == 1 ):
+			case ( parseInt(self.cfa(), 10) === 1 ):
 				doNotification();
 				return true;
 				break;
@@ -4948,7 +4993,7 @@ WebBooker.MiniCart = (function(){
 		}
 
 		var max = self.inventory().available, prices = self.cartItem().guests(), ni;
-		for ( ni = 0; ni < prices.length; ni++ ) {
+		for ( ni = 0; ni < prices.length; ni += 1 ) {
 			if( prices[ni].id == pid )
 				continue;
 			max -= prices[ni].qty();
@@ -4971,7 +5016,9 @@ WebBooker.MiniCart = (function(){
 	};
 	
 	self.checkout = function(){
-		if( !self.addToCart() ) return;
+		if( !self.addToCart() ) {
+			return false;
+		}
 		jQuery('html, body').animate({ scrollTop: 0 }, 500);
 		window.location.href = WebBooker.bootstrap.wb_url + '/#/Checkout';
 	};
@@ -5013,64 +5060,84 @@ WebBooker.MiniCart = (function(){
 			id: self.activity().id,
 			datetime: createTimestamp(new Date(self.date() + ' ' + time))
 		}, function(data){
-
 			self.checkingInventory(false);
+			
+			data.inventory = parseInt(data.inventory, 10);
+			data.available = parseInt(data.available, 10);
+			data.cfa = parseInt(data.cfa, 10);
 			
 			if(data.status > 0){
 				self.inventory(data);
 				self.cfa(data.cfa);
 			} else if(data.status < 0 && data.status != -10){
 				self.inventory(false);
+				self.canBook(false);
 				return false;
-			}
-
-			var ni,
-				i = WebBooker.Cart.items(), 
-				//bookDate = new Date( self.date() + ' ' + time ),
-				today = new Date(),
-				cutoff_timestamp = self.getCutoffTimestamp({
-					book_date: today,
-				}),
-				deadline_time = self.getStopSellingTime({
-					book_date: today,
-				}),
-				_time = function() {
-					if( self.activity().book_until_end ) {
-						_t = self.time().endTime == 'Open' ? '' : self.time().endTime;
-					} else {
-						_t = self.time().startTime == 'Open' ? '' : self.time().startTime;
-					}
-					return _t;
-				},
-				selected_date_time = new Date(self.date() + ' ' + _time());
-				selected_start_time = new Date(self.date() + ' ' + _time());
-
-			if( selected_date_time.getTime() - deadline_time <= 0 ) {
-				self.notPastCutoff(false);
-				self.notPastDeadline(false);
-				self.inventory(false);
-				return false;
-			} else {
-				self.notPastDeadline(true);
 			}
 			
-			if ( data.cfa ) {
-				// zero available and past cutoff
-				if ( !data.available ) {
-					self.notPastCutoff(false);
+			var i = WebBooker.Cart.items(),
+				deadline = self.getDeadline(),
+				today = new Date(),
+				ni;
+				
+				console.log(data);
+				
+			// the real beauty of simplifying this is we separate the deadline from the inventory checks,
+			// so that after getting the deadline above (which accounts for CFA as well), we only have to determine
+			// below whether certain conditions are met and if we are over or under the deadline.
+			// Ryan Freeman
+			switch(true) {
+				// case #1 in matrix / line 3
+				// cfa off, max inv is set, no available inventory: do not book
+				case ( data.inventory > 0 && !data.cfa && data.available <= 0 ):
+					self.canBook(false);
 					self.inventory(false);
-				}
-				else if ( selected_start_time.getTime() - deadline_time <= 0 ) {
-					self.notPastCutoff(false);
+					console.log('failed at case #1');
+					return false;
+					break;
+				
+				// max inv not set, none available, deadline hasn't passed yet: allow booking (unlimited bookings)
+				case ( data.inventory <= 0 && data.available <= 0 && deadline >= today ):
+					if ( data.cfa ) {
+						//set ticket cfa
+					} else {
+						//unset ticket cfa
+					}
+					self.canBook(true);
+					self.unlBooking(true);
+					console.log('passed at case #2');
+					break;
+				
+				// max inv is set, inventory available, deadline hasn't passed yet: allow booking
+				case ( data.inventory > 0 && data.available > 0 && deadline >= today ):
+					self.canBook(true);
+					console.log('passed at case #3');
+					break;
+					
+				// max inv is set, no more inventory available, cfa on, and deadline hasn't passed yet: allow booking
+				case ( data.cfa && data.inventory > 0 && data.available <= 0 && deadline >= today ):
+					self.canBook(true);
+					//set ticket cfa
+					console.log('passed at case #4');
+					break;
+					
+				// max inv is set, inventory available, deadline already past: do not book
+				case ( data.inventory > 0 && data.available > 0 && deadline < today && !data.cfa ):
+					self.canBook(false);
 					self.inventory(false);
-				} else {
-					self.notPastCutoff(true);
-					self.notPastDeadline(true);
-				}
-			} else {
-				self.notPastCutoff(true);
+					console.log('failed at case #5');
+					return false;
+					break;
+					
+				//default behavior is to prevent booking
+				default:
+					self.canBook(false);
+					self.inventory(false);
+					console.log('failed at default case');
+					return false;
+					break;
 			}
-
+			
 			//wraps the validation script to maintain object's presence in the cart
 			var valFunc = function(obj){
 				obj.qty.setValidate(function(nval){
@@ -5100,10 +5167,12 @@ WebBooker.MiniCart = (function(){
 			var _ci;
 			//check for thineself in the cart
 			for(ni = 0; ni < i.length; ni++){
-				if(i[ni].activity != self.activity().id)
+				if(i[ni].activity != self.activity().id) {
 					continue;
-				if(i[ni].date != self.date() || i[ni].time != self.time())
+				}
+				if(i[ni].date != self.date() || i[ni].time.startTime != self.time().startTime) {
 					continue;
+				}
 				_ci = i[ni];
 				break;
 			}
@@ -5251,36 +5320,7 @@ WebBooker.MiniCart = (function(){
 		
 		item.qty( item.qty() - 1 );
 	};
-
-	self.getCutoffTimestamp = function(args) {
-		var unit = 60000, //60,000 milliseconds in a minute
-			_date = new Date( args.book_date.getTime() ),
-			//cutoff times are in minutes
-			_cutoff = ( self.activity().cutoff_hours ? parseInt( self.activity().cutoff_hours, 10 ) * 60 : 0 ) + ( self.activity().cutoff_minutes ? parseInt( self.activity().cutoff_minutes, 10 ) : 0 );
-			
-		_date = new Date( _date.getTime() + ( _cutoff * unit ) );
-		return _date;
-	};
-
-	self.getStopSellingTime = function(args) {
-		var unit = 60000, //60,000 milliseconds in a minute
-			cfa = parseInt( self.cfa(), 10 ) === 1 ? true : false,
-			_date = new Date( args.book_date.getTime() ),
-			//cutoff times are in minutes
-			activity_deadline = ( self.activity().cutoff_hours ? parseInt( self.activity().cutoff_hours, 10 ) * 60 : 0 ) + ( self.activity().cutoff_minutes ? parseInt( self.activity().cutoff_minutes, 10 ) : 0 ),
-			default_deadline = ( WebBooker.bootstrap.default_cutoff_hrs ? parseInt( WebBooker.bootstrap.default_cutoff_hrs, 10 ) * 60 : 0 ) + ( WebBooker.bootstrap.default_cutoff_mins ? parseInt( WebBooker.bootstrap.default_cutoff_mins, 10 ) : 0 );
-
-		// if CFA off, then respect activity deadline when activity > default
-		if( !cfa ) {
-			_date = new Date( _date.getTime() + ( ( activity_deadline > default_deadline ? activity_deadline : default_deadline ) * unit ) );
-		// otherwise, default deadline is always deadline.	
-		} else {
-			_date = new Date( _date.getTime() + ( default_deadline * unit ) );
-		}
-		
-		return _date.getTime();
-	};
-
+	
 	self._grabDays = function(day){
 		var times = self.activity().times,
 			days = {},
@@ -5684,7 +5724,6 @@ WebBooker.ActivityView = (function(){
 			return;
 		}
 		self.activity(WebBooker.bootstrap.activity);
-		self.activity().stop_sell_hours = ( WebBooker.bootstrap.default_cutoff_hrs ? parseInt( WebBooker.bootstrap.default_cutoff_hrs, 10 ) : 0 ) + ( WebBooker.bootstrap.default_cutoff_mins ? parseInt( WebBooker.bootstrap.default_cutoff_mins, 10 ) / 60  : 0 );
 		jQuery('.carousel').carousel({pause: 'hover'});
 	};
 
@@ -6306,6 +6345,8 @@ $ar.CheckoutItemModel = function(data){
 				}
 			}
 		}
+		WebBooker.Checkout.sale.leadGuest.hotel($ar.HotelModel(item.hotel().json()));
+		WebBooker.Checkout.sale.leadGuest.room( (!item.room() || item.room() === '') ? 'Not provided' : item.room() );
 	};
 	that.undoTransportMaster = function() {
 		var tix = that.tickets(), ni;
@@ -6327,6 +6368,8 @@ $ar.CheckoutItemModel = function(data){
 			tix[ni].transportView.home.postal('');
 			tix[ni].transportView.home.country('');
 		}
+		WebBooker.Checkout.sale.leadGuest.hotel(null);
+		WebBooker.Checkout.sale.leadGuest.room(null);
 	};
 	that.makeTransportsFalse = function() {
 		var tix = that.tickets(), ni;
@@ -6337,6 +6380,8 @@ $ar.CheckoutItemModel = function(data){
 			tix[ni].transportView.selectTransport('false');
 			tix[ni].transportView.wantsTransport(false);
 		}
+		WebBooker.Checkout.sale.leadGuest.hotel(null);
+		WebBooker.Checkout.sale.leadGuest.room(null);
 	};
 	
 	that.i18n_date = function(){
@@ -6674,7 +6719,7 @@ $ar.CheckoutTicketModel = function(data){
 		if( that.transportView.wantsTransport() ) {
 			if( !that.transport() || 
 				!that.transportView.locationSelect() || 
-				( that.transportView.locationSelect() == 'hotel' && ( !that.transportView.hotel() || !that.transportView.room() ) ) ||
+				( that.transportView.locationSelect() == 'hotel' && !that.transportView.hotel() ) ||
 				( that.transportView.locationSelect() == 'address' && !that.transportView.lat() ) ) {
 				valid = false;
 			}
@@ -6687,7 +6732,7 @@ $ar.CheckoutTicketModel = function(data){
 	};
 
 	that.save = function(guest,sale_id,_callback){
-		var a_cfa = guest.cfa && !guest.inventory;
+		var a_cfa = guest.cfa && !guest.inventory;		
 		var ticket = {
 			aid: guest.activity,
 			sid: sale_id,
@@ -6695,7 +6740,8 @@ $ar.CheckoutTicketModel = function(data){
 			guest_type_id: that.id,
 			guest_type: that.name,
 			//leadGuest: guest.lead(),
-			lead_guest_hotel: (that.transportView.hotel()||{ json:function(){ return null; }}).json(),
+			guest_hotel: (that.transportView.hotel()||{ json:function(){ return null; }}).json(),
+			guest_room: (!that.transportView.room() || that.transportView.room() === '') ? 'Not provided' : that.transportView.room(),
 			cfa: guest.cfa,
 			cfa_name: '',
 			cfa_number: '',
@@ -7789,7 +7835,12 @@ WebBooker.Checkout = (function(){
 		var payments = self.sale.payments(),
 			ni;
 		for(ni = 0; ni < payments.length; ni++){
-			if(payments[ni].type != 'credit') continue;
+			if ( payments[ni].type != 'credit' ) {
+				continue;
+			}
+			if ( !payments[ni].validate() ) {
+				return false;
+			}
 		}
 		return true;
 	});
@@ -8410,9 +8461,8 @@ if(window.addEventListener) {
 		if(if_height_interval) {
 			clearInterval(if_height_interval);
 		}
-		console.log(event.data);
-		if(event.data.substring(0,4) !== '_FB_'){
-			WebBooker.bootstrap.parent_url = event.data;
+		if(event.origin.substring(0,4) !== '_FB_'){
+			WebBooker.bootstrap.parent_url = event.origin;
 			setHeight(event.data);
 		}
 	});
@@ -8421,8 +8471,8 @@ if(window.addEventListener) {
 		if(if_height_interval) {
 			clearInterval(if_height_interval);
 		}
-		if(event.data.substring(0,4) !== '_FB_'){
-			WebBooker.bootstrap.parent_url = event.data;
+		if(event.origin.substring(0,4) !== '_FB_'){
+			WebBooker.bootstrap.parent_url = event.origin;
 			setHeight(event.data);
 		}
 	});

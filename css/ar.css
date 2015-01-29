@@ -331,7 +331,7 @@ h6 {
   background-image: -ms-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
   background-image: -o-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
   background-image: linear-gradient(to bottom, #eaeaea 0%, #e1e1e1 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eaeaea', endColorstr='#e1e1e1',GradientType=0 );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#e1e1e1',GradientType=0 );
   box-shadow: 0 12px 10px -12px black; }
 
 .box-rounded {
@@ -386,7 +386,7 @@ h6 {
   background-image: -ms-linear-gradient(top, #f3f3f3 0%, #ededed 100%);
   background-image: -o-linear-gradient(top, #f3f3f3 0%, #ededed 100%);
   background-image: linear-gradient(to bottom, #f3f3f3 0%, #ededed 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f3f3f3', endColorstr='#ededed',GradientType=0 );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3f3f3', endColorstr='#ededed',GradientType=0 );
   box-shadow: 0 12px 10px -12px black; }
 
 .sidebar-container input[type="text"],
@@ -399,7 +399,7 @@ h6 {
 .sidebar-container .header, #webbooker-main .header, #webbooker-activity-book #activity-availability.avail, #webbooker-activity-book #activity-availability.unavail, .activity.box-rounded h3, #webbooker-search-results .activity .price .amount {
   color: white;
   background: #1c9be3;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1c9be3', endColorstr='#1c9be3',GradientType=0 );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1c9be3', endColorstr='#1c9be3',GradientType=0 );
   padding: 0 15px 16px 23px;
   font-size: 21px;
   margin: 0 0 0 -10px;
@@ -795,7 +795,7 @@ h6 {
   background-image: -ms-linear-gradient(top, #f3f3f3 0%, #ededed 100%);
   background-image: -o-linear-gradient(top, #f3f3f3 0%, #ededed 100%);
   background-image: linear-gradient(to bottom, #f3f3f3 0%, #ededed 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f3f3f3', endColorstr='#ededed',GradientType=0 );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3f3f3', endColorstr='#ededed',GradientType=0 );
   box-shadow: 0 34px 10px -34px black, 0 0 0 1px #dfdfdf; }
 
 #webbooker-search-summary {
@@ -1031,7 +1031,7 @@ h6 {
   background-image: -ms-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
   background-image: -o-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
   background-image: linear-gradient(to bottom, #eaeaea 0%, #e1e1e1 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eaeaea', endColorstr='#e1e1e1',GradientType=0 ); }
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#e1e1e1',GradientType=0 ); }
 
 /* Alex's new fancy menu */
 .webbooker-actions {
@@ -1265,7 +1265,7 @@ h6 {
   background-image: -ms-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
   background-image: -o-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
   background-image: linear-gradient(to bottom, #eaeaea 0%, #e1e1e1 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eaeaea', endColorstr='#e1e1e1',GradientType=0 );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#e1e1e1',GradientType=0 );
   box-shadow: 0 12px 10px -12px black; }
 
 .bigPrice {
@@ -1301,9 +1301,9 @@ h6 {
 
 .point.avail {
   border-top-color: #3CE31C;
-  -webkit-filter: drop-shadow(0 1px 0 #12c902);
-  -moz-filter: drop-shadow(0 1px 0 #12c902);
-  filter: drop-shadow(0 1px 0 #12c902); }
+  -webkit-filter: drop-shadow(0 1px 0 #12C902);
+  -moz-filter: drop-shadow(0 1px 0 #12C902);
+  filter: drop-shadow(0 1px 0 #12C902); }
 
 .itemsInCart {
   text-align: center;
@@ -1358,6 +1358,34 @@ h6 {
 
 #webbooker-activity-book #activity-time select:disabled {
   opacity: .5; }
+
+#webbooker-activity-book #activity-ticketsleft {
+  font-size: 1.2em;
+  text-align: center; }
+  #webbooker-activity-book #activity-ticketsleft.notickets {
+    color: #b22222;
+    -webkit-animation: ticketsleft 0.5s infinite alternate;
+    -ms-animation: ticketsleft 0.5s infinite alternate;
+    -moz-animation: ticketsleft 0.5s infinite alternate;
+    -o-animation: ticketsleft 0.5s infinite alternate;
+    -animation: ticketsleft 0.5s infinite alternate; }
+@-webkit-keyframes ticketsleft {
+  from {
+    color: #b22222; }
+  to {
+    color: #ff0000; } }
+@-moz-keyframes ticketsleft {
+  from {
+    color: #b22222; }
+  to {
+    color: #ff0000; } }
+@keyframes ticketsleft {
+  from {
+    color: #b22222; }
+  to {
+    color: #ff0000; } }
+  #webbooker-activity-book #activity-ticketsleft.hastickets {
+    color: green; }
 
 #webbooker-activity-book .actions {
   border: 0;
@@ -1619,7 +1647,29 @@ g + text tspan {
   background: #484848;
   box-shadow: none;
   padding: 9px 15px; }
-
+  #webbooker-activity-book #activity-subtotal > div {
+    line-height: 0; }
+  #webbooker-activity-book #activity-subtotal.pulsate {
+    -webkit-animation: activitysubtotal 0.5s infinite alternate;
+    -ms-animation: activitysubtotal 0.5s infinite alternate;
+    -moz-animation: activitysubtotal 0.5s infinite alternate;
+    -o-animation: activitysubtotal 0.5s infinite alternate;
+    -animation: activitysubtotal 0.5s infinite alternate; }
+@-webkit-keyframes activitysubtotal {
+  from {
+    background: #484848; }
+  to {
+    background: #1c9be3; } }
+@-moz-keyframes activitysubtotal {
+  from {
+    background: #484848; }
+  to {
+    background: #1c9be3; } }
+@keyframes activitysubtotal {
+  from {
+    background: #484848; }
+  to {
+    background: #1c9be3; } }
 /* Checkout */
 #webbooker-checkout .header h3 .btn {
   float: right;
@@ -2133,7 +2183,7 @@ ul.typeahead.dropdown-menu {
   background-image: -ms-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
   background-image: -o-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
   background-image: linear-gradient(to bottom, #eaeaea 0%, #e1e1e1 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eaeaea', endColorstr='#e1e1e1',GradientType=0 ); }
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#e1e1e1',GradientType=0 ); }
 
 .ui-state-highlight, .ui-widget-content .ui-state-highlight {
   color: #1c9be3; }
@@ -2520,7 +2570,7 @@ html[xmlns] .clearfix {
     background: -o-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
     background: -ms-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
     background: linear-gradient(to bottom, #eaeaea 0%, #e1e1e1 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eaeaea', endColorstr='#e1e1e1', GradientType=0 );
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#e1e1e1', GradientType=0 );
     border: 1px solid #d0d0d0; }
     #webbooker-search-results .activity:nth-child(2n) {
       float: right; }
@@ -2532,7 +2582,7 @@ html[xmlns] .clearfix {
     background: -o-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
     background: -ms-linear-gradient(top, #eaeaea 0%, #e1e1e1 100%);
     background: linear-gradient(to bottom, #eaeaea 0%, #e1e1e1 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eaeaea', endColorstr='#e1e1e1', GradientType=0 ); }
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#e1e1e1', GradientType=0 ); }
 
   #webbooker-search-results .activity:last-child {
     border: 1px solid #d0d0d0; }
@@ -3069,3 +3119,5 @@ html[xmlns] .clearfix {
 
   .border {
     width: 100%; } }
+
+/*# sourceMappingURL=ar.css.map */

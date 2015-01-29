@@ -64,9 +64,8 @@ if(window.addEventListener) {
 		if(if_height_interval) {
 			clearInterval(if_height_interval);
 		}
-		console.log(event.data);
-		if(event.data.substring(0,4) !== '_FB_'){
-			WebBooker.bootstrap.parent_url = event.data;
+		if(event.origin.substring(0,4) !== '_FB_'){
+			WebBooker.bootstrap.parent_url = event.origin;
 			setHeight(event.data);
 		}
 	});
@@ -75,8 +74,8 @@ if(window.addEventListener) {
 		if(if_height_interval) {
 			clearInterval(if_height_interval);
 		}
-		if(event.data.substring(0,4) !== '_FB_'){
-			WebBooker.bootstrap.parent_url = event.data;
+		if(event.origin.substring(0,4) !== '_FB_'){
+			WebBooker.bootstrap.parent_url = event.origin;
 			setHeight(event.data);
 		}
 	});

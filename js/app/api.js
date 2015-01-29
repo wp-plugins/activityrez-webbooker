@@ -177,7 +177,8 @@ WebBooker.API = {
 			firstName: ticket.firstName,
 			lastName: ticket.lastName,
 			currency: WebBooker.selectedCurrency().title,
-			lead_guest_hotel: ticket.lead_guest_hotel
+			guest_hotel: ticket.guest_hotel,
+			guest_room: ticket.guest_room
 		}, function(tix){
 			if(tix.status == 1 && typeof callback == 'function'){
 				callback(tix);

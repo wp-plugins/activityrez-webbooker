@@ -155,7 +155,7 @@ class ActivityRezAPI {
 	public function bootstrap($args){
 	 	if(is_null($args['webBookerID'])) return false;
 
-	 	$args['remote'] = 'true';
+	 	//$args['remote'] = 'true';
 		$result = $this->request('webBooker','bootStrap',$args);
 		$result['data']['langPath'] = WP_CONTENT_DIR.'/client-content/'.$result['data']['agencyID'].'/languages/'.$result['data']['webBookerID'];
 		return $result;

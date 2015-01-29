@@ -12,7 +12,7 @@
 				<select data-bind="options: times, optionsCaption: '<?php _e('Select time','arez'); ?>', value: time, enable: date, optionsText: 'startTime'"></select>
 			</div>
 		</div>
-		<div id="activity-cutoff" class="section" data-bind="visible: !notPastDeadline() && !inventory()">
+		<div id="activity-cutoff" class="section" data-bind="visible: !canBook()">
 			<p><?php _e('This activity is currently not available for booking at the selected date and time.', 'arez'); ?></p>
 			<!-- ko if: activity --><p data-bind="visible: activity().reseller_csPhone.length > 0"><?php _e('Please choose another date and time or contact an agent at: ', 'arez'); ?><span data-bind="text: activity().reseller_csPhone"></span></p><!-- /ko -->
 		</div>
@@ -27,8 +27,8 @@
 					<div class="price-action">
 						<input type="text" class="input-mini qty" disabled="disabled" data-bind="value: qty" />
 						<div class="btn-group shift-qty">
-							<a href="#" class="btn btn-mini" data-bind="click: $parent.remove" title="<?php _e('Decrement','arez'); ?>"><i class="icon-minus"></i></a>
-							<a href="#" class="btn btn-mini" data-bind="click: $parent.add" title="<?php _e('Increment','arez'); ?>"><i class="icon-plus"></i></a>
+							<button class="btn btn-mini" data-bind="click: $parent.remove" title="<?php _e('Decrement','arez'); ?>"><i class="icon-minus"></i></button>
+							<button class="btn btn-mini" data-bind="click: $parent.add, disable: $parent.ticketsLeft() === 'No more tickets left!'" title="<?php _e('Increment','arez'); ?>"><i class="icon-plus"></i></button>
 						</div>
 					</div>
 				</div>
@@ -65,6 +65,9 @@
 		</div><!-- /activity-prices -->
 		<!-- /ko -->
 		<!-- ko if: cartItem() -->
+		<div id="activity-ticketsleft" class="section" data-bind="visible: ticketsLeft, css: { 'notickets': ticketsLeft() === 'No more tickets left!', 'hastickets': /only/gi.test( ticketsLeft() ) }">
+			<p data-bind="text: ticketsLeft"></p>
+		</div><!-- /activity-ticketsleft -->
 		<div id="activity-subtotal" class="section">
 			<div class="clearfix">
 				<strong><?php _e('Subtotal:','arez'); ?></strong>
@@ -75,7 +78,7 @@
 		<p class="itemsInCart"><?php _e('Activities in Cart:','arez'); ?> <span data-bind="text: WebBooker.Cart.items().length"></span></p>
 		<div class="actions section">
 			<a title="<?php _e('Return to Search Results','arez'); ?>" data-bind="attr: { href: WebBooker.searchUrl }, click: WebBooker.ActivityView.analyticsContinueShopping" class="buttonGray buttonBig"><i class="icon-white icon-plus"></i> <?php _e('Add another Activity','arez'); ?></a>
-			<button data-bind="enable: canAdd, click: checkout" class="buttonBlue buttonBig checkButton"><i class="icon-shopping-cart icon-white"></i> <?php _e('Check Out','arez'); ?></button>
+			<button data-bind="enable: canCheckout, click: checkout" class="buttonBlue buttonBig checkButton"><i class="icon-shopping-cart icon-white"></i> <?php _e('Check Out','arez'); ?></button>
 		</div><!-- /actions -->
 	</div><!-- /content -->
 </div><!-- /webbooker-activity-book -->

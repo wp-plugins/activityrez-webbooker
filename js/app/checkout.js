@@ -614,6 +614,8 @@ $ar.CheckoutItemModel = function(data){
 				}
 			}
 		}
+		WebBooker.Checkout.sale.leadGuest.hotel($ar.HotelModel(item.hotel().json()));
+		WebBooker.Checkout.sale.leadGuest.room( (!item.room() || item.room() === '') ? 'Not provided' : item.room() );
 	};
 	that.undoTransportMaster = function() {
 		var tix = that.tickets(), ni;
@@ -635,6 +637,8 @@ $ar.CheckoutItemModel = function(data){
 			tix[ni].transportView.home.postal('');
 			tix[ni].transportView.home.country('');
 		}
+		WebBooker.Checkout.sale.leadGuest.hotel(null);
+		WebBooker.Checkout.sale.leadGuest.room(null);
 	};
 	that.makeTransportsFalse = function() {
 		var tix = that.tickets(), ni;
@@ -645,6 +649,8 @@ $ar.CheckoutItemModel = function(data){
 			tix[ni].transportView.selectTransport('false');
 			tix[ni].transportView.wantsTransport(false);
 		}
+		WebBooker.Checkout.sale.leadGuest.hotel(null);
+		WebBooker.Checkout.sale.leadGuest.room(null);
 	};
 	
 	that.i18n_date = function(){
@@ -982,7 +988,7 @@ $ar.CheckoutTicketModel = function(data){
 		if( that.transportView.wantsTransport() ) {
 			if( !that.transport() || 
 				!that.transportView.locationSelect() || 
-				( that.transportView.locationSelect() == 'hotel' && ( !that.transportView.hotel() || !that.transportView.room() ) ) ||
+				( that.transportView.locationSelect() == 'hotel' && !that.transportView.hotel() ) ||
 				( that.transportView.locationSelect() == 'address' && !that.transportView.lat() ) ) {
 				valid = false;
 			}
@@ -995,7 +1001,7 @@ $ar.CheckoutTicketModel = function(data){
 	};
 
 	that.save = function(guest,sale_id,_callback){
-		var a_cfa = guest.cfa && !guest.inventory;
+		var a_cfa = guest.cfa && !guest.inventory;		
 		var ticket = {
 			aid: guest.activity,
 			sid: sale_id,
@@ -1003,7 +1009,8 @@ $ar.CheckoutTicketModel = function(data){
 			guest_type_id: that.id,
 			guest_type: that.name,
 			//leadGuest: guest.lead(),
-			lead_guest_hotel: (that.transportView.hotel()||{ json:function(){ return null; }}).json(),
+			guest_hotel: (that.transportView.hotel()||{ json:function(){ return null; }}).json(),
+			guest_room: (!that.transportView.room() || that.transportView.room() === '') ? 'Not provided' : that.transportView.room(),
 			cfa: guest.cfa,
 			cfa_name: '',
 			cfa_number: '',
@@ -2097,7 +2104,12 @@ WebBooker.Checkout = (function(){
 		var payments = self.sale.payments(),
 			ni;
 		for(ni = 0; ni < payments.length; ni++){
-			if(payments[ni].type != 'credit') continue;
+			if ( payments[ni].type != 'credit' ) {
+				continue;
+			}
+			if ( !payments[ni].validate() ) {
+				return false;
+			}
 		}
 		return true;
 	});

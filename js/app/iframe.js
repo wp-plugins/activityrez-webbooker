@@ -75,9 +75,10 @@ function URLDecode(encodedString) {
 			
 			if (plugin.settings.lang){
 				if(r2_id > 0){
-					src += '&i18N=' + plugin.settings.lang
-				} else
-					src += '?i18N=' + plugin.settings.lang
+					src += '&i18N=' + plugin.settings.lang;
+				} else {
+					src += '?i18N=' + plugin.settings.lang;
+				}
 			}
 
 			var iframe = $( '<iframe id="arez-webbooker-frame" src="' + src + '" name="arez-webbooker-frame" width="100%" height="1500" scrolling="no" frameborder="0" allowTransparency="true" onload="scrollTo(0,0);"><\/iframe>' ).appendTo(element);

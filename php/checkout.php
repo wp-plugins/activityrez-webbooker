@@ -144,7 +144,6 @@ global $wb;
 									
 									<div class="pull-left inputMarg">
 										<label><?php _e('Hotel Room/Confirmation Number','arez'); ?></label>
-										<div class="reqSideGreen" data-bind="css: {reqSideRed: !room()}"></div>
 										<input type="text" data-bind="value: room, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;1227&quot;','arez'); ?>" />
 									</div>
 									
@@ -381,7 +380,6 @@ global $wb;
 									
 									<div class="pull-left inputMarg">
 										<label><?php _e('Hotel Room/Confirmation Number','arez'); ?></label>
-										<div class="reqSideGreen" data-bind="css: {reqSideRed: !room()}"></div>
 										<input type="text" data-bind="value: room, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;1227&quot;','arez'); ?>" />
 									</div>
 									

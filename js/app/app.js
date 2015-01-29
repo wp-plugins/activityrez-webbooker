@@ -856,7 +856,8 @@ WebBooker.About = {
 // postMessage for iFrame 
 WebBooker.postMessage = function(message) {
 	if(WebBooker.bootstrap.parent_url) {
-		if(typeof window.parent !== 'undefined' && typeof window.parent.postMessage == 'function'){
+		var matcher = new RegExp(WebBooker.bootstrap.parent_url, 'gi');
+		if(typeof window.parent !== 'undefined' && typeof window.parent.postMessage == 'function' && matcher.test(window.parent.location.origin)){
 			window.parent.postMessage(message, WebBooker.bootstrap.parent_url);
 		}
 	}
