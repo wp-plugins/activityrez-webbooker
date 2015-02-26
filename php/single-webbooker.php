@@ -13,7 +13,6 @@ global $wp_query, $wb, $query, $currency, $currencySymbol, $testMode, $available
 define('IMAGE_SERVER','https://media1.activityrez.com/images/timthumb.php');
 if ( WB_REMOTE == true ) {
 	$arezApi = ActivityRezAPI::instance();
-	$arezApi->init_view();
 	$wbMeta = get_post_custom( $post->ID );
 	$webBookerID = $post->ID;
 	$webBookerID =$wbMeta['webBookerID'][0];

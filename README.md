@@ -61,6 +61,9 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 
 # Changelog #
 
+# 2.5.4 #
+* Bug fixes
+
 # 2.5.3 #
 * Improvements to availability logic
 * Misc bugfixes

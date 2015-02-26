@@ -213,7 +213,12 @@ $ar.CheckoutItemModel = function(data){
 			setTransport = function(item){
 				return function(_nval){
 					if(!_nval) {
-						that.transport(null);
+						that.transport( $ar.TransportationModel({
+							id: 12345,
+							name: 'None',
+							amount: 0,
+							instructions: 'Select this if the guest doesn\'t need transportation.'
+						}) );
 					} else {
 						that.transport(item);
 					}
@@ -234,7 +239,7 @@ $ar.CheckoutItemModel = function(data){
 	that.transportView.selectTransport.subscribe(function(val) {
 		if ( val == 'false' ) {
 			that.makeTransportsFalse();
-		} else if ( val == 'empty' ) {
+		} else if ( val === 'empty' ) {
 			that.undoTransportMaster();
 		} else {
 			that.makeTransportMaster( that.transportView );
@@ -579,9 +584,15 @@ $ar.CheckoutItemModel = function(data){
 		var tix = that.tickets(), ni;
 		if ( !that.transport() ) return;
 		for(ni = 0; ni < tix.length; ni++){
-			if ( tix[ni].transportView.selectTransport() === 'false' ) {
+			/*if ( tix[ni].transportView.selectTransport() === 'false' ) {
+				tix[ni].transport( $ar.TransportationModel({
+					id: 12345,
+					name: 'None',
+					amount: 0,
+					instructions: 'Select this if the guest doesn\'t need transportation.'
+				}) );
 				continue;
-			}
+			}*/
 			tix[ni].transportView.selectTransport('true');
 			tix[ni].transportView.wantsTransport(true);
 			tix[ni].transportView.selectedTransType(item.selectedTransType());
@@ -644,7 +655,12 @@ $ar.CheckoutItemModel = function(data){
 		var tix = that.tickets(), ni;
 		//that.transportMaster(false);
 		for ( ni = 0; ni < tix.length; ni += 1 ) {
-			tix[ni].transport(null);
+			tix[ni].transport( $ar.TransportationModel({
+				id: 12345,
+				name: 'None',
+				amount: 0,
+				instructions: 'Select this if the guest doesn\'t need transportation.'
+			}) );
 			//tix[ni].transportView.master(false);
 			tix[ni].transportView.selectTransport('false');
 			tix[ni].transportView.wantsTransport(false);
@@ -839,13 +855,14 @@ $ar.TransportView = function(data){
 	self.selectedTransType = ko.observable();
 	self.selectTransport = ko.observable(self.wantsTransport);
 	self.selectTransport.subscribe(function(value) {
-		if ( value == 'empty' || value == 'false' ) {
+		if ( value === 'empty' || value == 'false' ) {
 			self.wantsTransport(false);
-		} else if ( value == 'true' ) {
+			
+		} else if ( value === 'true' ) {
 			self.wantsTransport(true);
 		}
 	});
-	self.wantsTransport = ko.observable( ( self.wantsTransport == 'empty' ) ? false : self.wantsTransport );
+	self.wantsTransport = ko.observable( ( self.wantsTransport === 'empty' ) ? false : self.wantsTransport );
 	self.locationSelect = ko.observable(self.locationSelect);
 	if(WebBooker.bootstrap.agencyID == 1260) {
 		// TODO - We should not hard-code clients like this. Let's make it manageable
@@ -955,8 +972,16 @@ $ar.CheckoutTicketModel = function(data){
 		var ni,
 			setTransport = function(item){
 				return function(_nval){
-					if(!_nval) that.transport(null);
-					else that.transport(item);
+					if(!_nval) {
+						that.transport( $ar.TransportationModel({
+							id: 12345,
+							name: 'None',
+							amount: 0,
+							instructions: 'Select this if the guest doesn\'t need transportation.'
+						}) );
+					} else {
+						that.transport(item);
+					}
 				};
 			};
 
@@ -967,6 +992,16 @@ $ar.CheckoutTicketModel = function(data){
 	that.transportView.hotel.subscribe(function(nval){
 		if(!nval)
 			that.transport(null);
+	});
+	that.transportView.wantsTransport.subscribe(function(value) {
+		if ( !value || value == 'false' ) {
+			that.transport( $ar.TransportationModel({
+				id: 12345,
+				name: 'None',
+				amount: 0,
+				instructions: 'Select this if the guest doesn\'t need transportation.'
+			}) );
+		}
 	});
 
 	that.transportView.row_id = that.row_id;
@@ -1039,7 +1074,7 @@ $ar.CheckoutTicketModel = function(data){
 				WebBooker.Checkout.sale.discount().save(that.ticket_id,sale_id);
 			}
 
-			if(that.transportView.wantsTransport() && that.transport()){
+			if(that.transport()){
 				that.transport().save(that.ticket_id, sale_id);
 			}
 

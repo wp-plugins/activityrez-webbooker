@@ -20,7 +20,7 @@ WebBooker.Homepage.show.subscribe(function(newValue){
 		var des = [], no;
 		
 		for ( no = 0; no < WebBooker.bootstrap.wb_destinations.length; no += 1 ) {
-			des.push( WebBooker.bootstrap.wb_destinations[no].name() );
+			des.push( WebBooker.bootstrap.wb_destinations[no].id );
 		}
 		
 		WebBooker.API.getFeaturedActivities( des, function(results) {

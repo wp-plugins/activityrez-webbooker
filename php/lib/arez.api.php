@@ -33,7 +33,6 @@ class ActivityRezAPI {
 	private $base_url = "/wp-content/plugins/flash-api/wsrv.php";
 	private $server;
 	private $nonce;
-	private $api_key;
 
 	// sets up some stuff since we dont have a constructor
 	public function init(){
@@ -50,13 +49,6 @@ class ActivityRezAPI {
 			$this->server = AREZ_SERVER_TRAINING;
 			$this->base_url = AREZ_SERVER_TRAINING.$this->base_url;
 		}
-	}
-	public function init_view(){
-		$options = get_option('arez_plugin');
-		if(WB_REMOTE && !isset( $options['api_key'] ) ){
-			die("Missing API Key, Please Contact Support");
-		}
-		$this->api_key = $options['api_key'];
 	}
 
 	//the next three functions are for data transport
@@ -122,7 +114,6 @@ class ActivityRezAPI {
 			$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 			$header = substr($result, 0, $header_size);
 			$body = substr($result, $header_size);
-
 			curl_close($ch);
 			return $body;
 		}catch (Exception $e) {
@@ -142,7 +133,6 @@ class ActivityRezAPI {
 			}else{
 				$nonce = 'NEW';				
 			}
-			$params['api_key'] = $this->api_key;
 		}
 
 		$params['service'] = $service;
@@ -174,16 +164,12 @@ class ActivityRezAPI {
 		return $resp;
 	}
 	
-	public function fetchApiKey(){
-		return $this->request('webBooker','fetchApiKey');
-	}
 	
 	public function fetchTranslations($webbookerID){
 		if(is_null($webbookerID)) return false;
 		$nonce = $this->nonce;
 		if(!$nonce){
 			$nonce = 'NEW';
-			$params['api_key'] = $this->api_key;
 		}
 
 		$params['service'] = 'webBooker';

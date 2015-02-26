@@ -161,19 +161,6 @@ function arez_plugin_option_page() {
 		if(!headers_sent()) setcookie ("ACTIVITYREZ", "", time() - 3600);
 	}
 
-	if( !isset( $options['api_key'] ) ){
-		//need the api key, go get it
-
-		$arezApi = ActivityRezAPI::instance();
-		$apiKey = $arezApi->fetchApiKey();
-		
-		if( isset($apiKey['status']) && $apiKey['status'] == 1 ){
-			$options['api_key'] = $apiKey['api_key'];
-			update_option( 'arez_plugin', $options);
-		}else{
-			$flashError = __("Can't lookup agency API Key, Please contact Support",'arez');
-		}
-	}
 
 	if( isset( $_REQUEST['translate'] ) && is_array( $_REQUEST['translate'] ) && !empty( $_REQUEST['translate'] ) ){
 		if( !isset($flashError) || !$flashError){
@@ -185,7 +172,7 @@ function arez_plugin_option_page() {
 		if( !isset($flashError) || !$flashError){
 			$arezApi = ActivityRezAPI::instance();
 			$ResultString = $arezApi->importWebbookers();
-			
+			echo "<!-- import wb ".print_r($ResultString,1)."-->";
 			if( isset($ResultString['status']) && $ResultString['status'] == '1' ){
 				//Store the wb list and prompt the user wich ones they want to import
 				$_webbookers = $ResultString['webBookers'];
