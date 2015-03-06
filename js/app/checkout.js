@@ -913,6 +913,8 @@ $ar.TransportView = function(data){
 			transport.distance = getDistance(transport.lat, transport.lng, location.lat, location.lng, 'M');
 			if ( self.selectedTransType() && ( self.selectedTransType() === __( transport.vehicle.charAt(0).toUpperCase() + transport.vehicle.slice(1) )() || self.selectedTransType() === __('Any')() ) ) {
 				transports.push(transport);
+			} else if ( !self.selectedTransType() ) {
+				transports.push(transport);
 			}
 		}
 

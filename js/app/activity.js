@@ -255,8 +255,6 @@ WebBooker.MiniCart = (function(){
 				today = new Date(),
 				ni;
 				
-				console.log(data);
-				
 			// the real beauty of simplifying this is we separate the deadline from the inventory checks,
 			// so that after getting the deadline above (which accounts for CFA as well), we only have to determine
 			// below whether certain conditions are met and if we are over or under the deadline.
@@ -895,7 +893,7 @@ WebBooker.ActivityView = (function(){
 		}
 			
 		if ( WebBooker.bootstrap.activity.status == -1 ) {
-			WebBooker.errorMsg('There was a problem loading this activity.');
+			WebBooker.Catalog.loadWithFilters();
 			return;
 		}
 		self.activity(WebBooker.bootstrap.activity);
