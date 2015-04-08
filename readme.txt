@@ -61,6 +61,10 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 4. Web Booker Configuration Manager on ActivityRez ![](https://raw.github.com/ActivityRez/arez-web-booker/feature-wprepo/assets/screenshot-4.png)
 
 == Changelog ==
+= 2.6.0 =
+* Bug fixes
+* Update for compatibility with ActivityRez 2.6.0
+
 = 2.5.5 =
 * Bug fixes for languages
 

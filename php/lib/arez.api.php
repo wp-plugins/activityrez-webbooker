@@ -128,8 +128,8 @@ class ActivityRezAPI {
 		$nonce = $this->nonce;
 
 		if(!$nonce){
-			if( isset($_COOKIE['ACTIVITYREZ']) && !empty($_COOKIE['ACTIVITYREZ']) ){
-				$nonce = $_COOKIE['ACTIVITYREZ'];
+			if( isset($_COOKIE['ACTIVITYREZ3']) && !empty($_COOKIE['ACTIVITYREZ3']) ){
+				$nonce = $_COOKIE['ACTIVITYREZ3'];
 			}else{
 				$nonce = 'NEW';				
 			}

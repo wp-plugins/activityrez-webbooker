@@ -265,15 +265,15 @@ WebBooker.API = {
 	},
 
 	signupAgent: function(params, callback) {
-		WebBooker.API.raw(WebBooker.bootstrap.api_url,{
-			nonce: WebBooker.bootstrap.nonce,
-			service: 'updateUser',
-			first_name: params.first_name,
-			last_name: params.last_name,
-			user_email: params.email,
-			user_pass: params.password,
+		var parser = document.createElement('a');
+		parser.href = WebBooker.bootstrap.api_url;
+		var url = 'https://' + parser.hostname + '/ar-core/api/company/user/arcAdd';
+		WebBooker.API.raw(url,{
+			token: WebBooker.bootstrap.nonce,
+			display_name: params.first_name +' '+ params.last_name,
+			email: params.email,
+			pass: params.password,
 			confirm_pass: params.verify_password,
-			user_login: params.user_name,
 			arc_number: params.arc,
 			reseller1ID: WebBooker.bootstrap.reseller1_id,
 			booker_site: true,
@@ -282,19 +282,27 @@ WebBooker.API = {
 	},
 	
 	passwordReset: function(params, callback){
-		WebBooker.API.request('accountManage','userPasswordReset',{
-			login: params.login,
+		var parser = document.createElement('a');
+		parser.href = WebBooker.bootstrap.api_url;
+		var url = 'https://' + parser.hostname + '/ar-core/api/user/activate_password';
+		WebBooker.API.raw(url,{
+			token: WebBooker.bootstrap.nonce,
+			email: params.login,
 			password: params.password,
 			key: params.key
 		},callback);
 	},
 	
 	passwordResetRequest: function(params, callback) {
-		WebBooker.API.request('accountManage', 'userPasswordResetRequest', {
-			wbID: WebBooker.bootstrap.webBookerID,
+		var parser = document.createElement('a');
+		parser.href = WebBooker.bootstrap.api_url;
+		var url = 'https://' + parser.hostname + '/ar-core/api/user/reset_password';
+		WebBooker.API.raw(url,{
+			token: WebBooker.bootstrap.nonce,
+			catalog_id: WebBooker.bootstrap.webBookerID,
 			site: WebBooker.bootstrap.wb_url,
-			user: params.user
-		}, callback);
+			email: params.user
+		},callback);
 	},
 	
 	resetPassword: function(params, callback) {

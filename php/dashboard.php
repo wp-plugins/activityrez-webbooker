@@ -169,17 +169,12 @@ global $wb;
 				<p><?php _e('Welcome to the travel agent signup page.','arez'); ?></p>
 				<form class="form-vertical" data-bind="with: WebBooker.Agent">
 					<div class="inputMarg pull-left">
-						<label><?php _e('First Name','arez'); ?></label>
-						<input type="text" data-bind="value: signup_fields.first_name" placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" />
-						<div class="reqSideGreen" data-bind="css: {reqSideRed: !signup_fields.first_name()}"></div>
+						<label><?php _e('Name','arez'); ?></label>
+						<input type="text" data-bind="value: signup_fields.display_name" placeholder="<?php _e('Ex. &quot;John Doe&quot;','arez'); ?>" />
+						<div class="reqSideGreen" data-bind="css: {reqSideRed: !signup_fields.display_name()}"></div>
 					</div>
 					<div class="inputMarg pull-left">
-						<label><?php _e('Last Name','arez'); ?></label>
-						<input type="text" data-bind="value: signup_fields.last_name" placeholder="<?php _e('Ex. &quot;Doe&quot;','arez'); ?>" />
-						<div class="reqSideGreen" data-bind="css: {reqSideRed: !signup_fields.last_name()}"></div>
-					</div>
-					<div class="inputMarg pull-left">
-						<label><?php _e('E-mail Address','arez'); ?></label>
+						<label><?php _e('E-mail Address (This will be your user name)','arez'); ?></label>
 						<input type="text" data-bind="value: signup_fields.email" placeholder="<?php _e('Ex. &quot;jdoe@gmail.com&quot;','arez'); ?>" />
 						<div class="reqSideGreen" data-bind="css: {reqSideRed: !signup_fields.email()}"></div>
 					</div>
@@ -187,11 +182,6 @@ global $wb;
 						<label><?php _e('ARC Number','arez'); ?></label>
 						<input type="text" data-bind="value: signup_fields.arc" placeholder="<?php _e('Ex. &quot;12345678&quot;','arez'); ?>" />
 						<div class="reqSideGreen" data-bind="css: {reqSideRed: !signup_fields.arc()}"></div>
-					</div>
-					<div class="inputMarg pull-left">
-						<label><?php _e('Username (no spaces or special characters)','arez'); ?></label>
-						<input type="text" data-bind="value: signup_fields.user_name" placeholder="<?php _e('Ex. &quot;jdoe&quot;','arez'); ?>" />
-						<div class="reqSideGreen" data-bind="css: {reqSideRed: !signup_fields.user_name()}"></div>
 					</div>
 					<div class="cb"></div>
 					<div class="inputMarg pull-left">

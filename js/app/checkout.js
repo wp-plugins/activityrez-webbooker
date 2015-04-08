@@ -103,20 +103,15 @@ $ar.CheckoutItemModel = function(data){
 		date: null,
 		i18n_date: null,
 		time: null,
-
 		url: '',
 		title: '',
 		destination: '',
-
 		directions_url: '',
 		instructions: '',
-
 		cfa: false,
 		pending: false,
 		inventory: 0,
 		tickets: [],
-
-		discounts: [],
 		options: [],
 		fees: [],
 		transportation: [],
@@ -625,7 +620,7 @@ $ar.CheckoutItemModel = function(data){
 				}
 			}
 		}
-		WebBooker.Checkout.sale.leadGuest.hotel($ar.HotelModel(item.hotel().json()));
+		WebBooker.Checkout.sale.leadGuest.hotel({} || $ar.HotelModel(item.hotel().json()));
 		WebBooker.Checkout.sale.leadGuest.room( (!item.room() || item.room() === '') ? 'Not provided' : item.room() );
 	};
 	that.undoTransportMaster = function() {
@@ -1038,7 +1033,7 @@ $ar.CheckoutTicketModel = function(data){
 	};
 
 	that.save = function(guest,sale_id,_callback){
-		var a_cfa = guest.cfa && !guest.inventory;		
+		var a_cfa = guest.cfa && !guest.inventory;
 		var ticket = {
 			aid: guest.activity,
 			sid: sale_id,
@@ -1282,7 +1277,7 @@ $ar.LeadGuestInfoModel = function(data){
 	that.errors = ko.observableArray([]);
 	that.validate = function(){
 		that.errors([]);
-		var email_regexp = /[a-z0-9!#$%&'*+\/=?\^_`{|}~\-]+(?:\.[a-z0-9!#$%&'*+\/=?\^_`{|}~\-]+)*@(?:[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?/;
+		var email_regexp = /[a-zA-Z0-9!#$%&'*+\/=?\^_`{|}~\-]+(?:\.[a-zA-Z0-9!#$%&'*+\/=?\^_`{|}~\-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?/;
 
 		if(!that.first_name()){
 			that.errors.push(__('First name is required.')());
@@ -1615,13 +1610,17 @@ $ar.SaleModel = function(data){
 			beans.items[ni] = $ar.CheckoutItemModel(beans.items[ni]);
 		}
 		for(ni = 0; ni < beans.payments.length; ni++){
-			if(beans.payments[ni].type == 'credit')
+			if(beans.payments[ni].type === 'credit') {
 				beans.payments[ni] = $ar.CreditCardPaymentModel(beans.payments[ni]);
-			if(beans.payments[ni].type == 'voucher')
+			}
+			if(beans.payments[ni].type === 'voucher') {
 				beans.payments[ni] = $ar.VoucherPaymentModel(beans.payments[ni]);
+			}
 		}
 		beans.leadGuest = $ar.LeadGuestInfoModel(beans.leadGuest);
-		if(beans.discount) beans.discount = $ar.DiscountModel(beans.discount);
+		if(beans.discount) {
+			beans.discount = $ar.DiscountModel(beans.discount);
+		}
 	};
 	self.json(data);
 
@@ -1660,15 +1659,18 @@ $ar.SaleModel = function(data){
 	self.discountTotal = ko.computed(function(){
 		if(!self.discount() || !self.items().length) return 0;
 		var items = self.items(),
+			discount = self.discount(),
 			sub = 0,
 			amt,ni;
-		if(self.discount().rate){
-			amt = parseFloat( self.discount().rate.replace('%', '') )/100;
+		if(discount.rate){
+			amt = parseFloat( discount.rate.replace('%', '') )/100;
 			for(ni = 0; ni < items.length; ni++){
 				sub += items[ni].subtotal() * amt;
 			}
 		} else {
-			sub = self.discount().amount;
+			for ( ni = 0; ni < items.length; ni += 1 ) {
+				sub = discount.amount * items[ni].tickets().length;
+			}
 		}
 		return sub;
 	}).extend({ throttle: 10 });
@@ -1776,7 +1778,7 @@ $ar.SaleModel = function(data){
 				for(no = 0; no < types.length; no++){
 					if(types[no].activity != tix[ni].activityID) continue;
 					if(types[no].date != (time.getMonth() + 1) + '/' + time.getDate() + '/' + time.getFullYear()) continue;
-					if(types[no].time != formatTime(tix[ni].datetime)) continue;
+					if(types[no].time.startTime != formatTime(tix[ni].datetime)) continue;
 					type = types[no];
 					break;
 				}
@@ -1784,7 +1786,7 @@ $ar.SaleModel = function(data){
 					type = $ar.CheckoutItemModel({
 						activity: tix[ni].activityID,
 						date: (time.getMonth() + 1) + '/' + time.getDate() + '/' + time.getFullYear(),
-						time: formatTime(tix[ni].datetime),
+						time: { startTime: formatTime(tix[ni].datetime) },
 						tickets: []
 					});
 					type.load((function(beans,opt){
@@ -1856,9 +1858,20 @@ $ar.SaleModel = function(data){
 			'postal': 'lead_guest_postal',
 			'country': 'lead_guest_country'
 		},self.leadGuest.json()),
-			ni;
+			payments = self.payments(),
+			cc_country, ni;
+		
+		for ( ni = 0; ni < payments.length; ni += 1 ) {
+			if ( payments[ni].type !== 'credit' ) {
+				continue;
+			}
+			cc_country = payments[ni].payee.country()['alpha-2'];
+		}
+		
 		if(sale.lead_guest_country) {
 			sale.lead_guest_country = (sale||{}).lead_guest_country['alpha-2']||'';
+		} else {
+			sale.lead_guest_country = cc_country;
 		}
 
 		// Send the sale.
@@ -1928,15 +1941,7 @@ $ar.SaleModel = function(data){
 	};
 
 	WebBooker.selectedCurrency.subscribe(function(){
-		var items = self.items(),
-			payments = self.payments(),
-			total = self.total(),
-			the_credit, ni;
-
-		var caller = function(){ self.items.valueHasMutated(); };
-		for(ni = 0; ni < items.length; ni++){
-			items[ni].load(caller);
-		}
+		WebBooker.Checkout.sale.items.valueHasMutated();
 	});
 
 	self.getDateOrder = function(time){
@@ -2036,6 +2041,39 @@ $ar.ccMonthModel = function(){
 		}
 	];
 	return months;
+};
+
+WebBooker.HotelSearch = function(args,callback){
+	var searchArgs = {
+		object: 'hotel',
+		property: 'post_title',
+		query: args.term
+	};
+
+	if( WebBooker.Cart.items().length > 0 ){
+		searchArgs.activities = [];
+		acts = WebBooker.Cart.items();
+		for( var ne = 0; ne < acts.length; ne++ ){
+			if( jQuery.inArray( acts[ne].activity, searchArgs.activities ) == -1 )
+				searchArgs.activities.push( acts[ne].activity );
+		}
+	}
+	
+	WebBooker.API.request('lookup','liveSearch', searchArgs,function(resp){
+		//convert format
+		if(resp.status ==1){
+			resp.results = [];
+			for(var ni = 0; ni<resp.items.length; ni++){
+				resp.results.push($ar.HotelModel(resp.items[ni]));
+			}
+			delete resp.items;
+			callback(resp);
+		}else{
+			return;
+		}
+		
+	});
+
 };
 
 WebBooker.Checkout = (function(){
@@ -2151,6 +2189,13 @@ WebBooker.Checkout = (function(){
 		return true;
 	});
 
+	self.enablePayment = ko.computed(function() {
+		var payments = self.sale.payments();
+		if( payments.length > 0 && payments[0].type_id == 0 )
+			return false;
+		return true;
+	});	
+	
 	self.process = function(item, event){
 		var voucher = true,
 			payments = self.sale.payments(),
@@ -2207,6 +2252,7 @@ WebBooker.Checkout = (function(){
 				
 				//cleanup current session
 				var saleid = self.sale.id();
+				var email = self.sale.leadGuest.email();
 //				self.sale = $ar.SaleModel();
 //				WebBooker.Sale.remove('leadGuestInfo');
 				WebBooker.Sale.set('loadedConfirmation', false);
@@ -2216,7 +2262,7 @@ WebBooker.Checkout = (function(){
 				} else {
 					jQuery('.modal-backdrop').hide();
 					jQuery('html, body').animate({ scrollTop: 0 }, 500);
-					window.location.hash = '/Confirmation/' + saleid;
+					window.location.hash = '/Confirmation/' + saleid + '/' + email;
 				}
 			}
 
@@ -2351,7 +2397,7 @@ WebBooker.CheckoutNav = (function(){
 		window.location.hash = '/Search';
 	};
 	self.viewItinerary = function(){
-		window.location.hash = '/Itinerary/' + WebBooker.Checkout.sale.id();
+		window.location.hash = '/Itinerary/' + WebBooker.Checkout.sale.id() + '/' + WebBooker.Checkout.sale.leadGuest.email();
 	};
 	self.goToSearch = function(){
 		window.location.hash = '/Search';

@@ -513,7 +513,7 @@ WebBooker.MiniCart = (function(){
 			start_date = new Date( times[ni].startDate === '0000-00-00 00:00:00' ? '2001/01/01 00:00:00' : cleanTimestamp(times[ni].startDate) );
 			end_date = new Date( times[ni].endDate === '0000-00-00 00:00:00' ? '2037/01/01 00:00:00' : cleanTimestamp(times[ni].endDate) );
 			
-			if ( start_date >= day || end_date <= day ) {
+			if ( start_date > day || end_date < day ) {
 				continue;
 			}
 			

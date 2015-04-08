@@ -34,7 +34,7 @@
 		<div class="alert" data-bind="visible: sale.cfa_activities().length > 0">
 			<p><strong><?php _e('Notice:','arez'); ?></strong> <?php _e('The following activities are pending confirmation from the vendor. An agent will get back to you within 72 hours regarding this reservation.','arez'); ?></p>
 			<ul data-bind="foreach: sale.cfa_activities">
-				<li><strong><span data-bind="html: title"></span>:</strong> <span data-bind="text: date"></span> <?php _e('at','arez'); ?> <span data-bind="text: time"></span></li>
+				<li><strong><span data-bind="html: title"></span>:</strong> <span data-bind="text: date"></span> <?php _e('at','arez'); ?> <span data-bind="text: time.startTime"></span></li>
 			</ul>
 			<p><?php printf( __('You may call %s to inquire about them.','arez'), $wb['reseller_cs_phone'] ); ?></p>
 		</div>

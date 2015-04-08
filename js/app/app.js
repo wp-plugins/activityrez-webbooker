@@ -210,7 +210,7 @@ var WebBooker = {
 				jQuery('.trainingWarning').hide();
 			});
 		}
-		createCookie('ACTIVITYREZ', WebBooker.bootstrap.nonce);
+		createCookie('ACTIVITYREZ3', WebBooker.bootstrap.nonce);
 		WebBooker.Agent.last_key = WebBooker.bootstrap.nonce;
 		jQuery('#wb_bootstrapper').remove();
 
@@ -362,9 +362,7 @@ WebBooker.Agent = {
 	passwordReset: ko.observable(false),
 	passwordResetRequest: ko.observable(false),
 	signup_fields: {
-		first_name: ko.observable(),
-		last_name: ko.observable(),
-		user_name: ko.observable(),
+		display_name: ko.observable(),
 		email: ko.observable(),
 		arc: ko.observable(),
 		password: ko.observable(),
@@ -414,8 +412,8 @@ WebBooker.Agent = {
 			}
 
 			data.display_name = data.display_name||'';
-			WebBooker.bootstrap.reseller2_id = data.agencyID;
-			WebBooker.Agent.user_id(data.userID);
+			WebBooker.bootstrap.reseller2_id = data.company;
+			WebBooker.Agent.user_id(data.uid);
 			if(data.display_name.replace(/\s/g,'').length){
 				WebBooker.Agent.name(data.display_name);
 			} else {
@@ -486,13 +484,11 @@ WebBooker.Agent = {
 		}
 
 		var params = {
-			first_name: WebBooker.Agent.signup_fields.first_name(),
-			last_name: WebBooker.Agent.signup_fields.last_name(),
+			display_name: WebBooker.Agent.signup_fields.display_name(),
 			email: WebBooker.Agent.signup_fields.email(),
 			password: WebBooker.Agent.signup_fields.password(),
 			verify_password: WebBooker.Agent.signup_fields.verify_password(),
-			arc: WebBooker.Agent.signup_fields.arc(),
-			user_name: WebBooker.Agent.signup_fields.user_name()
+			arc: WebBooker.Agent.signup_fields.arc()
 		};
 
 		WebBooker.hideAllScreens();
@@ -517,7 +513,7 @@ WebBooker.Agent = {
 				WebBooker.Dashboard.showMain(false);
 				WebBooker.Dashboard.showReports(false);
 				WebBooker.Dashboard.showSignup(true);
-				WebBooker.Agent.signup_error(result.msg);
+				WebBooker.Agent.signup_error(result.error);
 				WebBooker.Dashboard.signupSuccessMsg(false);
 				WebBooker.Agent.loginSuccess(false);
 			}
@@ -542,17 +538,8 @@ WebBooker.Agent = {
 		if(!WebBooker.Agent.signup_fields.email()) {
 			msg = __('You need to enter your e-mail address.');
 		}
-		if(!WebBooker.Agent.signup_fields.user_name()) {
-			msg = __('You need to enter a user name.');
-		}
-		if ( /[^A-Za-z0-9\.]+/gi.test(WebBooker.Agent.signup_fields.user_name()) ) {
-			msg = __('Your username cannot have spaces or special characters in it.');
-		}
-		if(!WebBooker.Agent.signup_fields.last_name()) {
-			msg = __('You need to enter your last name.');
-		}
-		if(!WebBooker.Agent.signup_fields.first_name()) {
-			msg = __('You need to enter your first name.');
+		if(!WebBooker.Agent.signup_fields.display_name()) {
+			msg = __('You need to enter your display  name.');
 		}
 		if(msg) {
 			WebBooker.Agent.signup_error(msg());
@@ -566,9 +553,7 @@ WebBooker.Agent = {
 		WebBooker.Agent.signup_fields.verify_password('');
 		WebBooker.Agent.signup_fields.arc('');
 		WebBooker.Agent.signup_fields.email('');
-		WebBooker.Agent.signup_fields.user_name('');
-		WebBooker.Agent.signup_fields.last_name('');
-		WebBooker.Agent.signup_fields.first_name('');
+		WebBooker.Agent.signup_fields.display_name('');
 		WebBooker.Agent.signup_error(false);
 	},
 
@@ -626,7 +611,7 @@ WebBooker.Agent = {
 	},
 	
 	pingCookie: function() {
-		var cookie = readCookie('ACTIVITYREZ');
+		var cookie = readCookie('ACTIVITYREZ3');
 		
 		if ( cookie && cookie != WebBooker.Agent.last_key ) {
 			WebBooker.bootstrap.nonce = cookie;
@@ -751,19 +736,15 @@ Path.map('#/Checkout').to(function() {
 	}, 1000);
 });
 
-Path.map('#/Confirmation/:saleID').to(function(){
+Path.map('#/Confirmation/:saleID/:email').to(function(){
 	WebBooker.showInitLoader(false);
 	WebBooker.hideAllScreens();
 
 	WebBooker.CheckoutNav.showConfirmation(true);
 	WebBooker.CheckoutNav.progress(71);
-	var sale = WebBooker.Sale.get('sale');
-	if( !sale || !sale.leadGuest.email ) {
-		WebBooker.Checkout.moreErrorMsg(__('Unable to retrieve sale; Missing e-mail.'));
-		return;
-	}
+
 	WebBooker.Checkout.sale.id(parseInt(this.params['saleID'],10));
-	WebBooker.Checkout.sale.leadGuest.email( sale.leadGuest.email );
+	WebBooker.Checkout.sale.leadGuest.email( this.params['email'] );
 
 	WebBooker.Checkout.sale.load(function(){
 		WebBooker.Analytics.trigger( WebBooker.Checkout.sale, 'action_Confirmation' );
@@ -802,21 +783,24 @@ Path.map('#/Confirmation/error/:errorMsg').to(function() {
 	}
 });
 
+
+Path.map('#/Itinerary/:saleID/:email').to(function() {
+	WebBooker.showInitLoader(false);
+	WebBooker.hideAllScreens();
+	jQuery('#cart-sidebar .retrieve').hide(); //dumbness
+	//var sale = WebBooker.Sale.get('sale');
+	//if(sale) WebBooker.Itinerary.sale = $ar.SaleModel(sale);
+	WebBooker.Itinerary.sale.id(parseInt(this.params['saleID']));
+	WebBooker.Itinerary.sale.leadGuest.email( this.params['email'] );
+	WebBooker.Itinerary.load();
+	WebBooker.Itinerary.show(true);
+});
+
+
 Path.map('#/Itinerary').to(function() {
 	WebBooker.showInitLoader(false);
 	WebBooker.hideAllScreens();
 	jQuery('#cart-sidebar .retrieve').hide(); //dumbness
-	WebBooker.Itinerary.show(true);
-});
-
-Path.map('#/Itinerary/:saleID').to(function() {
-	WebBooker.showInitLoader(false);
-	WebBooker.hideAllScreens();
-	jQuery('#cart-sidebar .retrieve').hide(); //dumbness
-	var sale = WebBooker.Sale.get('sale');
-	if(sale) WebBooker.Itinerary.sale = $ar.SaleModel(sale);
-	WebBooker.Itinerary.sale.id(this.params['saleID']);
-	WebBooker.Itinerary.load();
 	WebBooker.Itinerary.show(true);
 });
 
@@ -959,6 +943,7 @@ ko.bindingHandlers.hotelTypeahead = {
 					if (data.items.length) {
 						WebBooker.Checkout.hotels(mappedObjs);
 						no_results = false;
+					console.log("Found hotels:",WebBooker.Checkout.hotels(),"Process:",process,"names:",names);
 						process(names);
 					} else {
 						no_results = true;
@@ -972,6 +957,7 @@ ko.bindingHandlers.hotelTypeahead = {
 			property: 'name',
 			items: 8,
 			updater: function(item) {
+				console.log("Checking hotels updater:",item);
 				option(null);
 				for(var r = 0; r < WebBooker.Checkout.hotels().length; r++){
 					var hotel = WebBooker.Checkout.hotels()[r];
@@ -1340,7 +1326,7 @@ jQuery(document).ready(function(){
 });
 */
 
-window.$ar = window.$ar||{};
+
 $ar.Notification = (function(){
 	var visible = 6000,
 		remove = 300;

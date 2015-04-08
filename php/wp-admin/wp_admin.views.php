@@ -158,7 +158,7 @@ function arez_plugin_option_page() {
  
 	if( isset( $_REQUEST['arez_logout'] ) ){
 		unset($nonce);
-		if(!headers_sent()) setcookie ("ACTIVITYREZ", "", time() - 3600);
+		if(!headers_sent()) setcookie ("ACTIVITYREZ3", "", time() - 3600);
 	}
 
 

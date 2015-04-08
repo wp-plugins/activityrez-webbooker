@@ -70,7 +70,7 @@ if ( WB_REMOTE == true ) {
 	//local call internally
 	// CHANGE LOCAL LANGUAGE
 	if ( isset( $_REQUEST['i18N'] ) && isset( $availableLangs[ $_REQUEST['i18N'] ] ) ) {
-		UserAuth::instance()->language = $_REQUEST['i18N'];
+		UserAuth::instance()->auth->setLanguage($_REQUEST['i18N']);
 	}
 
 	api_include( array( 'web_booker' ) );
@@ -84,7 +84,8 @@ if ( WB_REMOTE == true ) {
 		//we need google maps on activity pages
 		wp_enqueue_script('google-maps','https://maps.google.com/maps/api/js?sensor=true',array('jquery'));
 		$wbArgs['slug'] = $wp_query->query_vars['activitySlug'];
-	}	
+	}
+
 	$wb = $wbAPI->action_bootStrap( $wbArgs );
 	$wb = $wb['data'];
     if( $testMode ){
@@ -234,6 +235,7 @@ function arez_webbooker_loadScripts(){
 		wp_enqueue_script('google-maps','https://maps.google.com/maps/api/js?sensor=true',array('jquery'));
 		
 		//ActivityRez Required Scripts
+		wp_enqueue_script('ar',ACTIVITYREZWB_PLUGIN_PATH.'js/app/ar.js',array('knockout'));
 		wp_enqueue_script('ar-app',ACTIVITYREZWB_PLUGIN_PATH.'js/app/app.js',array('jquery','jquery-ui-datepicker','knockout','bootstrap','store','path','lazyload','nouislider'));
 		wp_enqueue_script('ar-api',ACTIVITYREZWB_PLUGIN_PATH.'js/app/api.js',array('ar-app'));
 		wp_enqueue_script('ar-catalog',ACTIVITYREZWB_PLUGIN_PATH.'js/app/catalog.js',array('ar-app','ar-api'));

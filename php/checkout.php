@@ -139,7 +139,7 @@ global $wb;
 									<div class="pull-left inputMarg">
 										<label><?php _e('Hotel','arez'); ?></label>
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !hotel()}"></div>
-										<input type="text" data-bind="hotelTypeahead: { value: hotel }, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e("Type to search...",'arez');?>" data-provide="typeahead" />
+										<div data-bind="dropdown: { value: hotel, field: 'name', api: WebBooker.HotelSearch, search:true, placeholder: '<?php _e("Type to search...",'arez');?>' }" class="" ></div>
 									</div>
 									
 									<div class="pull-left inputMarg">
@@ -375,7 +375,7 @@ global $wb;
 									<div class="pull-left inputMarg">
 										<label><?php _e('Hotel','arez'); ?></label>
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !hotel()}"></div>
-										<input type="text" data-bind="hotelTypeahead: { value: hotel }, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e("Type to search...",'arez');?>" data-provide="typeahead" />
+										<input type="text" data-bind="dropdown: { value: hotel, field: 'name', api: WebBooker.HotelSearch, search:true, placeholder: '<?php _e("Type to search...",'arez');?>' }" placeholder="<?php _e("Type to search...",'arez');?>" data-provide="typeahead" />
 									</div>
 									
 									<div class="pull-left inputMarg">
@@ -872,8 +872,12 @@ global $wb;
 		<div id="checkout-payment-error" class="alert alert-error" data-bind="fadeVisible: WebBooker.Checkout.errorMsg">
 			<span data-bind="text: WebBooker.Checkout.errorMsg"></span>
 		</div><!-- /checkout-payment-error -->
+		
+		<div class="alert alert-error" data-bind="visible: !WebBooker.Checkout.enablePayment()">
+			You must add your credit card processing information via the admin in order to start taking bookings through your website. Click <a href="http://support.activityrez.com/customer/portal/articles/217900" target="_blank">here</a> to learn how.
+		</div><!-- /unset-payment-type-warning -->
 
-		<div class="actions clearfix">
+		<div class="actions clearfix" data-bind="visible: WebBooker.Checkout.enablePayment()">
 			<button data-target="Customize" class="buttonGray buttonBig float-left" data-bind="click: WebBooker.CheckoutNav.goToStep, scrollTopOnClick: true"><i class="icon-arrow-left icon-white"></i> <?php _e('Go back','arez'); ?></button>
 			<button class="buttonBlue buttonBig float-right" data-bind="enable: WebBooker.Checkout.enableSubmit, click: WebBooker.Checkout.process"><i class="icon-white icon-ok"></i> <?php _e('Submit','arez'); ?></button>
 		</div>

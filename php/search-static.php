@@ -50,7 +50,7 @@ if ( isset( $wp_query->query_vars['search_tag'] ) ) {
 
 if ( WB_REMOTE == true ) {
 	$arezApi = ActivityRezAPI::instance();
-	$arezApi->set_wb_id($wbArgs['webBookerID']);
+	$query['webBookerID'] = $wbArgs['webBookerID'];
 	$results = $arezApi->searchCatalog($query);
 }else{
 	api_include( array( 'web_booker' ) );

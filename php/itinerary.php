@@ -95,7 +95,7 @@ global $wb;
 
 				<div class="info">
 					<strong><?php _e('Date:','arez'); ?></strong> <span data-bind="text: i18n_date()"></span> &nbsp;
-					<strong><?php _e('Time:','arez'); ?></strong> <span data-bind="text: time"></span> &nbsp;
+					<strong><?php _e('Time:','arez'); ?></strong> <span data-bind="text: time.startTime"></span> &nbsp;
 					<strong><?php _e('Location:','arez'); ?></strong> <span data-bind="text: destination"></span>
 					<!-- ko if: directions_url -->
 					<p><strong><?php _e('Address','arez'); ?>:</strong> <span data-bind="text: address"></span></p>

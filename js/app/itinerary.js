@@ -16,7 +16,7 @@ WebBooker.Itinerary = (function(){
 		loading: ko.observable(false),
 		loaded: ko.observable(false),
 
-		errorMsg: ko.observable(),
+		errorMsg: ko.observable(false),
 	};
 
 	self.show.subscribe(function(value) {
@@ -28,7 +28,7 @@ WebBooker.Itinerary = (function(){
 
 	self.reset = function(){
 		self.loading(false);
-		self.errorMsg(null);
+		self.errorMsg(false);
 		self.loaded(false);
 		self.sale.id('');
 		self.sale.leadGuest.email('');
@@ -47,7 +47,7 @@ WebBooker.Itinerary = (function(){
 
 		self.loaded(false);
 		self.loading(true);
-		self.errorMsg(null);
+		self.errorMsg(false);
 
 		self.sale.load(function(result){
 			self.loading(false);

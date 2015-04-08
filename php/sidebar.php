@@ -141,7 +141,7 @@
 					<div class="login-form">
 					<form>
 						<div class="alert alert-success" data-bind="text: loginSuccess, visible: loginSuccess"></div>
-						<input type="text" title="<?php _e('Username','arez'); ?>" placeholder="<?php _e('Username','arez'); ?>" autocorrect="off" autocapitalize="off" data-bind="value: email" />
+						<input type="text" title="<?php _e('E-mail or Username','arez'); ?>" placeholder="<?php _e('E-mail or Username','arez'); ?>" autocorrect="off" autocapitalize="off" data-bind="value: email" />
 						<input type="password" autocomplete="off" title="<?php _e('Password','arez'); ?>" placeholder="<?php _e('Password','arez'); ?>" data-bind="value: password" />
 						<a class="lostPass" href="#" data-bind="attr: { href: wb_global_vars.wb_url + '/#/PasswordResetRequest' }"><?php _e("Forgot Password?",'arez');?></a>
 						<div style="clear:both"></div>
