@@ -835,7 +835,7 @@ $ar.TransportView = function(data){
 		}
 	});
 	self.transportationTypes = ko.computed(function() {
-		var types = [__('Any')()], ni;
+		var types = [], ni;
 		for ( ni = 0; ni < self.transportation().length; ni += 1 ) {
 			var trans = self.transportation()[ni],
 				vehicle = decodeURIComponent(trans.vehicle);//Remove URL Encoding if there
@@ -844,6 +844,11 @@ $ar.TransportView = function(data){
 			if ( jQuery.inArray( vehicle, types ) < 0 ) {
 				types.push( vehicle );
 			}
+		}
+		if ( types.length === 1 ) {
+			self.selectedTransType(types[0]);
+		} else {
+			types.unshift(__('Any')());
 		}
 		return types;
 	});

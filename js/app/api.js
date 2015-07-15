@@ -270,7 +270,7 @@ WebBooker.API = {
 		var url = 'https://' + parser.hostname + '/ar-core/api/company/user/arcAdd';
 		WebBooker.API.raw(url,{
 			token: WebBooker.bootstrap.nonce,
-			display_name: params.first_name +' '+ params.last_name,
+			display_name: params.display_name,
 			email: params.email,
 			pass: params.password,
 			confirm_pass: params.verify_password,
@@ -287,7 +287,7 @@ WebBooker.API = {
 		var url = 'https://' + parser.hostname + '/ar-core/api/user/activate_password';
 		WebBooker.API.raw(url,{
 			token: WebBooker.bootstrap.nonce,
-			email: params.login,
+			email: atob(params.login),
 			password: params.password,
 			key: params.key
 		},callback);

@@ -79,7 +79,7 @@ var WebBooker = {
 	isOldIE: (function(){
 		if(navigator.appName != "Microsoft Internet Explorer")
 			return false;
-		return parseInt(/MSIE\s(\d)/.exec(navigator.appVersion)[1],10) < 9
+		return parseInt(/MSIE\s(\d+)/.exec(navigator.appVersion)[1],10) < 9
 	})(),
 
 	us_states: [
@@ -226,8 +226,8 @@ var WebBooker = {
 		WebBooker.Contact.content(boot.contact);
 		if(boot.user_name){
 			WebBooker.Agent.name(boot.user_name);
-		} else if(boot.user_fname){
-			WebBooker.Agent.name(boot.user_fname + (boot.user_lname?' ' + boot.user_lname:''));
+		} else if(boot.user_display_name){
+			WebBooker.Agent.name(boot.user_display_name);
 		}
 
 		// Set the user id.
@@ -354,7 +354,6 @@ WebBooker.Agent = {
 	name: ko.observable(),
 	email: ko.observable(),
 	password: ko.observable(),
-	password2: ko.observable(),
 	key: ko.observable(),
 	isLoggingIn: ko.observable(false),
 	loginError: ko.observable(),
@@ -513,7 +512,7 @@ WebBooker.Agent = {
 				WebBooker.Dashboard.showMain(false);
 				WebBooker.Dashboard.showReports(false);
 				WebBooker.Dashboard.showSignup(true);
-				WebBooker.Agent.signup_error(result.error);
+				WebBooker.Agent.signup_error(result.msg);
 				WebBooker.Dashboard.signupSuccessMsg(false);
 				WebBooker.Agent.loginSuccess(false);
 			}
@@ -568,10 +567,10 @@ WebBooker.Agent = {
 	},
 	
 	PasswordReset: function(login, key) {
-		if ( WebBooker.Agent.password() == WebBooker.Agent.password2() ) {
+		if ( WebBooker.Agent.pw_reset.new_pw() == WebBooker.Agent.pw_reset.new_pw_confirm() ) {
 			var args = {
 				login: WebBooker.Agent.user(),
-				password: WebBooker.Agent.password(),
+				password: WebBooker.Agent.pw_reset.new_pw(),
 				key: WebBooker.Agent.key()
 			};
 			
@@ -1146,7 +1145,7 @@ function createCookie(name, value, days){
 		expires = '';
 	}
 
-	document.cookie = name + '=' + value + expires + '; path=/';
+	document.cookie = name + '=' + value + expires + '; path=/;domain=' + window.location.host + "; secure";
 }
 
 function readCookie(name){

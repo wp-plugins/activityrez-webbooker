@@ -11,9 +11,9 @@
 		<div class="cb"></div>
 		<div class="ribbonFold"></div>
 		<div class="content">
-			<p><?php _e("Please provide your email or login name to reset your password.",'arez');?></p>
+			<p><?php _e("Please provide your email to reset your password.",'arez');?></p>
 			<div class="newPassword">
-				<label><?php _e("Login/Email: ",'arez');?></label>
+				<label><?php _e("Email: ",'arez');?></label>
 				<input type="text" data-bind="value: WebBooker.Agent.user">
 				<button class="buttonBlue buttonBig" data-bind="click: WebBooker.Agent.PasswordResetRequest"><i class="icon-white icon-ok"></i> <?php _e("Request Reset",'arez');?></button>
 			</div>	
@@ -30,9 +30,9 @@
 		<div class="ribbonFold"></div>
 		<div class="content">
 			<label><?php _e("Password: ",'arez');?></label>
-			<input type="password" data-bind="value: WebBooker.Agent.password">
+			<input type="password" data-bind="value: WebBooker.Agent.pw_reset.new_pw">
 			<label><?php _e("Re-Type Password: ",'arez');?></label>
-			<input type="password" data-bind="value: WebBooker.Agent.password2">
+			<input type="password" data-bind="value: WebBooker.Agent.pw_reset.new_pw_confirm">
 			<div title="fake clear"></div>
 			<button class="buttonBlue buttonBig" data-bind="click: WebBooker.Agent.PasswordReset"><i class="icon-white icon-ok"></i> <?php _e("Change Password",'arez');?></button>
 		</div>

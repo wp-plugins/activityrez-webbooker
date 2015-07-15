@@ -61,6 +61,9 @@ Wordpress Admin and reimport the web bookers again.  This will update your local
 
 # Changelog #
 
+# 2.6.1 #
+* Bug fixes
+
 # 2.6.0 #
 * Bug fixes
 * Update for compatibility with ActivityRez 2.6.0

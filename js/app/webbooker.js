@@ -2120,6 +2120,7 @@ Path.core.route.prototype = {
 	self.expose(self,'$ar');
 })();
 
+/* {"requires":["ar.js"]} */
 $ar.mixin({
 	// $ar.extend:
 	//		throw a bunch of objects in and it smashes
@@ -2153,7 +2154,7 @@ $ar.mixin({
 		},
 		write: function(key, value, expires, inLocalStorage){
 			if(!inLocalStorage){
-				document.cookie = key + "=" + escape(value) + ";path=/;domain=" + window.location.host;
+				document.cookie = key + "=" + escape(value) + ";path=/;domain=" + window.location.host + "; secure";
 				return;
 			}
 			throw new Error('nobody has written me yet');
@@ -4302,7 +4303,7 @@ var WebBooker = {
 	isOldIE: (function(){
 		if(navigator.appName != "Microsoft Internet Explorer")
 			return false;
-		return parseInt(/MSIE\s(\d)/.exec(navigator.appVersion)[1],10) < 9
+		return parseInt(/MSIE\s(\d+)/.exec(navigator.appVersion)[1],10) < 9
 	})(),
 
 	us_states: [
@@ -4449,8 +4450,8 @@ var WebBooker = {
 		WebBooker.Contact.content(boot.contact);
 		if(boot.user_name){
 			WebBooker.Agent.name(boot.user_name);
-		} else if(boot.user_fname){
-			WebBooker.Agent.name(boot.user_fname + (boot.user_lname?' ' + boot.user_lname:''));
+		} else if(boot.user_display_name){
+			WebBooker.Agent.name(boot.user_display_name);
 		}
 
 		// Set the user id.
@@ -4577,7 +4578,6 @@ WebBooker.Agent = {
 	name: ko.observable(),
 	email: ko.observable(),
 	password: ko.observable(),
-	password2: ko.observable(),
 	key: ko.observable(),
 	isLoggingIn: ko.observable(false),
 	loginError: ko.observable(),
@@ -4791,10 +4791,10 @@ WebBooker.Agent = {
 	},
 	
 	PasswordReset: function(login, key) {
-		if ( WebBooker.Agent.password() == WebBooker.Agent.password2() ) {
+		if ( WebBooker.Agent.pw_reset.new_pw() == WebBooker.Agent.pw_reset.new_pw_confirm() ) {
 			var args = {
 				login: WebBooker.Agent.user(),
-				password: WebBooker.Agent.password(),
+				password: WebBooker.Agent.pw_reset.new_pw(),
 				key: WebBooker.Agent.key()
 			};
 			
@@ -5369,7 +5369,7 @@ function createCookie(name, value, days){
 		expires = '';
 	}
 
-	document.cookie = name + '=' + value + expires + '; path=/';
+	document.cookie = name + '=' + value + expires + '; path=/;domain=' + window.location.host + "; secure";
 }
 
 function readCookie(name){
@@ -6177,7 +6177,7 @@ WebBooker.API = {
 		var url = 'https://' + parser.hostname + '/ar-core/api/company/user/arcAdd';
 		WebBooker.API.raw(url,{
 			token: WebBooker.bootstrap.nonce,
-			display_name: params.first_name +' '+ params.last_name,
+			display_name: params.display_name,
 			email: params.email,
 			pass: params.password,
 			confirm_pass: params.verify_password,
@@ -6194,7 +6194,7 @@ WebBooker.API = {
 		var url = 'https://' + parser.hostname + '/ar-core/api/user/activate_password';
 		WebBooker.API.raw(url,{
 			token: WebBooker.bootstrap.nonce,
-			email: params.login,
+			email: atob(params.login),
 			password: params.password,
 			key: params.key
 		},callback);
@@ -8804,7 +8804,7 @@ $ar.TransportView = function(data){
 		}
 	});
 	self.transportationTypes = ko.computed(function() {
-		var types = [__('Any')()], ni;
+		var types = [], ni;
 		for ( ni = 0; ni < self.transportation().length; ni += 1 ) {
 			var trans = self.transportation()[ni],
 				vehicle = decodeURIComponent(trans.vehicle);//Remove URL Encoding if there
@@ -8813,6 +8813,11 @@ $ar.TransportView = function(data){
 			if ( jQuery.inArray( vehicle, types ) < 0 ) {
 				types.push( vehicle );
 			}
+		}
+		if ( types.length === 1 ) {
+			self.selectedTransType(types[0]);
+		} else {
+			types.unshift(__('Any')());
 		}
 		return types;
 	});

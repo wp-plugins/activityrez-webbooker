@@ -49,30 +49,30 @@ global $wb;
 					<?php if( $wb['i18n'] != 'ja' ) { ?>
 					<div class="pull-left inputMarg">
 						<label><?php _e('First Name','arez'); ?></label>
-						<input placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" type="text" data-bind="value: first_name" />
+						<input placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" type="text" data-bind="value: first_name" maxlength="191" />
 						<div class="reqSideGreen" data-bind="css: {reqSideRed: !first_name()}"></div>
 					</div>
 					<?php } ?>
 					<div class="pull-left inputMarg">
 						<label><?php _e('Last Name','arez'); ?></label>
-						<input placeholder="<?php _e('Ex. &quot;Doe&quot;','arez'); ?>" type="text" data-bind="value: last_name" />
+						<input placeholder="<?php _e('Ex. &quot;Doe&quot;','arez'); ?>" type="text" data-bind="value: last_name" maxlength="191" />
 						<div class="reqSideGreen" data-bind="css: {reqSideRed: !last_name()}"></div>
 					</div>
 					<?php if( $wb['i18n'] == 'ja' ) { ?>
 					<div class="pull-left inputMarg">
 						<label><?php _e('First Name','arez'); ?></label>
-						<input placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" type="text" data-bind="value: first_name" />
+						<input placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" type="text" data-bind="value: first_name" maxlength="191" />
 						<div class="reqSideGreen" data-bind="css: {reqSideRed: !first_name()}"></div>
 					</div>
 					<?php } ?>
 					<div class="pull-left inputMarg">
 						<label><?php _e('Telephone Number','arez'); ?></label>
-						<input type="text" class="imeOff" data-bind="value: phone, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;(298) 555-2941&quot;','arez'); ?>" />
+						<input type="text" class="imeOff" data-bind="value: phone, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;(298) 555-2941&quot;','arez'); ?>" maxlength="191" />
 						<div class="reqSideGreen" data-bind="css: {reqSideRed: !phone()}"></div>
 					</div>
 					<div class="pull-left inputMarg">
 						<label><?php _e('E-mail Address','arez'); ?></label>
-						<input type="text" class="imeOff" data-bind="value: email, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;jdoe@gmail.com&quot;','arez'); ?>" />
+						<input type="text" class="imeOff" data-bind="value: email, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;jdoe@gmail.com&quot;','arez'); ?>" maxlength="191" />
 						<div class="reqSideGreen" data-bind="css: {reqSideRed: !email()}"></div>
 					</div>
 					<div class="pull-left inputMarg">
@@ -144,7 +144,7 @@ global $wb;
 									
 									<div class="pull-left inputMarg">
 										<label><?php _e('Hotel Room/Confirmation Number','arez'); ?></label>
-										<input type="text" data-bind="value: room, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;1227&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: room, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;1227&quot;','arez'); ?>" maxlength="191" />
 									</div>
 									
 									<div class="cb"></div>
@@ -153,23 +153,23 @@ global $wb;
 									<?php if( $wb['i18n'] != 'ja' ) { ?>
 									<div class="pull-left inputMarg">
 										<label><?php _e('Address','arez'); ?></label>
-										<input type="text" data-bind="value: home.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.address()}"></div>
 									</div>
 									<div class="pull-left inputMarg">
 										<label><?php _e('City','arez'); ?></label>
-										<input type="text" data-bind="value: home.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.city()}"></div>
 									</div>
 									<div class="pull-left inputMarg">
 										<label><?php _e('State/Province','arez'); ?></label>
-										<input type="text" data-bind="value: home.state, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;West Virginia&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.state, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;West Virginia&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.state()}"></div>
 									</div>
 									<?php } ?>
 									<div class="pull-left inputMarg">
 										<label><?php _e('Zip/Postal Code','arez'); ?></label>
-										<input type="text" class="imeOff" data-bind="value: home.postal, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" />
+										<input type="text" class="imeOff" data-bind="value: home.postal, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.postal()}"></div>
 									</div>
 									<div class="cb"></div>
@@ -182,17 +182,17 @@ global $wb;
 									<div class="cb"></div>
 									<div class="pull-left inputMarg">
 										<label><?php _e('State/Province','arez'); ?></label>
-										<input type="text" data-bind="value: home.state, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;West Virginia&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.state, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;West Virginia&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.state()}"></div>
 									</div>
 									<div class="pull-left inputMarg">
 										<label><?php _e('City','arez'); ?></label>
-										<input type="text" data-bind="value: home.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.city()}"></div>
 									</div>
 									<div class="pull-left inputMarg">
 										<label><?php _e('Address','arez'); ?></label>
-										<input type="text" data-bind="value: home.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.address()}"></div>
 									</div>
 									<?php } ?>
@@ -281,19 +281,19 @@ global $wb;
 								<?php if( $wb['i18n'] != 'ja' ) { ?>
 								<div class="pull-left nameMarg">
 									<label><?php _e('First Name', 'arez'); ?><br>
-									<input type="text" class="input-medium" data-bind="value: first_name" placeholder="<?php _e("First name",'arez');?>" />
+									<input type="text" class="input-medium" data-bind="value: first_name" placeholder="<?php _e("First name",'arez');?>" maxlength="191" />
 									</label>
 								</div>
 								<?php } ?>
 								<div class="pull-left nameMarg">
 									<label><?php _e('Last Name', 'arez'); ?><br>
-									<input type="text" class="input-medium" data-bind="value: last_name" placeholder="<?php _e("Last name",'arez');?>" />
+									<input type="text" class="input-medium" data-bind="value: last_name" placeholder="<?php _e("Last name",'arez');?>" maxlength="191" />
 									</label>
 								</div>
 								<?php if( $wb['i18n'] == 'ja' ) { ?>
 								<div class="pull-left nameMarg">
 									<label><?php _e('First Name', 'arez'); ?><br>
-									<input type="text" class="input-medium" data-bind="value: first_name" placeholder="<?php _e("First name",'arez');?>" />
+									<input type="text" class="input-medium" data-bind="value: first_name" placeholder="<?php _e("First name",'arez');?>" maxlength="191" />
 									</label>
 								</div>
 								<?php } ?>
@@ -324,7 +324,7 @@ global $wb;
 										<div class="reqSideGreen" data-bind="if: required, css: {reqSideRed: required && !selectedItem()}"></div>
 										<!-- /ko -->
 										<!-- ko if: type.toLowerCase() == 'text' -->
-										<input type="text" class="input-small" data-bind="value: text, valueUpdate: ['afterkeydown','propertychange','input']" />
+										<input type="text" class="input-small" data-bind="value: text, valueUpdate: ['afterkeydown','propertychange','input']" maxlength="500" />
 										<div class="reqSideGreen" data-bind="if: required, css: {reqSideRed: required && !text()}"></div>
 										<!-- /ko -->
 									</li>
@@ -358,7 +358,7 @@ global $wb;
 										<option value="false"><?php _e('No, I do not need transportation.', 'arez'); ?></option>
 									</select>
 								</div>
-								<div class="pull-left" style="clear:both" data-bind="visible: wantsTransport">
+								<div class="pull-left" style="clear:both" data-bind="visible: wantsTransport() && transportationTypes().length > 1">
 									<p><?php _e('Please select which type of vehicle you would prefer.', 'arez'); ?></p>
 									<select data-bind="options: transportationTypes, value: selectedTransType, optionsCaption: 'Choose...'">
 									</select>
@@ -380,7 +380,7 @@ global $wb;
 									
 									<div class="pull-left inputMarg">
 										<label><?php _e('Hotel Room/Confirmation Number','arez'); ?></label>
-										<input type="text" data-bind="value: room, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;1227&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: room, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;1227&quot;','arez'); ?>" maxlength="191" />
 									</div>
 									
 									<div class="cb"></div>
@@ -389,23 +389,23 @@ global $wb;
 									<?php if( $wb['i18n'] != 'ja' ) { ?>
 									<div class="pull-left inputMarg">
 										<label><?php _e('Address','arez'); ?></label>
-										<input type="text" data-bind="value: home.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.address()}"></div>
 									</div>
 									<div class="pull-left inputMarg">
 										<label><?php _e('City','arez'); ?></label>
-										<input type="text" data-bind="value: home.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.city()}"></div>
 									</div>
 									<div class="pull-left inputMarg">
 										<label><?php _e('State/Province','arez'); ?></label>
-										<input type="text" data-bind="value: home.state, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;West Virginia&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.state, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;West Virginia&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.state()}"></div>
 									</div>
 									<?php } ?>
 									<div class="pull-left inputMarg">
 										<label><?php _e('Zip/Postal Code','arez'); ?></label>
-										<input type="text" class="imeOff" data-bind="value: home.postal, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" />
+										<input type="text" class="imeOff" data-bind="value: home.postal, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.postal()}"></div>
 									</div>
 									<div class="cb"></div>
@@ -418,17 +418,17 @@ global $wb;
 									<div class="cb"></div>
 									<div class="pull-left inputMarg">
 										<label><?php _e('State/Province','arez'); ?></label>
-										<input type="text" data-bind="value: home.state, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;West Virginia&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.state, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;West Virginia&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.state()}"></div>
 									</div>
 									<div class="pull-left inputMarg">
 										<label><?php _e('City','arez'); ?></label>
-										<input type="text" data-bind="value: home.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.city()}"></div>
 									</div>
 									<div class="pull-left inputMarg">
 										<label><?php _e('Address','arez'); ?></label>
-										<input type="text" data-bind="value: home.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" />
+										<input type="text" data-bind="value: home.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" maxlength="191" />
 										<div class="reqSideGreen" data-bind="css: {reqSideRed: !home.address()}"></div>
 									</div>
 									<?php } ?>
@@ -594,46 +594,46 @@ global $wb;
 			<?php if( $wb['i18n'] != 'ja' ) { ?>
 			<div class="inputMarg">
 				<label><?php _e('First Name','arez'); ?></label>
-				<input type="text" data-bind="value: first_name" placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" />
+				<input type="text" data-bind="value: first_name" placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" maxlength="191" />
 				<div class="reqSideGreen" data-bind="css: {reqSideRed: !first_name()}"></div>
 			</div>
 			<?php } ?>
 			<div class="inputMarg">
 				<label><?php _e('Last Name','arez'); ?></label>
-				<input type="text" data-bind="value: last_name" placeholder="<?php _e('Ex. &quot;Doe&quot;','arez'); ?>" />
+				<input type="text" data-bind="value: last_name" placeholder="<?php _e('Ex. &quot;Doe&quot;','arez'); ?>" maxlength="191" />
 				<div class="reqSideGreen" data-bind="css: {reqSideRed: !last_name()}"></div>
 			</div>
 			<?php if( $wb['i18n'] == 'ja' ) { ?>
 			<div class="inputMarg">
 				<label><?php _e('First Name','arez'); ?></label>
-				<input type="text" data-bind="value: first_name" placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" />
+				<input type="text" data-bind="value: first_name" placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" maxlength="191" />
 				<div class="reqSideGreen" data-bind="css: {reqSideRed: !first_name()}"></div>
 			</div>
 			<?php } ?>
 			<div class="inputMarg">
 				<label><?php _e('Telephone Number','arez'); ?></label>
-				<input type="text" class="imeOff" data-bind="value: phone, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;(298) 555-2941&quot;','arez'); ?>" />
+				<input type="text" class="imeOff" data-bind="value: phone, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;(298) 555-2941&quot;','arez'); ?>" maxlength="191" />
 				<div class="reqSideGreen" data-bind="css: {reqSideRed: !phone()}"></div>
 			</div>
 			<div class="inputMarg">
 				<label><?php _e('E-mail Address','arez'); ?></label>
-				<input type="text" class="imeOff" data-bind="value: email, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;jdoe@gmail.com&quot;','arez'); ?>" />
+				<input type="text" class="imeOff" data-bind="value: email, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;jdoe@gmail.com&quot;','arez'); ?>" maxlength="191" />
 				<div class="reqSideGreen" data-bind="css: {reqSideRed: !email()}"></div>
 			</div>
 			<?php if( $wb['i18n'] != 'ja' ) { ?>
 			<div class="inputMarg">
 				<label><?php _e('Address','arez'); ?></label>
-				<input type="text" data-bind="value: address" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" />
+				<input type="text" data-bind="value: address" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" maxlength="191" />
 			</div>
 			<div class="inputMarg">
 				<label><?php _e('City','arez'); ?></label>
-				<input type="text" data-bind="value: city" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" />
+				<input type="text" data-bind="value: city" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" maxlength="191" />
 			</div>
 			<?php } ?>
 			<?php if( $wb['i18n'] == 'ja' ) { ?>
 			<div class="inputMarg">
 				<label><?php _e('Zip/Postal Code','arez'); ?></label>
-				<input type="text" class="imeOff" data-bind="value: postal" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" />
+				<input type="text" class="imeOff" data-bind="value: postal" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" maxlength="191" />
 			</div>
 			<?php } ?>
 			<div class="inputMarg">
@@ -647,24 +647,24 @@ global $wb;
 				<select name="state" data-bind="value: state, options: WebBooker.us_states, optionsCaption: '<?php _e('Choose...','arez'); ?>'"></select>
 				<!-- /ko -->
 				<!-- ko if: country().name != 'United States' -->
-				<input type="text" data-bind="value: state" placeholder="<?php _e('Ex. &quot;Alberta&quot;','arez'); ?>" />
+				<input type="text" data-bind="value: state" placeholder="<?php _e('Ex. &quot;Alberta&quot;','arez'); ?>" maxlength="191" />
 				<!-- /ko -->
 			</div>
 			<!-- /ko -->
 			<?php if( $wb['i18n'] != 'ja' ) { ?>
 			<div class="inputMarg">
 				<label><?php _e('Zip/Postal Code','arez'); ?></label>
-				<input type="text" class="imeOff" data-bind="value: postal" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" />
+				<input type="text" class="imeOff" data-bind="value: postal" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" maxlength="191" />
 			</div>
 			<?php } ?>
 			<?php if( $wb['i18n'] == 'ja' ) { ?>
 			<div class="inputMarg">
 				<label><?php _e('City','arez'); ?></label>
-				<input type="text" data-bind="value: city" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" />
+				<input type="text" data-bind="value: city" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" maxlength="191" />
 			</div>
 			<div class="inputMarg">
 				<label><?php _e('Address','arez'); ?></label>
-				<input type="text" data-bind="value: address" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" />
+				<input type="text" data-bind="value: address" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" maxlength="191" />
 			</div>
 			<?php } ?>
 		</form>
@@ -696,38 +696,38 @@ global $wb;
 						<div class="inputMarg">
 							<label><?php _e('First Name','arez'); ?></label>
 							<div class="reqSideGreen" data-bind="css: {reqSideRed: !payee.first_name()}"></div>
-							<input type="text" data-bind="value: payee.first_name, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" />
+							<input type="text" data-bind="value: payee.first_name, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" maxlength="191" />
 						</div>
 						<?php } ?>
 						<div class="inputMarg">
 							<label><?php _e('Last Name','arez'); ?></label>
 							<div class="reqSideGreen" data-bind="css: {reqSideRed: !payee.last_name()}"></div>
-							<input type="text" data-bind="value: payee.last_name, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Doe&quot;','arez'); ?>" />
+							<input type="text" data-bind="value: payee.last_name, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Doe&quot;','arez'); ?>" maxlength="191" />
 						</div>
 						<?php if( $wb['i18n'] == 'ja' ) { ?>
 						<div class="inputMarg">
 							<label><?php _e('First Name','arez'); ?></label>
 							<div class="reqSideGreen" data-bind="css: {reqSideRed: !payee.first_name()}"></div>
-							<input type="text" data-bind="value: payee.first_name, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" />
+							<input type="text" data-bind="value: payee.first_name, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;John&quot;','arez'); ?>" maxlength="191" />
 						</div>
 						<?php } ?>
 						<?php if( $wb['i18n'] == 'ja' ) { ?>
 						<div class="inputMarg">
 							<label><?php _e('Zip/Postal Code','arez'); ?></label>
 							<div class="reqSideGreen" data-bind="css: {reqSideRed: !payee.postal()}"></div>
-							<input type="text" class="imeOff" data-bind="value: payee.postal, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" />
+							<input type="text" class="imeOff" data-bind="value: payee.postal, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" maxlength="191" />
 						</div>
 						<?php } ?>
 						<?php if( $wb['i18n'] != 'ja' ) { ?>
 						<div class="inputMarg">
 							<label><?php _e('Address','arez'); ?></label>
 							<div class="reqSideGreen" data-bind="css: {reqSideRed: !payee.address()}"></div>
-							<input type="text" data-bind="value: payee.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" />
+							<input type="text" data-bind="value: payee.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" maxlength="191" />
 						</div>
 						<div class="inputMarg">
 							<label><?php _e('City','arez'); ?></label>
 							<div class="reqSideGreen" data-bind="css: {reqSideRed: !payee.city()}"></div>
-							<input type="text" data-bind="value: payee.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" />
+							<input type="text" data-bind="value: payee.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" maxlength="191" />
 						</div>
 						<?php } ?>
 						<div class="selectMarg">
@@ -743,7 +743,7 @@ global $wb;
 							<select name="state" data-bind="value: payee.state, options: WebBooker.us_states, optionsCaption: '<?php _e('Choose...','arez'); ?>'"></select>
 							<!-- /ko -->
 							<!-- ko if: payee.country().name != 'United States' -->
-							<input type="text" data-bind="value: payee.state, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Alberta&quot;','arez'); ?>" />
+							<input type="text" data-bind="value: payee.state, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Alberta&quot;','arez'); ?>" maxlength="191" />
 							<!-- /ko -->
 						</div>
 						<!-- /ko -->
@@ -751,25 +751,25 @@ global $wb;
 						<div class="inputMarg">
 							<label><?php _e('City','arez'); ?></label>
 							<div class="reqSideGreen" data-bind="css: {reqSideRed: !payee.city()}"></div>
-							<input type="text" data-bind="value: payee.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" />
+							<input type="text" data-bind="value: payee.city, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;Springfield&quot;','arez'); ?>" maxlength="191" />
 						</div>
 						<div class="inputMarg">
 							<label><?php _e('Address','arez'); ?></label>
 							<div class="reqSideGreen" data-bind="css: {reqSideRed: !payee.address()}"></div>
-							<input type="text" data-bind="value: payee.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" />
+							<input type="text" data-bind="value: payee.address, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;742 Evergreen Terr.&quot;','arez'); ?>" maxlength="191" />
 						</div>
 						<?php } ?>
 						<?php if( $wb['i18n'] != 'ja' ) { ?>
 						<div class="inputMarg">
 							<label><?php _e('Zip/Postal Code','arez'); ?></label>
 							<div class="reqSideGreen" data-bind="css: {reqSideRed: !payee.postal()}"></div>
-							<input type="text" class="imeOff" data-bind="value: payee.postal, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" />
+							<input type="text" class="imeOff" data-bind="value: payee.postal, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;31608&quot;','arez'); ?>" maxlength="191" />
 						</div>
 						<?php } ?>
 						<div class="inputMarg">
 							<label><?php _e('Phone Number','arez'); ?></label>
 							<div class="reqSideGreen" data-bind="css: {reqSideRed: !payee.phone()}"></div>
-							<input type="text" class="imeOff" data-bind="value: payee.phone, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;(298) 555-2941&quot;','arez'); ?>" />
+							<input type="text" class="imeOff" data-bind="value: payee.phone, valueUpdate: ['afterkeydown','propertychange','input']" placeholder="<?php _e('Ex. &quot;(298) 555-2941&quot;','arez'); ?>" maxlength="191" />
 						</div>
 					</fieldset>
 
